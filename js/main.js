@@ -212,20 +212,42 @@
   const cellHTML = x => `<button class="kana-cell${kanaDone[script + ":" + x.k] ? " done" : ""}" data-k="${x.k}" data-r="${x.r}" data-row="${x.row}">
       <span class="glyph">${x.k}</span><span class="rom">${x.r}</span></button>`;
 
+  const ACC_ARROW = '<svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+
   function renderKana() {
     const list = data().filter(matchesKana);
     if (!list.length) { grid.innerHTML = `<div class="kana-empty">Tidak ada huruf yang cocok. Coba kata kunci lain.</div>`; updateKanaProgress(); return; }
     const rows = [...new Set(list.map(x => x.row))].sort((a, b) => GROUP_ORDER.indexOf(a) - GROUP_ORDER.indexOf(b));
+    const autoOpen = !!kanaQuery || kanaRow !== "Semua";
     grid.innerHTML = rows.map(row => {
       const items = list.filter(x => x.row === row);
       const range = items.length > 1 ? `${items[0].k} – ${items[items.length - 1].k}` : items[0].k;
       const title = GROUP_TITLE[row] || `Baris ${row}`;
       const done = items.filter(x => kanaDone[script + ":" + x.k]).length;
-      return `<section class="kana-group">
-        <div class="kana-group-head"><h3>${title}</h3><span class="range">${range}</span><span class="cnt">${done}/${items.length} hafal</span></div>
-        <div class="kana-grid">${items.map(cellHTML).join("")}</div></section>`;
+      return `<section class="kana-group acc${autoOpen ? " open" : ""}" data-row="${row}">
+        <div class="kana-group-head acc-head">
+          <h3>${title}</h3><span class="range">${range}</span><span class="cnt">${done}/${items.length} hafal</span>
+          ${ACC_ARROW}
+        </div>
+        <div class="acc-body"><div class="kana-grid" data-built=""></div></div>
+      </section>`;
     }).join("");
-    grid.querySelectorAll(".kana-cell").forEach(c => c.addEventListener("click", () => openKanaPop(c.dataset)));
+    // isi grid hanya saat dibuka (hemat performa)
+    grid.querySelectorAll(".kana-group").forEach(sec => {
+      const items = list.filter(x => x.row === sec.dataset.row);
+      const body = sec.querySelector(".kana-grid");
+      const build = () => {
+        if (body.dataset.built) return;
+        body.innerHTML = items.map(cellHTML).join("");
+        body.querySelectorAll(".kana-cell").forEach(c => c.addEventListener("click", () => openKanaPop(c.dataset)));
+        body.dataset.built = "1";
+      };
+      if (sec.classList.contains("open")) build();
+      sec.querySelector(".acc-head").addEventListener("click", () => {
+        const open = sec.classList.toggle("open");
+        if (open) build();
+      });
+    });
     updateKanaProgress();
   }
   function updateKanaProgress() {
@@ -285,17 +307,44 @@
       return x.jp.includes(vQuery) || x.kana.toLowerCase().includes(q) || x.id.toLowerCase().includes(q);
     });
     if (!list.length) { vGrid.innerHTML = `<div class="kana-empty" style="grid-column:1/-1">Kosakata tidak ditemukan.</div>`; return; }
-    vGrid.innerHTML = list.map(x => `
-      <article class="vocab-card">
-        <span class="cat">${x.kat}</span>
-        <div class="jp">${x.jp}</div>
-        <div class="kana">${x.kana}</div>
-        <div class="id">${x.id}</div>
-        <div class="foot"><small>${x.kat}</small>
-          <button class="speak" data-speak="${esc(x.jp)}" aria-label="Dengar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12"/></svg></button>
+    const cats = [...new Set(list.map(x => x.kat))];
+    const autoOpen = !!vQuery || vCat !== "Semua";
+    vGrid.innerHTML = cats.map(cat => {
+      const items = list.filter(x => x.kat === cat);
+      return `<section class="vocab-group acc${autoOpen ? " open" : ""}" data-cat="${esc(cat)}">
+        <div class="vocab-head acc-head">
+          <span class="vocab-dot"></span>
+          <h3>${esc(cat)}</h3>
+          <span class="cnt">${items.length} kata</span>
+          ${ACC_ARROW}
         </div>
-      </article>`).join("");
-    vGrid.querySelectorAll(".speak").forEach(b => b.addEventListener("click", () => speak(b.dataset.speak)));
+        <div class="acc-body"><div class="vocab-grid" data-built=""></div></div>
+      </section>`;
+    }).join("");
+    vGrid.querySelectorAll(".vocab-group").forEach(sec => {
+      const items = list.filter(x => x.kat === sec.dataset.cat);
+      const body = sec.querySelector(".vocab-grid");
+      const build = () => {
+        if (body.dataset.built) return;
+        body.innerHTML = items.map(x => `
+          <article class="vocab-card">
+            <span class="cat">${esc(x.kat)}</span>
+            <div class="jp">${esc(x.jp)}</div>
+            <div class="kana">${esc(x.kana)}</div>
+            <div class="id">${esc(x.id)}</div>
+            <div class="foot"><small>${esc(x.kat)}</small>
+              <button class="speak" data-speak="${esc(x.jp)}" aria-label="Dengar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12"/></svg></button>
+            </div>
+          </article>`).join("");
+        body.querySelectorAll(".speak").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); speak(b.dataset.speak); }));
+        body.dataset.built = "1";
+      };
+      if (sec.classList.contains("open")) build();
+      sec.querySelector(".acc-head").addEventListener("click", () => {
+        const open = sec.classList.toggle("open");
+        if (open) build();
+      });
+    });
   }
   vSearch.addEventListener("input", e => { vQuery = e.target.value.trim(); renderVocab(); });
 

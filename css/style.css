@@ -630,6 +630,34 @@ footer ul a:hover{ color:#fff; padding-left:5px; }
   .reveal{ opacity:1; transform:none; }
 }
 
+
+/* =========================================================
+   ACCORDION (daftar buka-tutup) — hemat performa
+   ========================================================= */
+.acc-head{ cursor:pointer; user-select:none; }
+.acc-head:hover{ border-color:var(--teal); }
+.acc-arrow{ width:20px; height:20px; color:var(--faint); flex:0 0 auto; transition:transform .3s var(--ease); margin-left:6px; }
+.acc.open .acc-arrow{ transform:rotate(180deg); color:var(--teal-dark); }
+.acc-body{ overflow:hidden; max-height:0; transition:max-height .4s var(--ease-out); }
+.acc.open .acc-body{ max-height:5000px; }
+
+/* kana: kepala jadi tombol penuh */
+.kana-group.acc .kana-group-head{ margin-bottom:0; }
+.kana-group.acc.open .kana-group-head{ margin-bottom:16px; }
+.kana-group.acc .kana-group-head .cnt{ margin-left:auto; }
+.kana-group.acc .kana-grid{ padding-top:2px; }
+
+/* kosakata: kelompok */
+.vocab-group{ background:var(--card); border:1px solid var(--line); border-radius:var(--r-lg); padding:clamp(16px,2.2vw,24px); box-shadow:var(--shadow); }
+.vocab-head{ display:flex; align-items:center; gap:12px; }
+.vocab-head h3{ font-size:clamp(15px,2vw,19px); }
+.vocab-head .cnt{ margin-left:auto; color:var(--muted); font-size:12.5px; }
+.vocab-head .vocab-dot{ width:9px; height:9px; border-radius:50%; background:linear-gradient(140deg,var(--teal),var(--teal-deep)); flex:0 0 auto; }
+.vocab-group.acc .acc-body{ padding-top:0; }
+.vocab-group.acc.open .acc-body{ padding-top:16px; }
+/* wadah kosakata = daftar menurun berisi kelompok */
+#vocabGrid{ display:flex; flex-direction:column; gap:clamp(16px,2.2vw,28px); }
+
 /* =========================================================
    OPTIMASI HP — ringankan efek biar tidak lag/lemot
    ========================================================= */
