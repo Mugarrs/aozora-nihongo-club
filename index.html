@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="assets/logo.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
 <script>
   try { if (localStorage.getItem("aozora.theme") === "dark") document.documentElement.classList.add("dark-pre"); } catch (e) {}
@@ -94,8 +94,12 @@
               <stop offset="1" stop-color="var(--fuji-3)"/>
             </linearGradient>
           </defs>
-          <path d="M0,470 L428,132 Q480,80 532,132 L1200,470 Z" fill="url(#fujiG)"/>
-          <path d="M428,132 Q480,80 532,132 L572,172 L528,152 L498,196 L466,152 L432,192 L396,152 L356,172 Z" fill="var(--snow)"/>
+          <!-- badan gunung -->
+          <path d="M0,470 L520,120 Q600,72 680,120 L1200,470 Z" fill="url(#fujiG)"/>
+          <!-- salju di puncak (mengikuti kontur gunung) -->
+          <path d="M394,205 L520,120 Q600,72 680,120 L806,205
+                   L765,158 L722,196 L680,148 L640,186 L600,132 L560,186 L520,148 L478,196 L435,158 Z"
+                fill="var(--snow)"/>
         </svg>
         <div class="hills"></div>
         <div class="petals" id="petals"></div>

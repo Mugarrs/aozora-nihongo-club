@@ -67,7 +67,7 @@
   (function petals() {
     const box = $("#petals");
     if (!box || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const count = innerWidth < 640 ? 9 : 15;
+    const count = innerWidth < 640 ? 6 : 14;
     for (let i = 0; i < count; i++) {
       const p = document.createElement("span");
       p.className = "petal";
@@ -87,16 +87,17 @@
     const tips = ["Menyiapkan kelas…", "Memuat hiragana…", "Memuat katakana…", "Menyusun kosakata…", "ようこそ！"];
     let p = 0, done = false;
     const t = setInterval(() => {
-      p += Math.random() * 16 + 6;
+      p += Math.random() * 22 + 14;
       if (p >= 100) { p = 100; clearInterval(t); finish(); }
       bar.style.width = p + "%"; pct.textContent = Math.floor(p);
       tip.textContent = tips[Math.min(tips.length - 1, Math.floor(p / 22))];
-    }, 170);
+    }, 110);
     function finish() {
       if (done) return; done = true;
-      setTimeout(() => { pre.classList.add("done"); document.body.classList.remove("locked"); revealInit(); }, 320);
+      setTimeout(() => { pre.classList.add("done"); document.body.classList.remove("locked"); revealInit(); }, 200);
     }
-    setTimeout(finish, 4000);
+    // jangan menunggu terlalu lama di HP
+    setTimeout(finish, 2200);
   })();
 
   /* ---------- CURSOR ---------- */

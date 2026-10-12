@@ -209,6 +209,23 @@ body.dark .icon-btn .moon{ display:block; }
   .nav-links a{ padding:12px 15px; border-radius:var(--r-md); font-size:15px; }
 }
 
+/* ---------- NAV di HP: lebih ramping ---------- */
+@media (max-width:640px){
+  .nav{ top:10px; width:94vw; gap:6px; padding:6px 8px; border-radius:20px; }
+  .admin-corner{ padding:8px; border-radius:50%; }
+  .admin-corner span{ display:none; }
+  .admin-corner svg{ width:17px; height:17px; }
+  .brand{ gap:8px; min-width:0; }
+  .brand img{ width:32px; height:32px; }
+  .brand-txt b{ font-size:12.5px; }
+  .brand-txt small{ font-size:8px; letter-spacing:.1em; }
+  .icon-btn{ width:36px; height:36px; }
+  .icon-btn svg{ width:16px; height:16px; }
+  .nav-burger{ width:36px; height:36px; }
+  .nav-burger i{ width:15px; }
+  .nav-links{ top:64px; }
+}
+
 /* ---------- LAYOUT ---------- */
 .wrap{ width:min(1220px,92vw); margin-inline:auto; }
 section{ position:relative; padding:clamp(54px,6.5vw,92px) 0; }
@@ -611,4 +628,25 @@ footer ul a:hover{ color:#fff; padding-left:5px; }
   *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
   html{ scroll-behavior:auto; }
   .reveal{ opacity:1; transform:none; }
+}
+
+/* =========================================================
+   OPTIMASI HP — ringankan efek biar tidak lag/lemot
+   ========================================================= */
+@media (max-width:768px){
+  /* blur besar itu berat di HP -> perkecil / matikan */
+  .blob{ filter:blur(48px); opacity:.3; }
+  .grid-overlay{ display:none; }
+  .nav{ backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+  .hero-sun{ box-shadow:0 0 30px 8px var(--sun-glow); }
+  .hero-sun::after{ display:none; }
+  .petal{ animation-timing-function:linear; }
+  /* kurangi bayangan berat */
+  .glass,.kana-group,.vocab-card,.about-card,.forum-card,.slider,.form-card{ box-shadow:var(--shadow-sm); }
+  /* percepat animasi masuk */
+  .reveal{ transition-duration:.5s; transform:translateY(18px); }
+}
+@media (max-width:480px){
+  .blob{ display:none; }
+  .cursor-dot,.cursor-ring{ display:none; }
 }
