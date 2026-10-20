@@ -1,4 +1,30 @@
 <!DOCTYPE html>
+<!--
+  ============================================================================
+  AOZORA NIHONGO CLUB — index.html
+  ============================================================================
+  APA INI?
+  File ini adalah KERANGKA website. Ibarat rumah: HTML = dinding + ruangan,
+  CSS = cat + hiasan, JavaScript = listrik + saklar yang bikin ruangan hidup.
+
+  URUTAN BACA DARI ATAS KE BAWAH:
+    <head>   -> informasi halaman (judul tab, font, file CSS) — tidak tampil
+    <body>   -> semua yang kelihatan di layar
+      1. Preloader      : layar loading pembuka
+      2. Nav            : menu di atas (logo + link + tombol tema + admin)
+      3. Hero           : banner besar (Gunung Fuji, matahari, sakura)
+      4. Kana           : daftar Hiragana & Katakana
+      5. Kosakata       : daftar kata bahasa Jepang
+      6. Kegiatan       : info pertemuan + slider "Tentang"
+      7. Dokumentasi    : galeri foto
+      8. Pesan          : form pesan/kritik + pesan pribadi
+      9. Footer         : penutup halaman
+     10. Popup & Modal  : elemen tersembunyi yang muncul saat diklik
+
+  TIPS BELAJAR: setiap bagian diberi komentar <!-- ... --> di atasnya.
+  Komentar TIDAK tampil di browser — isinya catatan untuk kita.
+  ============================================================================
+-->
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
@@ -18,14 +44,33 @@
 </head>
 <body class="locked">
 
-<!-- PAGE TRANSITION -->
+<!--
+  ============================================================
+  1. PAGE TRANSITION (tirai animasi)
+  ============================================================
+  Dua panel (.p1 .p2) yang menutup layar saat pindah bagian,
+  lalu terbuka lagi. Diatur animasinya di CSS (.curtain).
+  aria-hidden="true" = disembunyikan dari pembaca layar
+  karena ini cuma hiasan, bukan konten.
+  ============================================================
+-->
 <div class="curtain" id="curtain" aria-hidden="true">
   <div class="panel p1"></div>
   <div class="panel p2"></div>
   <div class="mark"><div><img src="assets/logo-nobg.png" alt="" /><b>青空日本語</b></div></div>
 </div>
 
-<!-- PRELOADER -->
+<!--
+  ============================================================
+  2. PRELOADER (layar loading)
+  ============================================================
+  Muncul pertama kali web dibuka, menampilkan logo + progress bar.
+  id="plBar"   -> batang progress (lebarnya diatur JS)
+  id="plPct"   -> angka persen
+  id="plTip"   -> teks tips yang berganti-ganti
+  Setelah selesai, JS menambahkan class "done" supaya hilang.
+  ============================================================
+-->
 <div id="preloader">
   <div class="pl-inner">
     <img class="pl-logo" src="assets/logo-nobg.png" alt="Logo Aozora Nihongo Club" />
@@ -37,7 +82,16 @@
   </div>
 </div>
 
-<!-- BACKDROP -->
+<!--
+  ============================================================
+  3. BACKDROP (latar hiasan)
+  ============================================================
+  .blob      -> 3 bulatan warna blur di belakang layar
+  .grid-overlay -> garis kotak-kotak halus (tekstur)
+  .scroll-progress -> garis tipis di atas = seberapa jauh sudah scroll
+  .cursor-ring / .cursor-dot -> kursor kustom (hanya di komputer)
+  ============================================================
+-->
 <div class="backdrop">
   <div class="blob b1"></div>
   <div class="blob b2"></div>
@@ -48,7 +102,25 @@
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="cursor-dot" id="cursorDot"></div>
 
-<!-- NAV -->
+<!--
+  ============================================================
+  4. NAV (menu navigasi atas)
+  ============================================================
+  <nav> = tag semantik untuk menu utama.
+
+  Isinya:
+    .admin-corner -> tombol kunci (login pengurus)
+    .brand        -> logo + nama eskul, diklik balik ke atas
+    .nav-links    -> daftar link ke tiap bagian (#kana, #kosakata, dst)
+                     tanda # artinya "lompat ke elemen dengan id itu"
+    #themeToggle  -> tombol mode gelap/terang (ada 2 ikon: matahari & bulan,
+                        CSS yang memilih mana yang tampil)
+    .nav-burger   -> tombol garis 3 (muncul hanya di HP)
+    .nav-cta      -> tombol "Kirim Pesan" (disembunyikan di HP)
+
+  Di HP: .nav-links disembunyikan, dan baru muncul saat burger diklik.
+  ============================================================
+-->
 <nav class="nav" id="nav">
   <button class="admin-corner" id="adminCorner" title="Masuk sebagai admin" aria-label="Admin">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
@@ -77,7 +149,28 @@
   <a href="#pesan" class="nav-cta">Kirim Pesan</a>
 </nav>
 
-<!-- HERO -->
+<!--
+  ============================================================
+  5. HERO (banner pembuka)
+  ============================================================
+  Bagian paling atas yang pertama dilihat orang.
+
+  Dua lapisan:
+    .scene      -> GAMBAR: matahari, awan, Gunung Fuji, bukit, sakura
+                   (semua dibuat pakai CSS + SVG, bukan file foto)
+    .hero-grid  -> TEKS: sapaan, judul, tombol, statistik angka
+
+  Kenapa pakai SVG untuk gunung?
+    SVG = gambar berbasis rumus matematika, jadi tetap tajam di layar
+    sebesar apa pun dan ukurannya cuma beberapa kilobyte.
+
+  <path d="..."> adalah perintah menggambar:
+    M = pindah pena ke titik (move)
+    L = tarik garis lurus (line)
+    Q = garis melengkung (quadratic curve)
+    Z = tutup bentuk kembali ke titik awal (close)
+  ============================================================
+-->
 <header class="hero" id="home">
   <div class="wrap">
     <div class="hero-card">
@@ -139,7 +232,16 @@
   </div>
 </header>
 
-<!-- MARQUEE -->
+<!--
+  ============================================================
+  6. MARQUEE (teks berjalan)
+  ============================================================
+  Pita teks yang bergerak terus ke kiri: Hiragana, Katakana, Kanji…
+  Teksnya DITULIS DUA KALI supaya saat animasi mengulang tidak
+  terlihat ada jeda/kosong.
+  aria-hidden="true" karena ini hiasan, isinya sudah ada di bagian lain.
+  ============================================================
+-->
 <div class="marquee" aria-hidden="true">
   <div class="marquee-track">
     <span>ひらがな Hiragana</span><span>カタカナ Katakana</span><span>漢字 Kanji</span>
@@ -149,7 +251,23 @@
   </div>
 </div>
 
-<!-- KANA -->
+<!--
+  ============================================================
+  7. KANA (Hiragana & Katakana)
+  ============================================================
+  <section id="kana"> = bagian halaman, id-nya dipakai untuk lompatan link.
+
+  .tabs        -> 2 tombol: Hiragana / Katakana
+                  data-script="hiragana" dibaca JS untuk tahu mana yang aktif
+  #kanaSearch  -> kotak pencarian huruf
+  #kanaChips   -> tombol filter per baris (a, ka, sa, …) — diisi JS
+  #kanaGroups  -> TEMPAT KOSONG yang nanti diisi JS dengan daftar huruf
+
+  Penting: di HTML kita hanya menyiapkan wadah kosong.
+  Isinya dibuat oleh JavaScript dari data di js/data.js.
+  Kenapa? Biar tidak perlu tulis 104 huruf manual di HTML.
+  ============================================================
+-->
 <section id="kana">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -177,7 +295,19 @@
   </div>
 </section>
 
-<!-- KOSAKATA -->
+<!--
+  ============================================================
+  8. KOSAKATA
+  ============================================================
+  Sama polanya dengan bagian Kana:
+    #vocabSearch -> kotak cari kata
+    #vocabChips  -> filter kategori (Salam, Angka, Keluarga, …)
+    #vocabGrid   -> wadah kosong, diisi JS per kelompok kategori
+
+  Kartu kosakata berisi: kanji/kana Jepang, cara baca, arti Indonesia,
+  dan tombol speaker untuk mendengar pelafalan.
+  ============================================================
+-->
 <section id="kosakata">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -196,7 +326,19 @@
   </div>
 </section>
 
-<!-- KEGIATAN -->
+<!--
+  ============================================================
+  9. KEGIATAN (info pertemuan + tentang eskul)
+  ============================================================
+  .forum-card -> kartu "Info Pertemuan" (hari, tempat, waktu)
+                 isinya BISA DIUBAH ADMIN lewat panel, karena tempat
+                 eskul sering pindah kelas tiap minggu.
+  .slider     -> slideshow "Tentang" yang berganti otomatis,
+                 anak panah kiri/kanan (#slidePrev/#slideNext)
+                 dan titik-titik penanda (#slideDots)
+  .about-grid -> 4 kartu kecil berisi keunggulan eskul
+  ============================================================
+-->
 <section id="kegiatan">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -266,7 +408,15 @@
   </div>
 </section>
 
-<!-- DOKUMENTASI -->
+<!--
+  ============================================================
+  10. DOKUMENTASI (galeri foto)
+  ============================================================
+  #galleryGrid = wadah kosong. Foto dimasukkan oleh admin
+  lewat panel admin (bisa pakai link URL atau upload file).
+  Kalau belum ada foto, JS menampilkan pesan "belum ada foto".
+  ============================================================
+-->
 <section id="dokumentasi">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -278,7 +428,29 @@
   </div>
 </section>
 
-<!-- PESAN & KRITIK -->
+<!--
+  ============================================================
+  11. PESAN & KRITIK
+  ============================================================
+  Ada 2 tab:
+    data-ptab="publik"  -> Papan Pesan (terlihat semua orang)
+    data-ptab="pribadi" -> Pesan Pribadi (hanya admin yang bisa baca)
+
+  Form papan pesan (#fbForm) berisi:
+    #fbName   -> nama + kelas pengirim
+    #fbType   -> jenis pesan (Saran / Kritik / Ide) — pakai dropdown custom
+    #fbRating -> bintang penilaian 1–5
+    #fbMsg    -> isi pesan
+    .err      -> teks error merah, muncul kalau isian kurang
+
+  Catatan penting soal privasi:
+    Nama asli tetap tersimpan, TAPI yang tampil ke publik disamarkan
+    jadi "Pengunjung 123". Hanya admin yang bisa lihat nama asli.
+
+  novalidate = matikan validasi bawaan browser, supaya kita bisa
+  pakai pesan error sendiri yang lebih rapi.
+  ============================================================
+-->
 <section id="pesan">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -371,7 +543,15 @@
   </div>
 </section>
 
-<!-- FOOTER -->
+<!--
+  ============================================================
+  12. FOOTER (penutup)
+  ============================================================
+  Berisi logo, deskripsi singkat, kolom link navigasi,
+  dan copyright. <span id="year"></span> diisi otomatis oleh JS
+  dengan tahun sekarang, jadi tidak perlu ganti manual tiap tahun.
+  ============================================================
+-->
 <footer>
   <div class="wrap">
     <div class="foot-inner">
@@ -417,7 +597,18 @@
 </button>
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- KANA POPUP -->
+<!--
+  ============================================================
+  13. KANA POPUP (detail huruf)
+  ============================================================
+  Kotak yang muncul saat sebuah huruf kana diklik.
+  Awalnya tersembunyi (CSS: .kana-pop tidak tampil).
+  JS mengisi #popGlyph (huruf), #popRom (bacaan), #popRow (baris),
+  lalu menambahkan class "show" supaya muncul.
+
+  Isinya 3 tombol: Dengar / Tandai Hafal / Tutup.
+  ============================================================
+-->
 <div class="kana-pop" id="kanaPop">
   <div class="glass kana-pop-card">
     <div class="big" id="popGlyph">あ</div>
@@ -432,7 +623,20 @@
   </div>
 </div>
 
-<!-- ADMIN MODAL -->
+<!--
+  ============================================================
+  14. ADMIN MODAL (panel pengurus)
+  ============================================================
+  Kotak besar yang muncul saat tombol kunci di nav diklik.
+
+  Dua tampilan, hanya satu yang aktif:
+    #adminLoginView -> form username + password
+    #adminDash      -> panel setelah berhasil login
+                       (hidden = disembunyikan CSS)
+
+  Di dalam panel ada 3 tab: Info Pertemuan, Pesan Pribadi, Galeri.
+  ============================================================
+-->
 <div class="modal" id="adminModal">
   <div class="modal-card glass">
     <button class="modal-x" id="adminClose" aria-label="Tutup">
@@ -493,6 +697,21 @@
   </div>
 </div>
 
+<!--
+  ============================================================
+  15. MEMUAT JAVASCRIPT
+  ============================================================
+  Urutannya PENTING — jangan diacak, karena tiap file butuh yang di atasnya:
+
+  1. supabase-js -> pustaka untuk konek ke database online
+  2. config.js   -> isi alamat & kunci database
+  3. store.js    -> "petugas gudang": simpan/ambil data (online atau offline)
+  4. data.js     -> daftar huruf kana & kosakata
+  5. main.js     -> otak website: bikin tampilan, tangani klik, login admin
+
+  Kalau store.js dimuat sebelum config.js, dia tidak tahu mau konek ke mana.
+  ============================================================
+-->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 <script src="js/store.js"></script>
