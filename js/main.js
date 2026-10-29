@@ -152,10 +152,30 @@
   let io;
   function revealInit() {
     if (io) return;
+    /* IntersectionObserver = "mata" yang memantau elemen.
+       Ia memberi tahu JS ketika sebuah elemen masuk ke layar.
+       threshold .1  -> picu saat 10% elemen terlihat.
+       rootMargin -8% -> tunggu sedikit lebih masuk, biar animasinya terasa pas. */
     io = new IntersectionObserver(ents => {
-      ents.forEach(en => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
-    }, { threshold: .1, rootMargin: "0px 0px -6% 0px" });
+      ents.forEach(en => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add("in");
+        io.unobserve(en.target);   // sudah muncul, tidak perlu dipantau lagi
+      });
+    }, { threshold: .1, rootMargin: "0px 0px -8% 0px" });
+
+    /* Elemen yang tampil bersamaan diberi jeda bertingkat (stagger),
+       jadi munculnya bergiliran seperti gelombang — bukan serentak. */
     $$(".reveal").forEach(el => io.observe(el));
+
+    // Tambah jeda otomatis untuk anak-anak dalam satu wadah
+    $$(".about-grid, .kegiatan-top, .feedback-grid, .hero-stats, .foot-grid, .gallery-grid").forEach(group => {
+      [...group.querySelectorAll(".reveal")].forEach((el, i) => {
+        if (!el.classList.contains("d1") && !el.classList.contains("d2") && !el.classList.contains("d3")) {
+          el.style.transitionDelay = Math.min(i * 0.08, 0.4) + "s";
+        }
+      });
+    });
   }
   addEventListener("load", revealInit);
 
@@ -239,7 +259,12 @@
       const build = () => {
         if (body.dataset.built) return;
         body.innerHTML = items.map(cellHTML).join("");
-        body.querySelectorAll(".kana-cell").forEach(c => c.addEventListener("click", () => openKanaPop(c.dataset)));
+        // beri animasi muncul bergiliran pada tiap huruf
+        body.querySelectorAll(".kana-cell").forEach((c, i) => {
+          c.classList.add("fade-up");
+          c.style.animationDelay = Math.min(i * 0.02, 0.4) + "s";
+          c.addEventListener("click", () => openKanaPop(c.dataset));
+        });
         body.dataset.built = "1";
       };
       if (sec.classList.contains("open")) build();
@@ -247,6 +272,11 @@
         const open = sec.classList.toggle("open");
         if (open) build();
       });
+    });
+    // grup muncul bergiliran saat pertama kali dirender
+    grid.querySelectorAll(".kana-group").forEach((g, i) => {
+      g.classList.add("pop-in");
+      g.style.animationDelay = Math.min(i * 0.05, 0.5) + "s";
     });
     updateKanaProgress();
   }
@@ -336,6 +366,10 @@
               <button class="speak" data-speak="${esc(x.jp)}" aria-label="Dengar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12"/></svg></button>
             </div>
           </article>`).join("");
+        body.querySelectorAll(".vocab-card").forEach((card, i) => {
+          card.classList.add("fade-up");
+          card.style.animationDelay = Math.min(i * 0.03, 0.45) + "s";
+        });
         body.querySelectorAll(".speak").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); speak(b.dataset.speak); }));
         body.dataset.built = "1";
       };
@@ -344,6 +378,11 @@
         const open = sec.classList.toggle("open");
         if (open) build();
       });
+    });
+    // grup kosakata muncul bergiliran
+    vGrid.querySelectorAll(".vocab-group").forEach((g, i) => {
+      g.classList.add("pop-in");
+      g.style.animationDelay = Math.min(i * 0.05, 0.5) + "s";
     });
   }
   vSearch.addEventListener("input", e => { vQuery = e.target.value.trim(); renderVocab(); });
