@@ -919,3 +919,83 @@ footer ul a:hover{ color:#fff; padding-left:5px; }
   .blob{ display:none; }
   .cursor-dot,.cursor-ring{ display:none; }
 }
+
+
+/* ARAH VISUAL BARU: editorial, personal, tetap beridentitas Aozora */
+:root{
+ --bg:#f7f8f3;--bg-grad-1:#fbfcf8;--bg-grad-2:#f7f8f3;--bg-grad-3:#eef3ed;
+ --card:#fffefa;--card-2:#f3f5ee;--teal:#4d8f82;--teal-deep:#397568;--teal-dark:#2d6257;
+ --ink:#25352f;--navy:#25352f;--muted:#63736c;--faint:#89978f;--mint-soft:#eaf1e9;
+ --line:#dce4da;--field:#f3f5ef;--pink:#bf7d8e;--pink-soft:#f5eaeb;
+ --sky-1:#f1f5ef;--sky-2:#e7eee8;--sky-3:#f3e9e8;--sun:#e8bd8c;--sun-glow:rgba(232,189,140,.22);
+ --fuji-1:#c6d5d6;--fuji-2:#aabfc3;--fuji-3:#91aeb3;--snow:#fffefa;--cloud:rgba(255,254,250,.8);
+ --hill:#aac7af;--hill-2:#88ae9b;--shadow-sm:0 2px 8px rgba(37,53,47,.06);
+ --shadow:0 5px 18px rgba(37,53,47,.07);--shadow-lg:0 10px 28px rgba(37,53,47,.09);
+}
+body.dark{
+ --bg:#17201c;--bg-grad-1:#202b25;--bg-grad-2:#17201c;--bg-grad-3:#121a16;
+ --card:#202a24;--card-2:#1b251f;--teal:#82b6a1;--teal-deep:#689b87;--teal-dark:#9bc8b5;
+ --ink:#edf2ea;--navy:#edf2ea;--muted:#b4c0b5;--faint:#87978a;--mint-soft:#26372e;
+ --line:#34453a;--field:#1c2821;--pink:#d49aa5;--pink-soft:#392c30;
+ --sky-1:#26332e;--sky-2:#202c28;--sky-3:#332d31;--sun:#dfb88e;--sun-glow:rgba(223,184,142,.18);
+ --fuji-1:#526b70;--fuji-2:#405b61;--fuji-3:#304a51;--snow:#dfe8df;--cloud:rgba(190,207,196,.18);
+ --hill:#405d4e;--hill-2:#304c3e;--shadow-sm:0 2px 9px rgba(0,0,0,.18);
+ --shadow:0 5px 18px rgba(0,0,0,.2);--shadow-lg:0 10px 28px rgba(0,0,0,.24);
+}
+/* Latar kertas polos, tanpa blobs blur dan grid dekoratif. */
+.backdrop{background:var(--bg)}
+.blob,.grid-overlay{display:none!important}
+/* Nav sederhana tanpa kaca glossy. */
+.nav{background:var(--card);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid var(--line);box-shadow:0 2px 10px rgba(37,53,47,.05)}
+.nav-links a.active,.nav-cta,.admin-corner:hover,body.is-admin .admin-corner,.btn-primary,.tab.active,.chip.active,.kana-group-head .range{background:var(--teal-deep);box-shadow:none}
+/* Hero tetap bergambar Fuji, tetapi tanpa tampilan kartu glossy. */
+.hero-card{border-radius:12px;border:1px solid var(--line);box-shadow:none;background:linear-gradient(180deg,var(--sky-1),var(--sky-2) 68%,var(--sky-3))}
+.hero-sun{box-shadow:0 0 28px 8px var(--sun-glow);animation:none}
+.hero-sun::after{display:none}
+.fuji{filter:none}
+.hero-title{font-weight:700;letter-spacing:-.045em}
+.hero-tag{color:var(--teal-dark);background:none;-webkit-text-fill-color:currentColor;animation:none;font-weight:700}
+.hero .lead{max-width:48ch}
+.hero-stats{gap:26px}
+.hero-stats b{font-size:26px;font-weight:700}
+.logo-disc img{filter:none;animation:none}
+/* Judul section seperti halaman majalah, tidak memakai kapsul dekoratif. */
+.eyebrow{padding:0;border-radius:0;background:none;color:var(--teal-dark);font-size:10px;letter-spacing:.18em}
+.eyebrow::before{width:5px;height:5px;background:var(--pink)}
+.h2{font-weight:650;letter-spacing:-.035em}
+.sec-head .lead{margin-top:0}
+/* Kartu memakai garis dan permukaan sederhana, bukan bayangan tebal. */
+.kana-group,.vocab-group,.vocab-card,.about-card,.forum-card,.slider,.form-card,.private-info,.glass{background:var(--card);border:1px solid var(--line);box-shadow:none}
+.kana-group,.vocab-group,.vocab-card,.about-card,.forum-card,.slider,.form-card,.private-info{border-radius:12px}
+.kana-cell{background:var(--card-2);border-color:var(--line)}
+.kana-cell:hover{box-shadow:none}
+.vocab-card:hover{box-shadow:none;transform:translateY(-2px)}
+.vocab-card .cat{background:transparent;color:var(--teal-dark);padding:0;border-radius:0}
+.vocab-card .kana{color:var(--pink)}
+.forum-list li{border-radius:7px}
+.forum-ic{border-radius:8px}
+/* Kontrol sederhana, tidak semua elemen berbentuk pil. */
+.btn{border-radius:8px;box-shadow:none}
+.btn-primary{color:#fff}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--teal-dark)}
+.tab,.chip{border-radius:7px}
+.search-box input{border-radius:8px}
+.speak{border-radius:8px}
+/* Marquee jadi baris tenang, tanpa loop dekoratif. */
+.marquee-track{animation:none;justify-content:center;width:100%;flex-wrap:wrap;gap:12px 26px}
+.marquee span{font-size:12px;opacity:.75}
+/* Scroll reveal lebih ringan dan natural. */
+.reveal{transform:translateY(20px);transition:opacity .55s ease,transform .55s ease;will-change:auto}
+.reveal.in{transform:none}
+.pop-in,.fade-up{animation-duration:.32s}
+@media(max-width:768px){
+ section{padding:30px 0}.sec-head{margin-bottom:17px}
+ .hero{min-height:auto;padding-top:88px;padding-bottom:26px}
+ .hero-grid{padding:24px 20px;gap:16px}.hero-stats{margin-top:18px}
+ .scroll-hint{margin-top:10px}.marquee{padding:7px 0}.kana-groups{gap:12px}
+ .about-grid{gap:10px}.kegiatan-top{gap:12px;margin-bottom:12px}
+ .gallery-grid{gap:9px}.feedback-grid{gap:14px}
+}
+@media(prefers-reduced-motion:reduce){
+ .reveal{opacity:1;transform:none;transition:none}.pop-in,.fade-up,.marquee-track{animation:none}
+}
