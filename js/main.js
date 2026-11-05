@@ -129,7 +129,7 @@
     sections.forEach(s => { if (y >= s.offsetTop - 140) cur = s.id; });
     $$("#navLinks a").forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + cur));
     // Samakan tujuan dock mobile dengan section yang sedang terlihat.
-    const dockTarget = cur === "kosakata" ? "kana" : cur;
+    const dockTarget = cur === "kosakata" ? "kana" : cur === "kotd" ? "kuis" : cur;
     $$("#mobileDock a").forEach(a => {
       const active = a.getAttribute("href") === "#" + dockTarget;
       a.classList.toggle("active", active);
@@ -137,7 +137,7 @@
       else a.removeAttribute("aria-current");
     });
     // Jika link menuju bagian yang bukan tab utama, pertahankan tab terdekat.
-    if (!["home", "kana", "kegiatan", "dokumentasi", "pesan", "kosakata"].includes(cur)) {
+    if (!["home", "kana", "kuis", "kegiatan", "dokumentasi", "pesan", "kosakata", "kotd"].includes(cur)) {
       const near = cur === "kosakata" ? "kana" : "kegiatan";
       $$("#mobileDock a").forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + near));
     }
@@ -796,6 +796,105 @@
       await loadFeedback(); toast("Semua pesan dihapus");
     }
   });
+
+  /* =======================================================
+     KUIS KANA
+     ======================================================= */
+  (function quiz() {
+    const TOTAL = 10;
+    let qScript = "hiragana", questions = [], idx = 0, score = 0, answered = false;
+    const startEl = $("#quizStart"), playEl = $("#quizPlay"), doneEl = $("#quizDone");
+    const glyphEl = $("#quizGlyph"), optsEl = $("#quizOpts"), fbEl = $("#quizFb"), numEl = $("#quizNum");
+
+    $$("#quizBox .quiz-tabs .tab").forEach(t => t.addEventListener("click", () => {
+      qScript = t.dataset.qs;
+      $$("#quizBox .quiz-tabs .tab").forEach(x => x.classList.toggle("active", x === t));
+    }));
+
+    function pool() {
+      if (qScript === "campur") return [...HIRAGANA, ...KATAKANA];
+      return qScript === "katakana" ? [...KATAKANA] : [...HIRAGANA];
+    }
+    function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+    function generate() {
+      const p = pool(); shuffle(p);
+      const picked = p.slice(0, TOTAL);
+      const allRom = [...new Set(p.map(x => x.r))];
+      questions = picked.map(q => {
+        const wrongs = shuffle(allRom.filter(r => r !== q.r)).slice(0, 3);
+        return { glyph: q.k, answer: q.r, opts: shuffle([q.r, ...wrongs]) };
+      });
+    }
+
+    function show() {
+      const q = questions[idx];
+      numEl.textContent = idx + 1;
+      glyphEl.textContent = q.glyph;
+      glyphEl.style.animation = "none"; void glyphEl.offsetWidth; glyphEl.style.animation = "";
+      fbEl.textContent = ""; fbEl.className = "quiz-fb";
+      answered = false;
+      optsEl.innerHTML = q.opts.map(o => `<button class="quiz-opt" data-r="${esc(o)}">${esc(o)}</button>`).join("");
+      optsEl.querySelectorAll(".quiz-opt").forEach(b => b.addEventListener("click", () => pick(b)));
+    }
+
+    function pick(btn) {
+      if (answered) return;
+      answered = true;
+      const q = questions[idx], chosen = btn.dataset.r;
+      optsEl.querySelectorAll(".quiz-opt").forEach(b => {
+        b.classList.add("disabled");
+        if (b.dataset.r === q.answer) b.classList.add("correct");
+      });
+      if (chosen === q.answer) {
+        score++; btn.classList.add("correct");
+        fbEl.textContent = "Benar!"; fbEl.className = "quiz-fb ok";
+      } else {
+        btn.classList.add("wrong");
+        fbEl.textContent = `Salah — jawabannya "${q.answer}"`; fbEl.className = "quiz-fb bad";
+      }
+      setTimeout(() => {
+        idx++;
+        if (idx < TOTAL) show(); else finish();
+      }, 1200);
+    }
+
+    function finish() {
+      playEl.classList.add("hidden"); doneEl.classList.remove("hidden");
+      $("#quizScore").textContent = score;
+      const pct = score / TOTAL;
+      $("#quizVerdict").textContent = pct === 1 ? "Sempurna! Kamu luar biasa!" :
+        pct >= .7 ? "Bagus! Terus latihan ya." :
+        pct >= .4 ? "Lumayan, coba lagi biar makin hafal." : "Jangan menyerah — ulangi pelan-pelan.";
+    }
+
+    function start() {
+      generate(); idx = 0; score = 0;
+      startEl.classList.add("hidden"); doneEl.classList.add("hidden"); playEl.classList.remove("hidden");
+      show();
+    }
+
+    $("#quizGo").addEventListener("click", start);
+    $("#quizRetry").addEventListener("click", start);
+    $("#quizBack").addEventListener("click", () => {
+      playEl.classList.add("hidden"); doneEl.classList.add("hidden"); startEl.classList.remove("hidden");
+    });
+  })();
+
+  /* =======================================================
+     KATA HARI INI
+     ======================================================= */
+  (function kotd() {
+    // Hash tanggal hari ini supaya kata berubah tiap hari
+    const d = new Date(), seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+    const word = KOSAKATA[seed % KOSAKATA.length];
+    if (!word) return;
+    $("#kotdJp").textContent = word.jp;
+    $("#kotdKana").textContent = word.kana;
+    $("#kotdId").textContent = word.id;
+    $("#kotdKat").textContent = word.kat;
+    $("#kotdSpeak").addEventListener("click", () => speak(word.jp));
+  })();
 
   /* =======================================================
      STATS + INIT

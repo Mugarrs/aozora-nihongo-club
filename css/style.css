@@ -1043,3 +1043,38 @@ body.dark .form-msg.bad{background:#392729;border-color:#775052;color:#f0c7c7;}
 
 /* Referensi minimal: pita teks berulang tidak menambah informasi, jadi hilangkan. */
 .marquee{display:none}
+
+/* ========================================================
+   KUIS KANA
+   ======================================================== */
+.quiz-box{padding:28px;text-align:center}
+.quiz-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:18px}
+.quiz-tabs .tab{font-size:13.5px;padding:8px 16px}
+.quiz-glyph{font-size:clamp(56px,14vw,96px);font-weight:800;line-height:1.1;margin:18px 0 24px;font-family:'Noto Sans JP',sans-serif;color:var(--teal)}
+.quiz-progress{font-size:14px;color:var(--muted);font-weight:600;letter-spacing:.05em}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:340px;margin:0 auto 16px}
+.quiz-opt{padding:13px 18px;border:1.5px solid var(--line);border-radius:12px;background:var(--card-2);cursor:pointer;font-size:15px;font-weight:600;transition:border-color .2s,background .2s,transform .15s}
+.quiz-opt:hover{border-color:var(--teal);transform:scale(1.03)}
+.quiz-opt.correct{border-color:#22c55e;background:rgba(34,197,94,.12);color:#16a34a}
+.quiz-opt.wrong{border-color:#ef4444;background:rgba(239,68,68,.1);color:#dc2626}
+.quiz-opt.disabled{pointer-events:none;opacity:.65}
+.quiz-fb{min-height:28px;font-size:14px;font-weight:600;margin-top:6px;transition:opacity .2s}
+.quiz-fb.ok{color:#22c55e}.quiz-fb.bad{color:#ef4444}
+.quiz-score{margin:24px 0 12px}
+.quiz-score-num{font-size:clamp(48px,12vw,72px);font-weight:800;color:var(--teal)}
+.quiz-score small{font-size:24px;color:var(--muted);font-weight:600}
+.quiz-done p{font-size:15px;color:var(--muted);margin-bottom:20px}
+.quiz-done .btn{margin:0 6px}
+@keyframes quizPop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+.quiz-glyph{animation:quizPop .35s ease-out}
+
+/* ========================================================
+   KATA HARI INI
+   ======================================================== */
+.kotd-card{padding:32px;text-align:center;max-width:400px;margin:0 auto}
+.kotd-jp{font-size:clamp(36px,9vw,56px);font-weight:800;font-family:'Noto Sans JP',sans-serif;color:var(--teal);line-height:1.2}
+.kotd-kana{font-size:18px;color:var(--muted);margin:4px 0 10px;font-family:'Noto Sans JP',sans-serif}
+.kotd-id{font-size:20px;font-weight:700;color:var(--ink)}
+.kotd-kat{font-size:13px;color:var(--faint);margin:6px 0 16px;text-transform:uppercase;letter-spacing:.08em}
+.kotd-speak{display:inline-flex;align-items:center;gap:6px}
+.kotd-speak svg{width:18px;height:18px}
