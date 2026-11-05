@@ -923,30 +923,31 @@ footer ul a:hover{ color:#fff; padding-left:5px; }
 
 /* ARAH VISUAL BARU: editorial, personal, tetap beridentitas Aozora */
 :root{
- --bg:#f7f8f3;--bg-grad-1:#fbfcf8;--bg-grad-2:#f7f8f3;--bg-grad-3:#eef3ed;
- --card:#fffefa;--card-2:#f3f5ee;--teal:#4d8f82;--teal-deep:#397568;--teal-dark:#2d6257;
- --ink:#25352f;--navy:#25352f;--muted:#63736c;--faint:#89978f;--mint-soft:#eaf1e9;
- --line:#dce4da;--field:#f3f5ef;--pink:#bf7d8e;--pink-soft:#f5eaeb;
- --sky-1:#f1f5ef;--sky-2:#e7eee8;--sky-3:#f3e9e8;--sun:#e8bd8c;--sun-glow:rgba(232,189,140,.22);
- --fuji-1:#c6d5d6;--fuji-2:#aabfc3;--fuji-3:#91aeb3;--snow:#fffefa;--cloud:rgba(255,254,250,.8);
- --hill:#aac7af;--hill-2:#88ae9b;--shadow-sm:0 2px 8px rgba(37,53,47,.06);
- --shadow:0 5px 18px rgba(37,53,47,.07);--shadow-lg:0 10px 28px rgba(37,53,47,.09);
+ --bg:#EAF6FF;--bg-grad-1:#ffffff;--bg-grad-2:#EAF6FF;--bg-grad-3:#e2f1fc;
+ --card:#ffffff;--card-2:#f5faff;--teal:#5AA9E6;--teal-deep:#398ecf;--teal-dark:#173B57;
+ --ink:#173B57;--navy:#173B57;--muted:#5d7488;--faint:#8ba0b2;--mint-soft:#e5f3ff;
+ --line:#d6e6f2;--field:#f4f9fd;--pink:#e78da5;--pink-soft:#FFF3F5;
+ --sky-1:#EAF6FF;--sky-2:#B9E3FF;--sky-3:#FFF3F5;--sun:#f3b6c7;--sun-glow:rgba(243,182,199,.22);
+ --fuji-1:#d7eaf6;--fuji-2:#a9d4f1;--fuji-3:#79b4dc;--snow:#ffffff;--cloud:rgba(255,255,255,.86);
+ --hill:#b7d8ce;--hill-2:#91c4b9;--shadow-sm:0 2px 8px rgba(23,59,87,.06);
+ --shadow:0 5px 18px rgba(23,59,87,.07);--shadow-lg:0 10px 28px rgba(23,59,87,.09);
 }
 body.dark{
- --bg:#17201c;--bg-grad-1:#202b25;--bg-grad-2:#17201c;--bg-grad-3:#121a16;
- --card:#202a24;--card-2:#1b251f;--teal:#82b6a1;--teal-deep:#689b87;--teal-dark:#9bc8b5;
- --ink:#edf2ea;--navy:#edf2ea;--muted:#b4c0b5;--faint:#87978a;--mint-soft:#26372e;
- --line:#34453a;--field:#1c2821;--pink:#d49aa5;--pink-soft:#392c30;
- --sky-1:#26332e;--sky-2:#202c28;--sky-3:#332d31;--sun:#dfb88e;--sun-glow:rgba(223,184,142,.18);
- --fuji-1:#526b70;--fuji-2:#405b61;--fuji-3:#304a51;--snow:#dfe8df;--cloud:rgba(190,207,196,.18);
- --hill:#405d4e;--hill-2:#304c3e;--shadow-sm:0 2px 9px rgba(0,0,0,.18);
+ --bg:#122334;--bg-grad-1:#1b3145;--bg-grad-2:#122334;--bg-grad-3:#0d1b28;
+ --card:#1b3043;--card-2:#1a2c3c;--teal:#80c3f1;--teal-deep:#5aa9e6;--teal-dark:#a8d7f5;
+ --ink:#eef7ff;--navy:#eef7ff;--muted:#bbcedd;--faint:#8da6b9;--mint-soft:#203c51;
+ --line:#30495e;--field:#192d3e;--pink:#e9a0b3;--pink-soft:#3a2b37;
+ --sky-1:#203a50;--sky-2:#1a3043;--sky-3:#362d3b;--sun:#e9a0b3;--sun-glow:rgba(233,160,179,.16);
+ --fuji-1:#526f84;--fuji-2:#3e5e75;--fuji-3:#2d4a60;--snow:#e3f1fb;--cloud:rgba(190,220,242,.18);
+ --hill:#3e625f;--hill-2:#31525a;--shadow-sm:0 2px 9px rgba(0,0,0,.18);
  --shadow:0 5px 18px rgba(0,0,0,.2);--shadow-lg:0 10px 28px rgba(0,0,0,.24);
 }
 /* Latar kertas polos, tanpa blobs blur dan grid dekoratif. */
 .backdrop{background:var(--bg)}
 .blob,.grid-overlay{display:none!important}
 /* Nav sederhana tanpa kaca glossy. */
-.nav{background:var(--card);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid var(--line);box-shadow:0 2px 10px rgba(37,53,47,.05)}
+.nav{background:color-mix(in srgb,var(--card) 76%,transparent);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border:1px solid transparent;box-shadow:none}
+.nav.scrolled{background:var(--card);backdrop-filter:none;-webkit-backdrop-filter:none;border-color:var(--line);box-shadow:0 2px 10px rgba(23,59,87,.06)}
 .nav-links a.active,.nav-cta,.admin-corner:hover,body.is-admin .admin-corner,.btn-primary,.tab.active,.chip.active,.kana-group-head .range{background:var(--teal-deep);box-shadow:none}
 /* Hero tetap bergambar Fuji, tetapi tanpa tampilan kartu glossy. */
 .hero-card{border-radius:12px;border:1px solid var(--line);box-shadow:none;background:linear-gradient(180deg,var(--sky-1),var(--sky-2) 68%,var(--sky-3))}
@@ -996,6 +997,49 @@ body.dark{
  .about-grid{gap:10px}.kegiatan-top{gap:12px;margin-bottom:12px}
  .gallery-grid{gap:9px}.feedback-grid{gap:14px}
 }
+/* Navigasi bawah seperti referensi: lima tujuan, label + ikon, aktif jelas. */
+.mobile-dock{display:none}
+@media(max-width:768px){
+  section[id],header[id]{scroll-margin-top:82px}
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  .nav-links,.nav-burger,.nav-cta{display:none!important}
+  .mobile-dock{
+    position:fixed;z-index:110;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));
+    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;
+    padding:7px 6px;background:var(--card);border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 4px 18px rgba(37,53,47,.12)
+  }
+  .mobile-dock a{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    color:var(--muted);border-radius:9px;font-size:10px;font-weight:600;line-height:1.1;transition:background .2s,color .2s}
+  .mobile-dock svg{width:19px;height:19px}
+  .mobile-dock a.active{color:var(--teal-dark);background:var(--mint-soft)}
+  .mobile-dock a:focus-visible{outline:2px solid var(--teal-dark);outline-offset:2px}
+  .to-top{bottom:calc(96px + env(safe-area-inset-bottom))}
+}
 @media(prefers-reduced-motion:reduce){
  .reveal{opacity:1;transform:none;transition:none}.pop-in,.fade-up,.marquee-track{animation:none}
 }
+
+
+/* Form pesan: umpan balik jelas seperti form pada referensi video. */
+.field input,.field textarea{background:var(--card);border:1px solid var(--line);border-radius:8px;}
+.field input:focus,.field textarea:focus{border-color:var(--teal-dark);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 14%,transparent);}
+.field.invalid input,.field.invalid textarea{border-color:#b94b54;box-shadow:0 0 0 3px rgba(185,75,84,.1);}
+.field-meta{display:flex;justify-content:flex-end;min-height:18px;margin-top:5px;color:var(--faint);font-size:11px;}
+.field-meta .near-limit{color:#a45a49;font-weight:700;}
+#fbForm [type=submit]{min-height:48px;border-radius:8px;transition:background .2s,transform .2s,opacity .2s;}
+#fbForm [type=submit]:hover{transform:translateY(-1px);}
+#fbForm [type=submit]:disabled{cursor:wait;opacity:.72;transform:none;}
+#fbForm [type=submit].is-sending{background:var(--muted);}
+.form-msg{border-radius:8px;animation:formMessageIn .25s ease-out both;}
+@keyframes formMessageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.form-msg.ok{background:#edf4eb;border:1px solid #b9cfbb;color:#345b43;}
+.form-msg.bad{background:#f8eeee;border:1px solid #dfb9b9;color:#8b3d42;}
+body.dark .form-msg.ok{background:#26372e;border-color:#4b6f57;color:#c8e2ce;}
+body.dark .form-msg.bad{background:#392729;border-color:#775052;color:#f0c7c7;}
+#fbForm .field label{letter-spacing:.01em;text-transform:none;font-size:13px;}
+#fbForm .field{margin-bottom:17px;}
+@media(max-width:768px){.field-meta{font-size:10px}#fbForm .field{margin-bottom:14px}}
+
+/* Referensi minimal: pita teks berulang tidak menambah informasi, jadi hilangkan. */
+.marquee{display:none}

@@ -128,6 +128,19 @@
     let cur = "home";
     sections.forEach(s => { if (y >= s.offsetTop - 140) cur = s.id; });
     $$("#navLinks a").forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + cur));
+    // Samakan tujuan dock mobile dengan section yang sedang terlihat.
+    const dockTarget = cur === "kosakata" ? "kana" : cur;
+    $$("#mobileDock a").forEach(a => {
+      const active = a.getAttribute("href") === "#" + dockTarget;
+      a.classList.toggle("active", active);
+      if (active) a.setAttribute("aria-current", "location");
+      else a.removeAttribute("aria-current");
+    });
+    // Jika link menuju bagian yang bukan tab utama, pertahankan tab terdekat.
+    if (!["home", "kana", "kegiatan", "dokumentasi", "pesan", "kosakata"].includes(cur)) {
+      const near = cur === "kosakata" ? "kana" : "kegiatan";
+      $$("#mobileDock a").forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + near));
+    }
   }
   addEventListener("scroll", onScroll, { passive: true });
   onScroll();
@@ -571,17 +584,59 @@
   }
   const setInvalid = (sel, bad) => $(sel).classList.toggle("invalid", bad);
 
+  // Form terasa responsif: hitung karakter dan cek input setelah pengguna selesai mengetik.
+  const fbMsg = $("#fbMsg"), fbMsgCount = $("#fbMsgCount");
+  const updateMsgCount = () => {
+    if (!fbMsgCount) return;
+    fbMsgCount.textContent = `${fbMsg.value.length} / ${fbMsg.maxLength}`;
+    fbMsgCount.classList.toggle("near-limit", fbMsg.value.length >= fbMsg.maxLength * .85);
+  };
+  fbMsg?.addEventListener("input", () => {
+    updateMsgCount();
+    if (fbMsg.value.trim().length >= 5) setInvalid("#fMsg", false);
+  });
+  fbMsg?.addEventListener("blur", () => {
+    setInvalid("#fMsg", fbMsg.value.trim().length > 0 && fbMsg.value.trim().length < 5);
+  });
+  const fbName = $("#fbName");
+  fbName?.addEventListener("input", () => {
+    if (fbName.value.trim().length >= 2) setInvalid("#fName", false);
+  });
+  fbName?.addEventListener("blur", () => {
+    setInvalid("#fName", fbName.value.trim().length > 0 && fbName.value.trim().length < 2);
+  });
+  updateMsgCount();
+
+  let submittingFeedback = false;
   fbForm.addEventListener("submit", async e => {
     e.preventDefault();
+    if (submittingFeedback) return;
     const name = $("#fbName").value.trim(), msg = $("#fbMsg").value.trim(), type = $("#fbType").value;
     let bad = false;
     if (name.length < 2) { setInvalid("#fName", true); bad = true; } else setInvalid("#fName", false);
     if (msg.length < 5)  { setInvalid("#fMsg", true); bad = true; } else setInvalid("#fMsg", false);
-    const res = $("#fbResult"); res.className = "form-msg";
-    if (bad) { res.classList.add("bad"); res.textContent = "Lengkapi dulu: nama & pesan (min. 5 karakter)."; return; }
-    try { await window.Store.addFeedback({ name, msg, type, rating }); }
-    catch (err) { res.classList.add("bad"); res.textContent = "Gagal mengirim. Coba lagi ya."; return; }
-    fbForm.reset(); rating = 0; $("#fbRating").querySelectorAll("button").forEach(x => x.classList.remove("on"));
+    const res = $("#fbResult"), sendBtn = fbForm.querySelector('[type="submit"]');
+    res.className = "form-msg";
+    if (bad) {
+      res.classList.add("bad"); res.textContent = "Lengkapi dulu: nama & pesan (min. 5 karakter).";
+      fbForm.querySelector(".field.invalid input, .field.invalid textarea")?.focus();
+      return;
+    }
+    submittingFeedback = true;
+    sendBtn.disabled = true; sendBtn.classList.add("is-sending");
+    sendBtn.setAttribute("aria-busy", "true"); sendBtn.textContent = "Mengirim…";
+    try {
+      await window.Store.addFeedback({ name, msg, type, rating });
+    } catch (err) {
+      res.classList.add("bad"); res.textContent = "Gagal mengirim. Periksa koneksi lalu coba lagi.";
+      return;
+    } finally {
+      submittingFeedback = false;
+      sendBtn.disabled = false; sendBtn.classList.remove("is-sending");
+      sendBtn.removeAttribute("aria-busy"); sendBtn.textContent = "Kirim Pesan";
+    }
+    fbForm.reset(); updateMsgCount(); rating = 0;
+    $("#fbRating").querySelectorAll("button").forEach(x => x.classList.remove("on"));
     await loadFeedback();
     res.classList.add("ok"); res.textContent = "Terima kasih! Pesanmu terkirim. Nama kamu cuma terlihat oleh pengurus.";
     toast("Pesan terkirim");
