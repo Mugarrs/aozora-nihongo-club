@@ -931,6 +931,11 @@
       return;
     }
     const reason = String(error?.message || "").toLowerCase();
+    if (name === "TypeError" && (reason.includes("failed to fetch") || reason.includes("network"))) {
+      uploadResult.textContent =
+        "Server penyimpanan tidak bisa dijangkau. Foto belum terunggah; pengurus perlu memeriksa Project URL Supabase di js/config.js.";
+      return;
+    }
     if (reason.includes("payload too large") || reason.includes("request entity too large")) {
       uploadResult.textContent =
         "Database menolak ukuran foto. Pilih lebih sedikit foto atau foto beresolusi lebih kecil.";

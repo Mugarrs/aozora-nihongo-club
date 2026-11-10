@@ -48,6 +48,7 @@ async function main() {
   assert.match(html, /id="adminCorner"[^>]*aria-controls="adminModal"/);
   assert.match(appSource, /\$\("#adminCorner"\)\.addEventListener\("click"/);
   assert.match(appSource, /File tidak bisa dibuka|Browser tidak bisa membaca format foto/);
+  assert.match(appSource, /Server penyimpanan tidak bisa dijangkau/);
 
   const working = makeStore();
   await working.addGallery({ src: "data:image/jpeg;base64,AA==", caption: "latihan" });
