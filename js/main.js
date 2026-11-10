@@ -112,85 +112,41 @@
     addEventListener("mouseout",  e => { if (e.target.closest(sel)) document.body.classList.remove("cursor-hover"); });
   })();
 
-  /* ---------- NAV + SCROLL ---------- */
-  const nav = $("#nav"), burger = $("#navBurger"), navLinks = $("#navLinks");
-  burger.addEventListener("click", () => { burger.classList.toggle("open"); navLinks.classList.toggle("open"); });
-  navLinks.addEventListener("click", e => { if (e.target.tagName === "A") { burger.classList.remove("open"); navLinks.classList.remove("open"); } });
-
-  const progress = $("#scrollProgress"), toTop = $("#toTop");
-  const sections = $$("section[id], header[id]");
-  function onScroll() {
-    const y = scrollY;
-    nav.classList.toggle("scrolled", y > 40);
-    toTop.classList.toggle("show", y > 700);
-    const h = document.documentElement.scrollHeight - innerHeight;
-    progress.style.width = (h > 0 ? (y / h) * 100 : 0) + "%";
-    let cur = "home";
-    sections.forEach(s => { if (y >= s.offsetTop - 140) cur = s.id; });
-    $$("#navLinks a").forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + cur));
-    // Samakan tujuan dock mobile dengan section yang sedang terlihat.
-    const dockTarget = cur === "kosakata" ? "kana" : cur === "kotd" ? "kuis" : cur;
-    $$("#mobileDock a").forEach(a => {
-      const active = a.getAttribute("href") === "#" + dockTarget;
-      a.classList.toggle("active", active);
-      if (active) a.setAttribute("aria-current", "location");
-      else a.removeAttribute("aria-current");
+  /* ---------- ROUTER HALAMAN ----------
+     Satu panel aktif seperti aplikasi. Hash lama tetap diarahkan ke subtab Belajar.
+     History menyimpan route, sehingga tombol Back/Forward memulihkan panel. */
+  const nav=$("#nav"), burger=$("#navBurger"), navLinks=$("#navLinks");
+  const progress=$("#scrollProgress"), toTop=$("#toTop");
+  const pagePanels=$$("[data-page]"), learnPanes=$$("[data-learn]");
+  const routes=new Map([["home","home"],["belajar","belajar"],["kana","belajar"],["kuis","belajar"],["kotd","belajar"],["kosakata","belajar"],["kegiatan","kegiatan"],["dokumentasi","dokumentasi"],["pesan","pesan"]]);
+  let currentPage="home", currentLearn="kana";
+  function showRoute(route,updateHistory=true){
+    const id=String(route||"home").replace(/^#/,"");
+    const page=routes.get(id)||"home";
+    if(page==="belajar"&&learnPanes.some(p=>p.id===id))currentLearn=id;
+    currentPage=page;
+    pagePanels.forEach(panel=>{
+      const active=panel.dataset.page===page;
+      panel.classList.toggle("hidden",!active);panel.setAttribute("aria-hidden",String(!active));
+      if(active){panel.classList.remove("page-enter");void panel.offsetWidth;panel.classList.add("page-enter");panel.querySelectorAll(".reveal").forEach(el=>el.classList.add("in"));}
     });
-    // Jika link menuju bagian yang bukan tab utama, pertahankan tab terdekat.
-    if (!["home", "kana", "kuis", "kegiatan", "dokumentasi", "pesan", "kosakata", "kotd"].includes(cur)) {
-      const near = cur === "kosakata" ? "kana" : "kegiatan";
-      $$("#mobileDock a").forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + near));
-    }
+    learnPanes.forEach(p=>{const active=p.id===currentLearn;p.classList.toggle("hidden",!active);p.setAttribute("aria-hidden",String(!active));});
+    $$(".page-subnav a").forEach(a=>a.classList.toggle("active",a.hash==="#"+currentLearn));
+    $$("#navLinks a,#mobileDock a").forEach(a=>{const active=routes.get(a.hash.slice(1))===page;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
+    if(updateHistory&&location.hash!=="#"+id)window.history.pushState({route:id},"","#"+id);
+    window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+    navLinks?.classList.remove("open");burger?.classList.remove("open");
+    if(page==="dokumentasi")galleryAuto(true);else{clearInterval(galleryTimer);clearTimeout(galleryResumeTimer);}
+    setTimeout(()=>pagePanels.forEach(p=>p.classList.remove("page-enter")),280);onScroll();
   }
-  addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-  toTop.addEventListener("click", () => scrollTo({ top: 0, behavior: "smooth" }));
-
-  /* ---------- TRANSISI HALAMAN ---------- */
-  const curtain = $("#curtain");
-  function pageTransition(target) {
-    const go = () => { const el = document.querySelector(target); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
-    if (!curtain || matchMedia("(prefers-reduced-motion: reduce)").matches) { go(); return; }
-    curtain.classList.remove("run"); void curtain.offsetWidth; curtain.classList.add("run");
-    setTimeout(go, 240);
-    setTimeout(() => curtain.classList.remove("run"), 620);
-  }
-  $$('a[href^="#"]').forEach(a => a.addEventListener("click", e => {
-    const href = a.getAttribute("href");
-    if (!href || href === "#") return;
-    e.preventDefault(); pageTransition(href);
-  }));
-
-  /* ---------- REVEAL ---------- */
-  let io;
-  function revealInit() {
-    if (io) return;
-    /* IntersectionObserver = "mata" yang memantau elemen.
-       Ia memberi tahu JS ketika sebuah elemen masuk ke layar.
-       threshold .1  -> picu saat 10% elemen terlihat.
-       rootMargin -8% -> tunggu sedikit lebih masuk, biar animasinya terasa pas. */
-    io = new IntersectionObserver(ents => {
-      ents.forEach(en => {
-        if (!en.isIntersecting) return;
-        en.target.classList.add("in");
-        io.unobserve(en.target);   // sudah muncul, tidak perlu dipantau lagi
-      });
-    }, { threshold: .1, rootMargin: "0px 0px -8% 0px" });
-
-    /* Elemen yang tampil bersamaan diberi jeda bertingkat (stagger),
-       jadi munculnya bergiliran seperti gelombang — bukan serentak. */
-    $$(".reveal").forEach(el => io.observe(el));
-
-    // Tambah jeda otomatis untuk anak-anak dalam satu wadah
-    $$(".about-grid, .kegiatan-top, .feedback-grid, .hero-stats, .foot-grid, .gallery-grid").forEach(group => {
-      [...group.querySelectorAll(".reveal")].forEach((el, i) => {
-        if (!el.classList.contains("d1") && !el.classList.contains("d2") && !el.classList.contains("d3")) {
-          el.style.transitionDelay = Math.min(i * 0.08, 0.4) + "s";
-        }
-      });
-    });
-  }
-  addEventListener("load", revealInit);
+  function onScroll(){nav.classList.toggle("scrolled",scrollY>12);toTop.classList.toggle("show",scrollY>500);const max=document.documentElement.scrollHeight-innerHeight;progress.style.width=(max>0?scrollY/max*100:0)+"%";}
+  addEventListener("scroll",onScroll,{passive:true});onScroll();
+  toTop.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
+  document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.hash.slice(1);if(!routes.has(id))return;e.preventDefault();showRoute(id);});
+  addEventListener("popstate",()=>showRoute(location.hash||"#home",false));
+  /* Scroll reveal dinonaktifkan di panel: tidak ada elemen tertinggal transparan saat scroll. */
+  function revealInit(){document.querySelectorAll("[data-page]:not(.hidden) .reveal").forEach(el=>el.classList.add("in"));}
+  addEventListener("load",revealInit);
 
   /* ---------- SUARA (cepat, tanpa delay) ---------- */
   let jaVoice = null, voicesReady = false;
@@ -440,22 +396,111 @@
   })();
 
   /* =======================================================
-     GALERI
+     GALERI — strip geser; jeda otomatis saat disentuh.
+     ScrollLeft bergerak perlahan, berbalik di kedua ujung, dan berhenti untuk interaksi.
      ======================================================= */
   let gallery = [];
-  const gGrid = $("#galleryGrid");
+  const gGrid = $("#galleryGrid"), gViewport = $("#galleryViewport");
+  let galleryTimer = 0, galleryDir = 1, galleryPaused = false, galleryManualPause = false, galleryResumeTimer = 0;
+  const galleryToggle=$("#galleryToggle");
+  function paintGalleryToggle(){if(galleryToggle){galleryToggle.textContent=galleryManualPause?"Gerakkan galeri":"Jeda gerakan";galleryToggle.setAttribute("aria-pressed",String(galleryManualPause));}}
+  function galleryAuto(on) {
+    clearInterval(galleryTimer);
+    if (!on || document.hidden || galleryManualPause || currentPage!=="dokumentasi" || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    galleryPaused = false;
+    galleryTimer = setInterval(() => {
+      if (!gViewport || gViewport.scrollWidth <= gViewport.clientWidth + 4) return;
+      const end = gViewport.scrollWidth - gViewport.clientWidth;
+      if (gViewport.scrollLeft >= end - 2) galleryDir = -1;
+      else if (gViewport.scrollLeft <= 2) galleryDir = 1;
+      gViewport.scrollLeft += galleryDir * 0.8;
+    }, 32);
+  }
+  function pauseGallery(resume = false) {
+    galleryPaused = true; clearInterval(galleryTimer); clearTimeout(galleryResumeTimer);
+    if (resume && !galleryManualPause) galleryResumeTimer = setTimeout(() => galleryAuto(true), 1800);
+  }
+  galleryToggle?.addEventListener("click",()=>{galleryManualPause=!galleryManualPause;clearInterval(galleryTimer);clearTimeout(galleryResumeTimer);if(!galleryManualPause)galleryAuto(true);paintGalleryToggle();});
   function renderGallery() {
     if (!gGrid) return;
+    clearInterval(galleryTimer);
     if (!gallery.length) {
-      gGrid.innerHTML = `<div class="gallery-empty">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px;margin:0 auto 12px;opacity:.6"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l4.5-4.5 3.5 3.5 3-3L20 16"/></svg>
-        <b>Momen seru kita belum ada di sini</b><br><small>Foto-foto kegiatan bakal muncul di sini segera. Pantengin terus ya!</small>
-      </div>`;
+      gGrid.innerHTML = `<div class="gallery-empty"><b>Belum ada foto kegiatan</b><br><small>Pengurus bisa unggah foto dari panel Admin.</small></div>`;
+      $("#galleryHint").textContent = "Foto kegiatan akan tampil di sini setelah diunggah.";
       return;
     }
-    gGrid.innerHTML = gallery.map(g => `<figure class="gallery-item"><img src="${esc(g.src)}" alt="${esc(g.caption || 'Foto kegiatan')}" loading="lazy" /><figcaption>${esc(g.caption || '')}</figcaption></figure>`).join("");
+    gGrid.innerHTML = gallery.map(g => `<figure class="gallery-item"><img src="${esc(g.src)}" alt="${esc(g.caption || 'Foto kegiatan Aozora')}" loading="lazy" /><figcaption>${esc(g.caption || '')}</figcaption></figure>`).join("");
+    requestAnimationFrame(() => galleryAuto(!galleryPaused));
+    $("#galleryHint").textContent = gallery.length > 1 ? "Galeri bergerak pelan. Geser atau tekan tombol panah untuk melihat foto." : "Satu foto kegiatan.";
+    galleryAuto(!galleryPaused);
   }
+  $("#galleryPrev")?.addEventListener("click", () => { galleryDir=-1; pauseGallery(true); gViewport.scrollBy({left:-gViewport.clientWidth*.8,behavior:"smooth"}); });
+  $("#galleryNext")?.addEventListener("click", () => { galleryDir=1; pauseGallery(true); gViewport.scrollBy({left:gViewport.clientWidth*.8,behavior:"smooth"}); });
+  gViewport?.addEventListener("pointerdown", () => pauseGallery(false), {passive:true});
+  gViewport?.addEventListener("pointerup", () => pauseGallery(true), {passive:true});
+  gViewport?.addEventListener("pointercancel", () => pauseGallery(true), {passive:true});
+  gViewport?.addEventListener("keydown", e => { if(["ArrowLeft","ArrowRight","Home","End"].includes(e.key)) pauseGallery(true); });
+  gViewport?.addEventListener("touchstart", () => pauseGallery(false), {passive:true});
+  gViewport?.addEventListener("touchend", () => pauseGallery(true), {passive:true});
+  gViewport?.addEventListener("mouseenter", () => pauseGallery(false));
+  gViewport?.addEventListener("mouseleave", () => {if(!galleryManualPause)galleryAuto(true);});
+  gViewport?.addEventListener("focusin", () => pauseGallery(false));
+  gViewport?.addEventListener("focusout", () => {if(!galleryManualPause)galleryAuto(true);});
+  gViewport?.addEventListener("scroll", () => {
+    const end=gViewport.scrollWidth-gViewport.clientWidth;
+    if(gViewport.scrollLeft<=2) galleryDir=1; else if(gViewport.scrollLeft>=end-2) galleryDir=-1;
+  },{passive:true});
+  document.addEventListener("visibilitychange", () => galleryAuto(!document.hidden && !galleryPaused));
+  paintGalleryToggle();
   async function loadGallery() { try { gallery = await window.Store.listGallery(); } catch (e) { gallery = []; } renderGallery(); }
+
+  // Ubah foto jadi JPEG maksimal 1440px sebelum simpan; ini menghemat localStorage.
+  function resizePhoto(file) {
+    return new Promise((resolve,reject) => {
+      const img=new Image(), url=URL.createObjectURL(file);
+      img.onload=()=>{
+        const scale=Math.min(1,1440/Math.max(img.width,img.height));
+        const canvas=document.createElement("canvas"); canvas.width=Math.round(img.width*scale); canvas.height=Math.round(img.height*scale);
+        canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height); URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/jpeg",.78));
+      };
+      img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("Foto tidak bisa dibaca."));};
+      img.src=url;
+    });
+  }
+  const uploadInput=$("#gFile"), uploadPreview=$("#uploadPreview");
+  uploadInput?.addEventListener("change",()=>{
+    uploadPreview.querySelectorAll("img").forEach(img=>URL.revokeObjectURL(img.src));
+    const files=[...uploadInput.files].filter(f=>f.type.startsWith("image/"));
+    uploadPreview.innerHTML=files.map(f=>`<img src="${URL.createObjectURL(f)}" alt="Pratinjau ${esc(f.name)}">`).join("")+(files.length?`<span class="upload-count">${files.length} foto dipilih</span>`:"");
+    $("#galleryResult").className="form-msg";
+  });
+  $("#gAdd").addEventListener("click",async()=>{
+    const files=[...uploadInput.files], caption=$("#gCaption").value.trim(), url=$("#gUrl").value.trim();
+    const result=$("#galleryResult"),btn=$("#gAdd");
+    if(!files.length&&!url){result.className="form-msg bad";result.textContent="Pilih foto atau masukkan URL foto dulu.";return;}
+    if(files.some(f=>!f.type.startsWith("image/"))){result.className="form-msg bad";result.textContent="Pilih file gambar saja.";return;}
+    if(files.length>12){result.className="form-msg bad";result.textContent="Maksimal 12 foto sekali upload.";return;}
+    btn.disabled=true;btn.setAttribute("aria-busy","true");result.className="form-msg";result.textContent="";
+    let saved=0;
+    try{
+      const items=files.length?await Promise.all(files.map(resizePhoto)):[url];
+      for(let i=0;i<items.length;i++){
+        btn.textContent=`Mengunggah ${i+1}/${items.length}…`;
+        const name=files[i]?.name.replace(/\.[^.]+$/,"")||"Foto kegiatan";
+        await window.Store.addGallery({src:items[i],caption:caption||name});saved++;
+      }
+      $("#gCaption").value="";$("#gUrl").value="";uploadInput.value="";uploadPreview.querySelectorAll("img").forEach(img=>URL.revokeObjectURL(img.src));uploadPreview.innerHTML="";
+      await loadGallery();renderGalleryAdmin();result.className="form-msg ok";result.textContent=`${saved} foto berhasil ditambahkan.`;
+    }catch(e){
+      await loadGallery();renderGalleryAdmin();result.className="form-msg bad";
+      result.textContent=saved?`${saved} foto tersimpan; unggahan berikutnya gagal. Pilihan foto tetap ada, cek galeri sebelum mencoba lagi.`:"Upload gagal. Pilihan foto tetap ada; coba lagi.";
+    }
+    finally{btn.disabled=false;btn.removeAttribute("aria-busy");btn.textContent="Upload Foto";}
+  });
+
+  // Mulai router setelah fungsi galeri dideklarasikan agar inisialisasi aman.
+  showRoute(location.hash||"#home",false);
 
   /* =======================================================
      PESAN — helper

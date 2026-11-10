@@ -8,18 +8,18 @@
   CSS = cat + hiasan, JavaScript = listrik + saklar yang bikin ruangan hidup.
 
   URUTAN BACA DARI ATAS KE BAWAH:
+  index.html = susunan konten; css/style.css = tampilan; js/main.js = interaksi.
     <head>   -> informasi halaman (judul tab, font, file CSS) — tidak tampil
     <body>   -> semua yang kelihatan di layar
       1. Preloader      : layar loading pembuka
       2. Nav            : menu di atas (logo + link + tombol tema + admin)
       3. Hero           : banner besar (Gunung Fuji, matahari, sakura)
-      4. Kana           : daftar Hiragana & Katakana
-      5. Kosakata       : daftar kata bahasa Jepang
-      6. Kegiatan       : info pertemuan + slider "Tentang"
-      7. Dokumentasi    : galeri foto
-      8. Pesan          : form pesan/kritik + pesan pribadi
-      9. Footer         : penutup halaman
-     10. Popup & Modal  : elemen tersembunyi yang muncul saat diklik
+      4. Belajar        : Kana, kuis, kata hari ini, kosakata
+      5. Kegiatan       : info pertemuan + slider "Tentang"
+      6. Dokumentasi    : galeri foto
+      7. Pesan          : form pesan/kritik + pesan pribadi
+      8. Footer         : penutup halaman
+      9. Popup & Modal  : elemen tersembunyi yang muncul saat diklik
 
   TIPS BELAJAR: setiap bagian diberi komentar penanda di atasnya.
   Komentar TIDAK tampil di browser — isinya catatan untuk kita.
@@ -118,7 +118,7 @@
     .nav-burger   -> tombol menu pada ukuran tablet/layar menengah
     .nav-cta      -> tombol "Kirim Pesan" di menu desktop (disembunyikan di HP)
 
-  Di HP, menu diganti dock bawah berisi 5 bagian utama.
+  Di HP, menu memakai dock bawah lima tujuan utama; halaman berpindah tanpa menggulir seluruh dokumen.
   Menu hamburger dipakai pada ukuran tablet/layar menengah.
   ============================================================
 -->
@@ -136,12 +136,10 @@
   </a>
   <div class="nav-links" id="navLinks">
     <a href="#home" class="active">Beranda</a>
-    <a href="#kana">Hiragana &amp; Katakana</a>
-    <a href="#kuis">Kuis Kana</a>
-    <a href="#kosakata">Kosakata</a>
+    <a href="#belajar">Belajar</a>
     <a href="#kegiatan">Kegiatan</a>
-    <a href="#dokumentasi">Dokumentasi</a>
-    <a href="#pesan">Pesan &amp; Kritik</a>
+    <a href="#dokumentasi">Galeri</a>
+    <a href="#pesan">Pesan</a>
   </div>
   <button class="icon-btn" id="themeToggle" aria-label="Ganti tema" title="Mode gelap / terang">
     <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
@@ -151,26 +149,13 @@
   <a href="#pesan" class="nav-cta">Kirim Pesan</a>
 </nav>
 
-<!-- Navigasi bawah HP: enam tujuan, section aktif ditandai oleh JavaScript. -->
-<nav class="mobile-dock" id="mobileDock" aria-label="Navigasi utama mobile">
-  <a href="#home" class="active" aria-label="Beranda" title="Beranda">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span>
-  </a>
-  <a href="#kana" aria-label="Belajar Hiragana dan Katakana" title="Belajar Hiragana dan Katakana">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 1-2-2z"/><path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 0 2-2z"/></svg><span>Kana</span>
-  </a>
-  <a href="#kuis" aria-label="Kuis Kana" title="Kuis Kana">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 10a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/><circle cx="12" cy="18" r=".5"/></svg><span>Kuis</span>
-  </a>
-  <a href="#kegiatan" aria-label="Kegiatan" title="Kegiatan">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Info</span>
-  </a>
-  <a href="#dokumentasi" aria-label="Galeri kegiatan" title="Galeri kegiatan">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span>Foto</span>
-  </a>
-  <a href="#pesan" aria-label="Pesan dan kritik" title="Pesan dan kritik">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg><span>Pesan</span>
-  </a>
+<!-- Navigasi HP: lima tujuan utama; status aktif mengikuti panel yang dipilih. -->
+<nav class="mobile-dock" id="mobileDock" aria-label="Navigasi utama">
+  <a href="#home" class="active" aria-label="Beranda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Beranda</span></a>
+  <a href="#belajar" aria-label="Belajar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 1-2-2z"/><path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 0 2-2z"/></svg><span>Belajar</span></a>
+  <a href="#kegiatan" aria-label="Kegiatan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Kegiatan</span></a>
+  <a href="#dokumentasi" aria-label="Galeri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span>Galeri</span></a>
+  <a href="#pesan" aria-label="Pesan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg><span>Pesan</span></a>
 </nav>
 
 <!--
@@ -195,7 +180,7 @@
     Z = tutup bentuk kembali ke titik awal (close)
   ============================================================
 -->
-<header class="hero" id="home">
+<header class="hero page-panel" id="home" data-page="home">
   <div class="wrap">
     <div class="hero-card">
       <div class="scene" aria-hidden="true">
@@ -266,7 +251,7 @@
   aria-hidden="true" karena ini hiasan, isinya sudah ada di bagian lain.
   ============================================================
 -->
-<div class="marquee" aria-hidden="true">
+<div class="marquee page-decoration" aria-hidden="true">
   <div class="marquee-track">
     <span>ひらがな Hiragana</span><span>カタカナ Katakana</span><span>漢字 Kanji</span>
     <span>語彙 Kosakata</span><span>青空日本語</span><span>SMK N 1 Purwokerto</span>
@@ -292,7 +277,10 @@
   Kenapa? Biar tidak perlu tulis 104 huruf manual di HTML.
   ============================================================
 -->
-<section id="kana">
+<section id="belajar" class="page-panel" data-page="belajar" aria-label="Halaman Belajar">
+  <!-- Subnavigasi mengganti materi di dalam halaman Belajar, bukan halaman utama. -->
+  <nav class="page-subnav" aria-label="Menu belajar"><a href="#kana" class="subnav-link active">Kana</a><a href="#kuis" class="subnav-link">Kuis</a><a href="#kotd" class="subnav-link">Kata Hari Ini</a><a href="#kosakata" class="subnav-link">Kosakata</a></nav>
+  <section id="kana" class="learn-pane" data-learn="kana">
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">Daftar Isi Huruf</span>
@@ -328,7 +316,7 @@
   Muncul di antara bagian Kana dan Kosakata.
   ============================================================
 -->
-<section id="kuis">
+<section id="kuis" class="learn-pane hidden" data-learn="kuis">
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">クイズ · Kuis</span>
@@ -370,7 +358,7 @@
   Ditampilkan sebagai kartu kecil di antara Kuis dan Kosakata.
   ============================================================
 -->
-<section id="kotd">
+<section id="kotd" class="learn-pane hidden" data-learn="kotd">
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">今日の言葉 · Kata Hari Ini</span>
@@ -403,7 +391,7 @@
   dan tombol speaker untuk mendengar pelafalan.
   ============================================================
 -->
-<section id="kosakata">
+<section id="kosakata" class="learn-pane hidden" data-learn="kosakata">
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">語彙 · Kosakata</span>
@@ -420,6 +408,7 @@
     <div class="vocab-grid" id="vocabGrid"></div>
   </div>
 </section>
+</section> <!-- penutup panel halaman Belajar -->
 
 <!--
   ============================================================
@@ -434,7 +423,7 @@
   .about-grid -> 4 kartu kecil berisi keunggulan eskul
   ============================================================
 -->
-<section id="kegiatan">
+<section id="kegiatan" class="page-panel hidden" data-page="kegiatan">
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">活動 · Kegiatan</span>
@@ -512,14 +501,22 @@
   Kalau belum ada foto, JS menampilkan pesan "belum ada foto".
   ============================================================
 -->
-<section id="dokumentasi">
+<section id="dokumentasi" class="page-panel hidden" data-page="dokumentasi">
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">写真 · Dokumentasi</span>
       <h2 class="h2">Momen <em>Kita</em></h2>
       <p class="lead">Kumpulan foto &amp; kenangan dari kegiatan eskul. Pengurus bisa menambah foto lewat panel admin.</p>
     </div>
-    <div class="gallery-grid" id="galleryGrid"></div>
+    <!-- Galeri: viewport memotong strip foto; pengunjung bisa geser, berhenti, atau lanjutkan gerak otomatis. -->
+    <div class="gallery-shell">
+      <button class="gallery-arrow prev" id="galleryPrev" type="button" aria-label="Foto sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+      <div class="gallery-viewport" id="galleryViewport" tabindex="0" aria-label="Galeri foto, bisa digeser ke samping"><div class="gallery-grid" id="galleryGrid"></div></div>
+      <!-- Tombol pause memberi kendali manual selain swipe/drag. -->
+      <button class="gallery-toggle" id="galleryToggle" type="button" aria-pressed="false">Jeda gerakan</button>
+      <button class="gallery-arrow next" id="galleryNext" type="button" aria-label="Foto berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+    <p class="gallery-hint" id="galleryHint">Geser foto ke samping. Galeri berhenti saat disentuh.</p>
   </div>
 </section>
 
@@ -546,7 +543,7 @@
   pakai pesan error sendiri yang lebih rapi.
   ============================================================
 -->
-<section id="pesan">
+<section id="pesan" class="page-panel hidden" data-page="pesan">
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">意見 · Pesan</span>
@@ -648,7 +645,7 @@
   dengan tahun sekarang, jadi tidak perlu ganti manual tiap tahun.
   ============================================================
 -->
-<footer>
+<footer class="page-panel hidden" data-page="pesan">
   <div class="wrap">
     <div class="foot-inner">
       <div class="foot-grid">
@@ -671,6 +668,8 @@
           </ul>
         </div>
         <div>
+          <h4>Ikuti Aozora</h4>
+          <ul><li><a href="https://www.instagram.com/ancsmecone/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Aozora Nihongo Club">Instagram @ancsmecone</a></li></ul>
           <h4>Belajar</h4>
           <ul>
             <li><a href="#kana">ひらがな Hiragana</a></li>
@@ -785,8 +784,8 @@
         <div class="field"><label for="gCaption">Keterangan foto</label><input type="text" id="gCaption" placeholder="mis. Latihan kana minggu ke-3" maxlength="60" /></div>
         <div class="field"><label for="gUrl">Link foto (URL)</label><input type="text" id="gUrl" placeholder="https://…" /></div>
         <div class="or-line"><span>atau</span></div>
-        <div class="field"><label for="gFile">Unggah dari perangkat</label><input type="file" id="gFile" accept="image/*" /></div>
-        <button class="btn btn-primary" id="gAdd" style="width:100%">Tambah Foto</button>
+        <div class="field"><label for="gFile">Pilih foto dari perangkat</label><input type="file" id="gFile" accept="image/*" multiple /><small class="upload-help">Pilih beberapa foto sekaligus. Foto diperkecil otomatis sebelum disimpan.</small><div id="uploadPreview" class="upload-preview" aria-live="polite"></div></div>
+        <button class="btn btn-primary" id="gAdd" style="width:100%">Upload Foto</button><div class="form-msg" id="galleryResult" role="status" aria-live="polite"></div>
         <div class="admin-list" id="galleryAdminList"></div>
       </div>
     </div>

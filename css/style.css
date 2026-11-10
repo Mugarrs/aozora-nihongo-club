@@ -252,18 +252,18 @@ body.cursor-hover .cursor-ring{ width:54px; height:54px; margin:-27px 0 0 -27px;
    ---------------------------------------------------------------------------- */
 /* ---------- NAV ---------- */
 .nav{ position:fixed; top:14px; left:50%; translate:-50% 0; z-index:100; width:min(1220px,94vw);
-  display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:var(--r-pill);
+  display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:var(--r-pill);
   background:color-mix(in srgb, var(--card) 80%, transparent);
   backdrop-filter:blur(16px) saturate(160%); -webkit-backdrop-filter:blur(16px) saturate(160%);
   border:1px solid color-mix(in srgb, var(--line) 75%, transparent); box-shadow:var(--shadow-sm);
   transition:box-shadow .4s var(--ease), background .45s var(--ease), border-color .45s var(--ease); }
 .nav.scrolled{ box-shadow:var(--shadow); }
 .brand{ display:flex; align-items:center; gap:10px; margin-right:auto; }
-.brand img{ width:40px; height:40px; object-fit:contain; }
+.brand img{ width:34px; height:34px; object-fit:contain; }
 .brand-txt b{ display:block; font-weight:700; font-size:14px; line-height:1.15; color:var(--navy); }
 .brand-txt small{ color:var(--faint); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; }
-.nav-links{ display:flex; align-items:center; gap:2px; }
-.nav-links a{ padding:9px 13px; border-radius:var(--r-pill); font-size:13.5px; font-weight:500; color:var(--muted);
+.nav-links{ display:flex; align-items:center; gap:2px; flex:0 1 auto; min-width:0; }
+.nav-links a{ padding:9px 11px; border-radius:var(--r-pill); font-size:13px; font-weight:500; color:var(--muted);
   transition:color .22s, background .22s; white-space:nowrap; }
 .nav-links a:hover{ color:var(--teal-dark); background:var(--mint-soft); }
 .nav-links a.active{ color:#fff; background:linear-gradient(100deg,var(--teal),var(--teal-deep)); }
@@ -301,22 +301,34 @@ body.dark .icon-btn .moon{ display:block; }
     background:var(--card); backdrop-filter:blur(16px); border:1px solid var(--line); box-shadow:var(--shadow-lg);
     transform:translateY(-12px) scale(.98); opacity:0; pointer-events:none; transition:transform .35s var(--ease-out), opacity .3s; }
   .nav-links.open{ transform:none; opacity:1; pointer-events:auto; }
-  .nav-links a{ padding:12px 15px; border-radius:var(--r-md); font-size:15px; }
+  .nav-links a{ padding:8px 10px; border-radius:var(--r-md); font-size:13px; }
+}
+
+/* Navbar desktop berukuran sedang: tetap mudah disentuh tanpa menutupi hero. */
+@media(min-width:769px){
+  .nav{min-height:50px;gap:7px;padding:5px 9px}
+  .brand img{width:34px;height:34px}
+  .nav-links a{padding:8px 10px;font-size:13px}
+  .icon-btn,.nav-burger{width:36px;height:36px;flex-basis:36px}
+  .icon-btn svg{width:16px;height:16px}
+  .nav-cta{padding:8px 13px;font-size:12.5px}
 }
 
 /* ---------- NAV di HP: lebih ramping ---------- */
 @media (max-width:640px){
-  .nav{ top:10px; width:94vw; gap:6px; padding:6px 8px; border-radius:20px; }
+  .nav{ top:calc(8px + env(safe-area-inset-top)); width:calc(100% - 16px); gap:7px; padding:6px 9px; border-radius:16px; }
+  body{padding-top:68px}
   .admin-corner{ padding:8px; border-radius:50%; }
   .admin-corner span{ display:none; }
   .admin-corner svg{ width:17px; height:17px; }
-  .brand{ gap:8px; min-width:0; }
+  .brand{ gap:7px; min-width:0; flex:1 1 auto; overflow:hidden; }
   .brand img{ width:32px; height:32px; }
-  .brand-txt b{ font-size:12.5px; }
+  .brand-txt{min-width:0;overflow:hidden}
+  .brand-txt b{ font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .brand-txt small{ font-size:8px; letter-spacing:.1em; }
-  .icon-btn{ width:36px; height:36px; }
+  .icon-btn{ width:40px; height:40px; flex:0 0 40px; }
   .icon-btn svg{ width:16px; height:16px; }
-  .nav-burger{ width:36px; height:36px; }
+  .nav-burger{ width:40px; height:40px; flex:0 0 40px; }
   .nav-burger i{ width:15px; }
   .nav-links{ top:64px; }
 }
@@ -344,9 +356,8 @@ h1,h2,h3{ font-weight:700; line-height:1.15; margin:0; letter-spacing:-.02em; co
    translateY(+) = mulai dari BAWAH, lalu naik ke posisi asli.
    scale(.97)    = mulai sedikit lebih kecil, lalu membesar -> terasa "hidup".
    Hanya transform & opacity yang dianimasikan, jadi ringan di HP. */
-.reveal{ opacity:0; transform:translateY(38px) scale(.97);
-  transition:opacity .7s var(--ease-out), transform .8s var(--ease-out);
-  will-change:opacity, transform; }
+.reveal{ opacity:0; transform:translateY(18px);
+  transition:opacity .38s var(--ease-out), transform .42s var(--ease-out); }
 .reveal.in{ opacity:1; transform:none; }
 
 /* Varian arah: elemen tertentu bisa masuk dari kiri/kanan/zoom saja */
@@ -600,12 +611,26 @@ h1,h2,h3{ font-weight:700; line-height:1.15; margin:0; letter-spacing:-.02em; co
    Grid otomatis: foto mengalir mengisi baris sesuai lebar layar.
    ---------------------------------------------------------------------------- */
 /* ---------- DOKUMENTASI ---------- */
-.gallery-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px; }
-.gallery-item{ position:relative; border-radius:var(--r-lg); overflow:hidden; background:var(--card); border:1px solid var(--line);
-  box-shadow:var(--shadow); aspect-ratio:4/3; cursor:pointer; transition:transform .3s var(--ease), box-shadow .3s; }
-.gallery-item:hover{ transform:translateY(-5px); box-shadow:var(--shadow-lg); }
-.gallery-item img{ width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease); }
-.gallery-item:hover img{ transform:scale(1.06); }
+.gallery-shell{position:relative}
+.gallery-viewport{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;touch-action:pan-x;}
+.gallery-viewport::-webkit-scrollbar{display:none}
+.gallery-grid{display:flex;gap:14px;width:max-content;padding:4px 2px 14px;}
+.gallery-item{position:relative;flex:0 0 clamp(220px,28vw,340px);border-radius:var(--r-lg);overflow:hidden;background:var(--card);border:1px solid var(--line);
+  box-shadow:var(--shadow);aspect-ratio:4/3;cursor:pointer;scroll-snap-align:start;transition:transform .22s var(--ease),box-shadow .22s;}
+.gallery-item:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .35s var(--ease)}
+.gallery-item:hover img{transform:scale(1.035)}
+.gallery-arrow{position:absolute;z-index:2;top:42%;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer}
+.gallery-arrow svg{width:20px;height:20px}.gallery-arrow.prev{left:-16px}.gallery-arrow.next{right:-16px}
+.gallery-hint{text-align:center;color:var(--muted);font-size:13px;margin:8px 0 0}
+.gallery-empty{min-width:min(760px,88vw);text-align:center;padding:42px 18px;color:var(--faint);background:var(--card);border:1px dashed var(--line);border-radius:var(--r-lg)}
+.upload-help{display:block;color:var(--muted);font-size:12px;margin-top:6px}
+.upload-preview{display:flex;gap:8px;overflow-x:auto;padding:8px 0;min-height:0}
+.upload-preview:empty{display:none}
+.upload-preview img{width:76px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.upload-count{align-self:center;color:var(--muted);font-size:12px;white-space:nowrap}
+@media(max-width:768px){.gallery-item{flex-basis:min(78vw,320px)}.gallery-arrow{display:none}.gallery-hint{font-size:12px}.page-panel{padding-top:18px}}
+@media(max-width:360px){.nav{gap:5px;padding-inline:6px}.brand img{width:28px;height:28px}.brand-txt b{font-size:11.5px}.admin-corner{width:36px;height:36px}.icon-btn,.nav-burger{width:38px;height:38px;flex-basis:38px}.gallery-item{flex-basis:84vw}}
 .gallery-item figcaption{ position:absolute; left:0; right:0; bottom:0; padding:14px; color:#fff; font-size:13.5px; font-weight:600;
   background:linear-gradient(0deg, rgba(10,30,35,.82), transparent); }
 .gallery-empty{ grid-column:1/-1; text-align:center; padding:48px 20px; color:var(--faint); background:var(--card);
@@ -1005,7 +1030,7 @@ body.dark{
   .nav-links,.nav-burger,.nav-cta{display:none!important}
   .mobile-dock{
     position:fixed;z-index:110;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));
-    display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;
+    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;
     padding:6px;background:color-mix(in srgb,var(--card) 96%,transparent);border:1px solid var(--line);border-radius:16px;
     box-shadow:0 5px 18px rgba(23,59,87,.13);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
   }
@@ -1083,3 +1108,36 @@ body.dark .form-msg.bad{background:#392729;border-color:#775052;color:#f0c7c7;}
 .kotd-kat{font-size:13px;color:var(--faint);margin:6px 0 16px;text-transform:uppercase;letter-spacing:.08em}
 .kotd-speak{display:inline-flex;align-items:center;gap:6px}
 .kotd-speak svg{width:18px;height:18px}
+
+
+/* Halaman internal: hanya panel aktif terlihat; navbar tetap di luar alur konten. */
+.page-panel{min-height:calc(100svh - 90px);padding:24px 0 54px;}
+.page-subnav{position:sticky;top:82px;z-index:40;display:flex;justify-content:center;gap:6px;width:max-content;max-width:92vw;margin:0 auto 24px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow-sm);overflow-x:auto;}
+.page-subnav a{flex:none;padding:10px 15px;border-radius:999px;color:var(--muted);font-size:13px;font-weight:700;white-space:nowrap;}
+.page-subnav a.active{color:#fff;background:var(--teal-deep);}
+.learn-pane{padding:24px 0;}
+.page-enter{animation:pageEnter .24s ease-out both;}
+@keyframes pageEnter{from{opacity:.55;transform:translateY(8px)}to{opacity:1;transform:none}}
+body.page-mode{scroll-behavior:auto;}
+@media(max-width:640px){.page-subnav{top:66px;max-width:calc(100vw - 20px);justify-content:flex-start;margin-bottom:12px}.page-subnav a{padding:9px 12px;font-size:12px}.page-panel{padding-top:12px}.learn-pane{padding:14px 0}}
+
+/* Panel halaman: footer ikut halaman Pesan, dekorasi tak menembus perpindahan panel. */
+body.page-mode .page-decoration{display:none}
+.page-panel[aria-hidden="true"]{pointer-events:none}
+.page-panel[aria-hidden="false"]{pointer-events:auto}
+@media(max-width:640px){.btn,.tab,.chip,.ptab,.sl-btn,.to-top{min-height:44px}.btn{padding:12px 18px}.hero{padding-top:12px}.nav{top:calc(8px + env(safe-area-inset-top))}}
+@media(prefers-reduced-motion:reduce){.page-enter{animation:none!important}.gallery-viewport{scroll-behavior:auto!important}}
+
+/* Navigasi seperti aplikasi; semua panel selain tujuan aktif disembunyikan. */
+.page-panel.hidden,.learn-pane.hidden{display:none!important}
+.page-enter{animation:pageEnter .22s ease-out both}
+@keyframes pageEnter{from{opacity:.82;transform:translateY(5px)}to{opacity:1;transform:none}}
+/* Reveal lama menunggu elemen masuk viewport; halaman tersembunyi dapat membuatnya macet. */
+.page-panel .reveal{opacity:1;transform:none;transition:none}
+.gallery-toggle{position:relative;z-index:2;display:block;margin:0 0 12px auto;min-height:42px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.gallery-toggle:hover,.gallery-toggle:focus-visible{border-color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 30%,transparent);outline-offset:2px}
+@media(max-width:768px){.mobile-dock{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.page-enter{animation:none!important}}
+
+/* Tombol nyaman disentuh pada HP dan tetap terbaca saat gerak dikurangi. */
+@media(max-width:640px){.btn,.tab,.chip,.ptab,.sl-btn,.to-top,.gallery-toggle{min-height:44px}.btn{padding-inline:16px}}
