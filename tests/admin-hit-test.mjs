@@ -2,7 +2,9 @@
 import assert from "node:assert/strict";
 
 const pages = await (await fetch("http://127.0.0.1:9229/json")).json();
-const page = pages.find((target) => target.type === "page" && target.url.startsWith("http://127.0.0.1:8917/"));
+const page = pages.find(
+  (target) => target.type === "page" && target.url.startsWith("http://127.0.0.1:8917/"),
+);
 assert(page, "Local desktop test page was not found.");
 
 const socket = new WebSocket(page.webSocketDebuggerUrl);
