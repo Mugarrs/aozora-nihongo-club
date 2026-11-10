@@ -135,7 +135,15 @@
   ============================================================
 -->
     <nav class="nav" id="nav">
-      <button class="admin-corner" id="adminCorner" title="Masuk sebagai admin" aria-label="Admin">
+      <button
+        type="button"
+        class="admin-corner"
+        id="adminCorner"
+        title="Masuk sebagai admin"
+        aria-label="Admin"
+        aria-haspopup="dialog"
+        aria-controls="adminModal"
+      >
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -1168,7 +1176,7 @@
           <div class="admin-pane hidden" data-apane="gallery">
             <div class="field">
               <label for="gFile">Pilih foto dari perangkat</label>
-              <input type="file" id="gFile" accept="image/*" multiple />
+              <input type="file" id="gFile" accept="image/*,.heic,.heif,.tif,.tiff,.svg,.jxl" multiple />
               <small class="upload-help">
                 Pilih satu atau beberapa foto. Setelah tersimpan, foto langsung muncul di galeri.
               </small>

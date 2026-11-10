@@ -411,6 +411,7 @@ svg {
 #preloader.done {
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
 }
 .pl-inner {
   text-align: center;
@@ -614,6 +615,10 @@ body.cursor-hover .cursor-ring {
 
 /* tombol admin pojok kiri atas */
 .admin-corner {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+  touch-action: manipulation;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -635,6 +640,10 @@ body.cursor-hover .cursor-ring {
   color: var(--teal-dark);
   border-color: var(--teal);
   transform: translateY(-1px);
+}
+.admin-corner:focus-visible {
+  outline: 3px solid var(--teal-dark);
+  outline-offset: 3px;
 }
 body.is-admin .admin-corner {
   color: #fff;

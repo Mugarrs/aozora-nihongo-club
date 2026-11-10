@@ -45,6 +45,9 @@ async function main() {
     /await window\.Store\.addGallery\(\{ src: photoData, caption \}\)[\s\S]*?await loadGallery\(\)/,
     "successful save must refresh visible gallery",
   );
+  assert.match(html, /id="adminCorner"[^>]*aria-controls="adminModal"/);
+  assert.match(appSource, /\$\("#adminCorner"\)\.addEventListener\("click"/);
+  assert.match(appSource, /File tidak bisa dibuka|Browser tidak bisa membaca format foto/);
 
   const working = makeStore();
   await working.addGallery({ src: "data:image/jpeg;base64,AA==", caption: "latihan" });

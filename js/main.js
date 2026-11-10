@@ -905,7 +905,11 @@
       };
       img.onerror = () => {
         URL.revokeObjectURL(objectUrl);
-        reject(new Error("File tidak bisa dibuka sebagai gambar."));
+        reject(
+          new Error(
+            "Browser tidak bisa membaca format foto ini. Pilih JPG, PNG, WebP, GIF, BMP, atau AVIF; HEIC/HEIF perlu dikonversi ke JPG.",
+          ),
+        );
       };
       img.src = objectUrl;
     });
@@ -945,12 +949,7 @@
       uploadResult.textContent = "Maksimal 12 foto sekali pilih.";
       return;
     }
-    const invalidFile = files.find((file) => !file.type.startsWith("image/"));
-    if (invalidFile) {
-      uploadResult.className = "form-msg bad";
-      uploadResult.textContent = "Pilih file gambar saja.";
-      return;
-    }
+    // MIME di Windows kadang kosong/salah; decoder gambar yang memutuskan apakah file bisa dibaca.
     const oversizedFile = files.find((file) => file.size > 12 * 1024 * 1024);
     if (oversizedFile) {
       uploadResult.className = "form-msg bad";
