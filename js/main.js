@@ -4,55 +4,90 @@
 (() => {
   "use strict";
 
-  const $  = (s, c = document) => c.querySelector(s);
+  // $ mengambil satu elemen; $$ di bawah mengambil semua elemen yang cocok.
+  const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+  // Nama kunci tersentral agar data perangkat konsisten dan mudah diberi versi.
   const LS = {
-    kana:  "aozora.kanaDone.v1",
-    fb:    "aozora.feedback.v1",
-    pv:    "aozora.private.v1",
+    kana: "aozora.kanaDone.v1",
+    fb: "aozora.feedback.v1",
+    pv: "aozora.private.v1",
     forum: "aozora.forum.v1",
-    gal:   "aozora.gallery.v1",
+    gal: "aozora.gallery.v1",
     theme: "aozora.theme",
-    device:"aozora.deviceId",
+    device: "aozora.deviceId",
   };
-  const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
-  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
-  const esc  = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  // load membaca JSON dengan aman; data rusak/missing kembali ke nilai default.
+  const load = (k, d) => {
+    try {
+      return JSON.parse(localStorage.getItem(k)) ?? d;
+    } catch {
+      return d;
+    }
+  };
+  // save menyimpan nilai sebagai JSON; kegagalan kuota tidak menghentikan halaman.
+  const save = (k, v) => {
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+    } catch {}
+  };
+  // esc mengubah karakter khusus sebelum teks pengguna dimasukkan ke HTML.
+  const esc = (s) =>
+    String(s).replace(
+      /[&<>"']/g,
+      (c) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[c],
+    );
 
   /* ---------- IKON SVG (pengganti emoji) ---------- */
   const I = {
-    saran:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.5.4.8 1 .8 1.6V17h5.6v-1.6c0-.6.3-1.2.8-1.6A6 6 0 0 0 12 3z"/></svg>',
-    kritik: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18 10l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
-    ide:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/></svg>',
-    apres:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.3-8.4C1.1 8.9 2.7 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.3 0 4.9 3.4 3.3 6.1C19 15.6 12 20 12 20z"/></svg>',
-    lain:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>',
-    star:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L7.5 16.8l.9-5L4.8 8.3l5-.7z"/></svg>',
-    heart:  on => '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.3-8.4C1.1 8.9 2.7 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.3 0 4.9 3.4 3.3 6.1C19 15.6 12 20 12 20z"/></svg>',
+    saran: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.5.4.8 1 .8 1.6V17h5.6v-1.6c0-.6.3-1.2.8-1.6A6 6 0 0 0 12 3z"/></svg>`,
+    kritik: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18 10l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>`,
+    ide: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/></svg>`,
+    apres: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.3-8.4C1.1 8.9 2.7 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.3 0 4.9 3.4 3.3 6.1C19 15.6 12 20 12 20z"/></svg>`,
+    lain: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>`,
+    star: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L7.5 16.8l.9-5L4.8 8.3l5-.7z"/></svg>`,
+    heart: (on) =>
+      '<svg viewBox="0 0 24 24" fill="' +
+      (on ? "currentColor" : "none") +
+      '" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.3-8.4C1.1 8.9 2.7 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.3 0 4.9 3.4 3.3 6.1C19 15.6 12 20 12 20z"/></svg>',
   };
+  // TYPES menyatukan label kategori dan SVG ikon untuk dropdown pesan.
   const TYPES = [
-    { v:"Saran",        ic:I.saran  },
-    { v:"Kritik",       ic:I.kritik },
-    { v:"Ide Kegiatan", ic:I.ide    },
-    { v:"Apresiasi",    ic:I.apres  },
-    { v:"Lainnya",      ic:I.lain   },
+    { v: "Saran", ic: I.saran },
+    { v: "Kritik", ic: I.kritik },
+    { v: "Ide Kegiatan", ic: I.ide },
+    { v: "Apresiasi", ic: I.apres },
+    { v: "Lainnya", ic: I.lain },
   ];
 
   /* ---------- TOAST ---------- */
   const toastWrap = $("#toastWrap");
+  // toast memberi pemberitahuan singkat tanpa memindahkan halaman.
   function toast(msg, ms = 2600) {
     const el = document.createElement("div");
     el.className = "toast";
     el.innerHTML = `<span class="dot"></span><span>${esc(msg)}</span>`;
     toastWrap.appendChild(el);
-    setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 320); }, ms);
+    setTimeout(() => {
+      el.classList.add("out");
+      setTimeout(() => el.remove(), 320);
+    }, ms);
   }
 
   /* ---------- TEMA ---------- */
   (function theme() {
-    const root = document.documentElement, body = document.body;
+    const root = document.documentElement,
+      body = document.body;
     const stored = localStorage.getItem(LS.theme);
     const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
-    const startDark = stored ? stored === "dark" : (root.classList.contains("dark-pre") || prefersDark);
+    const startDark = stored ? stored === "dark" : root.classList.contains("dark-pre") || prefersDark;
     body.classList.toggle("dark", startDark);
     root.classList.remove("dark-pre");
     $("#themeToggle")?.addEventListener("click", () => {
@@ -73,157 +108,322 @@
       p.className = "petal";
       const size = 9 + Math.random() * 10;
       p.style.left = Math.random() * 100 + "%";
-      p.style.width = size + "px"; p.style.height = size + "px";
+      p.style.width = size + "px";
+      p.style.height = size + "px";
       p.style.opacity = (0.5 + Math.random() * 0.5).toFixed(2);
-      p.style.animationDuration = (7 + Math.random() * 8).toFixed(1) + "s, " + (2 + Math.random() * 2).toFixed(1) + "s";
-      p.style.animationDelay = (-Math.random() * 12).toFixed(1) + "s, " + (-Math.random() * 3).toFixed(1) + "s";
+      p.style.animationDuration =
+        (7 + Math.random() * 8).toFixed(1) + "s, " + (2 + Math.random() * 2).toFixed(1) + "s";
+      p.style.animationDelay =
+        (-Math.random() * 12).toFixed(1) + "s, " + (-Math.random() * 3).toFixed(1) + "s";
       box.appendChild(p);
     }
   })();
 
   /* ---------- PRELOADER ---------- */
   (function preloader() {
-    const pre = $("#preloader"), bar = $("#plBar"), pct = $("#plPct"), tip = $("#plTip");
-    const tips = ["Menyiapkan kelas…", "Memuat hiragana…", "Memuat katakana…", "Menyusun kosakata…", "ようこそ！"];
-    let p = 0, done = false;
+    const pre = $("#preloader"),
+      bar = $("#plBar"),
+      pct = $("#plPct"),
+      tip = $("#plTip");
+    const tips = [
+      "Menyiapkan kelas…",
+      "Memuat hiragana…",
+      "Memuat katakana…",
+      "Menyusun kosakata…",
+      "ようこそ！",
+    ];
+    let p = 0,
+      done = false;
     const t = setInterval(() => {
       p += Math.random() * 22 + 14;
-      if (p >= 100) { p = 100; clearInterval(t); finish(); }
-      bar.style.width = p + "%"; pct.textContent = Math.floor(p);
+      if (p >= 100) {
+        p = 100;
+        clearInterval(t);
+        finish();
+      }
+      bar.style.width = p + "%";
+      pct.textContent = Math.floor(p);
       tip.textContent = tips[Math.min(tips.length - 1, Math.floor(p / 22))];
     }, 110);
+    // finish menutup preloader dan melepas class locked setelah animasi selesai.
     function finish() {
-      if (done) return; done = true;
-      setTimeout(() => { pre.classList.add("done"); document.body.classList.remove("locked"); revealInit(); }, 200);
+      if (done) return;
+      done = true;
+      setTimeout(() => {
+        pre.classList.add("done");
+        document.body.classList.remove("locked");
+        revealInit();
+      }, 200);
     }
-    // jangan menunggu terlalu lama di HP
+    // Batas waktu memastikan pengunjung HP tidak tertahan di layar loading.
     setTimeout(finish, 2200);
   })();
 
   /* ---------- CURSOR ---------- */
   (function cursor() {
     if (matchMedia("(pointer:coarse)").matches) return;
-    const dot = $("#cursorDot"), ring = $("#cursorRing");
-    let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
-    addEventListener("mousemove", e => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx}px,${my}px)`; });
-    (function loop() { rx += (mx - rx) * .18; ry += (my - ry) * .18; ring.style.transform = `translate(${rx}px,${ry}px)`; requestAnimationFrame(loop); })();
+    const dot = $("#cursorDot"),
+      ring = $("#cursorRing");
+    let mx = innerWidth / 2,
+      my = innerHeight / 2,
+      rx = mx,
+      ry = my;
+    addEventListener("mousemove", (e) => {
+      mx = e.clientX;
+      my = e.clientY;
+      dot.style.transform = `translate(${mx}px,${my}px)`;
+    });
+    (function loop() {
+      rx += (mx - rx) * 0.18;
+      ry += (my - ry) * 0.18;
+      ring.style.transform = `translate(${rx}px,${ry}px)`;
+      requestAnimationFrame(loop);
+    })();
     const sel = "a,button,.kana-cell,.vocab-card,.chip,.tab,input,textarea,.select-btn,.gallery-item";
-    addEventListener("mouseover", e => { if (e.target.closest(sel)) document.body.classList.add("cursor-hover"); });
-    addEventListener("mouseout",  e => { if (e.target.closest(sel)) document.body.classList.remove("cursor-hover"); });
+    addEventListener("mouseover", (e) => {
+      if (e.target.closest(sel)) document.body.classList.add("cursor-hover");
+    });
+    addEventListener("mouseout", (e) => {
+      if (e.target.closest(sel)) document.body.classList.remove("cursor-hover");
+    });
   })();
 
   /* ---------- ROUTER HALAMAN ----------
      Satu panel aktif seperti aplikasi. Hash lama tetap diarahkan ke subtab Belajar.
      History menyimpan route, sehingga tombol Back/Forward memulihkan panel. */
-  const nav=$("#nav"), burger=$("#navBurger"), navLinks=$("#navLinks");
-  const progress=$("#scrollProgress"), toTop=$("#toTop");
-  const pagePanels=$$("[data-page]"), learnPanes=$$("[data-learn]");
-  const routes=new Map([["home","home"],["belajar","belajar"],["kana","belajar"],["kuis","belajar"],["kotd","belajar"],["kosakata","belajar"],["kegiatan","kegiatan"],["dokumentasi","dokumentasi"],["pesan","pesan"]]);
-  let currentPage="home", currentLearn="kana";
-  function showRoute(route,updateHistory=true){
-    const id=String(route||"home").replace(/^#/,"");
-    const page=routes.get(id)||"home";
-    if(page==="belajar"&&learnPanes.some(p=>p.id===id))currentLearn=id;
-    currentPage=page;
-    pagePanels.forEach(panel=>{
-      const active=panel.dataset.page===page;
-      panel.classList.toggle("hidden",!active);panel.setAttribute("aria-hidden",String(!active));
-      if(active){panel.classList.remove("page-enter");void panel.offsetWidth;panel.classList.add("page-enter");panel.querySelectorAll(".reveal").forEach(el=>el.classList.add("in"));}
+  const nav = $("#nav"),
+    burger = $("#navBurger"),
+    navLinks = $("#navLinks");
+  const progress = $("#scrollProgress"),
+    toTop = $("#toTop");
+  const pagePanels = $$("[data-page]"),
+    learnPanes = $$("[data-learn]");
+  // routes menerjemahkan hash URL ke panel; subfitur belajar tetap dalam satu panel.
+  const routes = new Map([
+    ["home", "home"],
+    ["belajar", "belajar"],
+    ["kana", "belajar"],
+    ["kuis", "belajar"],
+    ["kotd", "belajar"],
+    ["kosakata", "belajar"],
+    ["kegiatan", "kegiatan"],
+    ["dokumentasi", "dokumentasi"],
+    ["pesan", "pesan"],
+  ]);
+  let currentPage = "home",
+    currentLearn = "kana";
+  // showRoute memilih panel, menyelaraskan menu/hash, dan menjaga riwayat browser.
+  function showRoute(route, updateHistory = true) {
+    const id = String(route || "home").replace(/^#/, "");
+    const page = routes.get(id) || "home";
+    if (page === "belajar" && learnPanes.some((p) => p.id === id)) currentLearn = id;
+    currentPage = page;
+    pagePanels.forEach((panel) => {
+      const active = panel.dataset.page === page;
+      panel.classList.toggle("hidden", !active);
+      panel.setAttribute("aria-hidden", String(!active));
+      if (active) {
+        panel.classList.remove("page-enter");
+        void panel.offsetWidth;
+        panel.classList.add("page-enter");
+        panel.querySelectorAll(".reveal").forEach((el) => el.classList.add("in"));
+      }
     });
-    learnPanes.forEach(p=>{const active=p.id===currentLearn;p.classList.toggle("hidden",!active);p.setAttribute("aria-hidden",String(!active));});
-    $$(".page-subnav a").forEach(a=>a.classList.toggle("active",a.hash==="#"+currentLearn));
-    $$("#navLinks a,#mobileDock a").forEach(a=>{const active=routes.get(a.hash.slice(1))===page;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
-    if(updateHistory&&location.hash!=="#"+id)window.history.pushState({route:id},"","#"+id);
-    window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
-    navLinks?.classList.remove("open");burger?.classList.remove("open");
-    if(page==="dokumentasi")galleryAuto(true);else{clearInterval(galleryTimer);clearTimeout(galleryResumeTimer);}
-    setTimeout(()=>pagePanels.forEach(p=>p.classList.remove("page-enter")),280);onScroll();
+    learnPanes.forEach((p) => {
+      const active = p.id === currentLearn;
+      p.classList.toggle("hidden", !active);
+      p.setAttribute("aria-hidden", String(!active));
+    });
+    $$(".page-subnav a").forEach((a) => a.classList.toggle("active", a.hash === "#" + currentLearn));
+    $$("#navLinks a,#mobileDock a").forEach((a) => {
+      const active = routes.get(a.hash.slice(1)) === page;
+      a.classList.toggle("active", active);
+      if (active) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+    if (updateHistory && location.hash !== "#" + id)
+      window.history.pushState({ route: id }, "", "#" + id);
+    window.scrollTo({
+      top: 0,
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+    });
+    navLinks?.classList.remove("open");
+    burger?.classList.remove("open");
+    if (page === "dokumentasi") galleryAuto(true);
+    else {
+      clearInterval(galleryTimer);
+      clearTimeout(galleryResumeTimer);
+    }
+    setTimeout(() => pagePanels.forEach((p) => p.classList.remove("page-enter")), 280);
+    onScroll();
   }
-  function onScroll(){nav.classList.toggle("scrolled",scrollY>12);toTop.classList.toggle("show",scrollY>500);const max=document.documentElement.scrollHeight-innerHeight;progress.style.width=(max>0?scrollY/max*100:0)+"%";}
-  addEventListener("scroll",onScroll,{passive:true});onScroll();
-  toTop.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
-  document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.hash.slice(1);if(!routes.has(id))return;e.preventDefault();showRoute(id);});
-  addEventListener("popstate",()=>showRoute(location.hash||"#home",false));
+  // onScroll hanya memperbarui indikator visual; pilihan panel ditentukan router.
+  function onScroll() {
+    nav.classList.toggle("scrolled", scrollY > 12);
+    toTop.classList.toggle("show", scrollY > 500);
+    const max = document.documentElement.scrollHeight - innerHeight;
+    progress.style.width = (max > 0 ? (scrollY / max) * 100 : 0) + "%";
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+  toTop.addEventListener("click", () => scrollTo({ top: 0, behavior: "smooth" }));
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.hash.slice(1);
+    if (!routes.has(id)) return;
+    e.preventDefault();
+    showRoute(id);
+  });
+  addEventListener("popstate", () => showRoute(location.hash || "#home", false));
   /* Scroll reveal dinonaktifkan di panel: tidak ada elemen tertinggal transparan saat scroll. */
-  function revealInit(){document.querySelectorAll("[data-page]:not(.hidden) .reveal").forEach(el=>el.classList.add("in"));}
-  addEventListener("load",revealInit);
+  // revealInit memastikan isi panel pertama tidak transparan setelah preloader hilang.
+  function revealInit() {
+    document
+      .querySelectorAll("[data-page]:not(.hidden) .reveal")
+      .forEach((el) => el.classList.add("in"));
+  }
+  addEventListener("load", revealInit);
+
+  /* Penjelasan blok di atas: toast, tema, sakura, preloader, dan kursor. */
 
   /* ---------- SUARA (cepat, tanpa delay) ---------- */
-  let jaVoice = null, voicesReady = false;
+  let jaVoice = null,
+    voicesReady = false;
+  // pickVoice memilih voice Jepang yang dipakai bersama oleh semua tombol suara.
   function pickVoice() {
     const vs = speechSynthesis.getVoices() || [];
     if (!vs.length) return;
-    jaVoice = vs.find(v => /^ja[-_]?JP/i.test(v.lang)) || vs.find(v => /japanese|日本語/i.test(v.name)) || null;
+    jaVoice =
+      vs.find((v) => /^ja[-_]?JP/i.test(v.lang)) ||
+      vs.find((v) => /japanese|日本語/i.test(v.name)) ||
+      null;
     voicesReady = true;
   }
   if ("speechSynthesis" in window) {
     pickVoice();
     speechSynthesis.onvoiceschanged = pickVoice;
     // "hangatkan" mesin suara supaya klik pertama tidak delay
-    try { const w = new SpeechSynthesisUtterance(" "); w.volume = 0; w.lang = "ja-JP"; speechSynthesis.speak(w); speechSynthesis.cancel(); } catch {}
+    try {
+      const w = new SpeechSynthesisUtterance(" ");
+      w.volume = 0;
+      w.lang = "ja-JP";
+      speechSynthesis.speak(w);
+      speechSynthesis.cancel();
+    } catch {}
   }
+  // speak meminta Web Speech API membacakan teks Jepang bila suara tersedia.
   function speak(text) {
-    if (!("speechSynthesis" in window)) { toast("Perangkat ini belum mendukung suara"); return; }
+    if (!("speechSynthesis" in window)) {
+      toast("Perangkat ini belum mendukung suara");
+      return;
+    }
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "ja-JP"; u.rate = .95; u.pitch = 1; u.volume = 1;
+      u.lang = "ja-JP";
+      u.rate = 0.95;
+      u.pitch = 1;
+      u.volume = 1;
       if (jaVoice) u.voice = jaVoice;
       speechSynthesis.speak(u);
-    } catch { toast("Gagal memutar suara"); }
+    } catch {
+      toast("Gagal memutar suara");
+    }
   }
 
   /* =======================================================
      KANA
      ======================================================= */
-  let script = "hiragana", kanaRow = "Semua", kanaQuery = "";
+  let script = "hiragana",
+    kanaRow = "Semua",
+    kanaQuery = "";
   let kanaDone = load(LS.kana, {});
-  const grid = $("#kanaGroups"), chips = $("#kanaChips"), kanaSearch = $("#kanaSearch");
-  const data = () => script === "hiragana" ? HIRAGANA : KATAKANA;
-  const GROUP_ORDER = ["Vokal","K","S","T","N","H","M","Y","R","W","Dakuon","Handakuon","Youon"];
-  const GROUP_TITLE = { Vokal:"Vokal", Dakuon:"Dakuon", Handakuon:"Handakuon", Youon:"Youon" };
+  const grid = $("#kanaGroups"),
+    chips = $("#kanaChips"),
+    kanaSearch = $("#kanaSearch");
+  const data = () => (script === "hiragana" ? HIRAGANA : KATAKANA);
+  const GROUP_ORDER = [
+    "Vokal",
+    "K",
+    "S",
+    "T",
+    "N",
+    "H",
+    "M",
+    "Y",
+    "R",
+    "W",
+    "Dakuon",
+    "Handakuon",
+    "Youon",
+  ];
+  const GROUP_TITLE = {
+    Vokal: "Vokal",
+    Dakuon: "Dakuon",
+    Handakuon: "Handakuon",
+    Youon: "Youon",
+  };
 
+  // buildChips membuat filter baris kana dari data script yang sedang aktif.
   function buildChips() {
-    const rows = ["Semua", ...new Set(data().map(x => x.row))];
-    chips.innerHTML = rows.map(r => `<button class="chip${r === kanaRow ? " active" : ""}" data-row="${r}">${r}</button>`).join("");
-    chips.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
-      kanaRow = c.dataset.row;
-      chips.querySelectorAll(".chip").forEach(x => x.classList.toggle("active", x === c));
-      renderKana();
-    }));
+    const rows = ["Semua", ...new Set(data().map((x) => x.row))];
+    chips.innerHTML = rows
+      .map((r) => `<button class="chip${r === kanaRow ? " active" : ""}" data-row="${r}">${r}</button>`)
+      .join("");
+    chips.querySelectorAll(".chip").forEach((c) =>
+      c.addEventListener("click", () => {
+        kanaRow = c.dataset.row;
+        chips.querySelectorAll(".chip").forEach((x) => x.classList.toggle("active", x === c));
+        renderKana();
+      }),
+    );
   }
+  // matchesKana menentukan apakah satu huruf cocok dengan romaji dan baris filter.
   function matchesKana(x) {
     if (kanaRow !== "Semua" && x.row !== kanaRow) return false;
     if (!kanaQuery) return true;
     const q = kanaQuery.toLowerCase();
     return x.k.toLowerCase().includes(q) || x.r.toLowerCase().includes(q);
   }
-  const cellHTML = x => `<button class="kana-cell${kanaDone[script + ":" + x.k] ? " done" : ""}" data-k="${x.k}" data-r="${x.r}" data-row="${x.row}">
+  const cellHTML = (
+    x,
+  ) => `<button class="kana-cell${kanaDone[script + ":" + x.k] ? " done" : ""}" data-k="${x.k}" data-r="${x.r}" data-row="${x.row}">
       <span class="glyph">${x.k}</span><span class="rom">${x.r}</span></button>`;
 
-  const ACC_ARROW = '<svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+  const ACC_ARROW =
+    '<svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 
+  // renderKana membangun kelompok huruf dari data yang cocok dengan filter aktif.
   function renderKana() {
     const list = data().filter(matchesKana);
-    if (!list.length) { grid.innerHTML = `<div class="kana-empty">Tidak ada huruf yang cocok. Coba kata kunci lain.</div>`; updateKanaProgress(); return; }
-    const rows = [...new Set(list.map(x => x.row))].sort((a, b) => GROUP_ORDER.indexOf(a) - GROUP_ORDER.indexOf(b));
+    if (!list.length) {
+      grid.innerHTML = `<div class="kana-empty">Tidak ada huruf yang cocok. Coba kata kunci lain.</div>`;
+      updateKanaProgress();
+      return;
+    }
+    const rows = [...new Set(list.map((x) => x.row))].sort(
+      (a, b) => GROUP_ORDER.indexOf(a) - GROUP_ORDER.indexOf(b),
+    );
     const autoOpen = !!kanaQuery || kanaRow !== "Semua";
-    grid.innerHTML = rows.map(row => {
-      const items = list.filter(x => x.row === row);
-      const range = items.length > 1 ? `${items[0].k} – ${items[items.length - 1].k}` : items[0].k;
-      const title = GROUP_TITLE[row] || `Baris ${row}`;
-      const done = items.filter(x => kanaDone[script + ":" + x.k]).length;
-      return `<section class="kana-group acc${autoOpen ? " open" : ""}" data-row="${row}">
+    grid.innerHTML = rows
+      .map((row) => {
+        const items = list.filter((x) => x.row === row);
+        const range = items.length > 1 ? `${items[0].k} – ${items[items.length - 1].k}` : items[0].k;
+        const title = GROUP_TITLE[row] || `Baris ${row}`;
+        const done = items.filter((x) => kanaDone[script + ":" + x.k]).length;
+        return `<section class="kana-group acc${autoOpen ? " open" : ""}" data-row="${row}">
         <div class="kana-group-head acc-head">
           <h3>${title}</h3><span class="range">${range}</span><span class="cnt">${done}/${items.length} hafal</span>
           ${ACC_ARROW}
         </div>
         <div class="acc-body"><div class="kana-grid" data-built=""></div></div>
       </section>`;
-    }).join("");
+      })
+      .join("");
     // isi grid hanya saat dibuka (hemat performa)
-    grid.querySelectorAll(".kana-group").forEach(sec => {
-      const items = list.filter(x => x.row === sec.dataset.row);
+    grid.querySelectorAll(".kana-group").forEach((sec) => {
+      const items = list.filter((x) => x.row === sec.dataset.row);
       const body = sec.querySelector(".kana-grid");
       const build = () => {
         if (body.dataset.built) return;
@@ -249,68 +449,119 @@
     });
     updateKanaProgress();
   }
+  // updateKanaProgress menghitung huruf bertanda dan memperbarui progress belajar.
   function updateKanaProgress() {
     const total = data().length;
-    const done = data().filter(x => kanaDone[script + ":" + x.k]).length;
-    $("#kanaTotal").textContent = total; $("#kanaDoneCount").textContent = done;
+    const done = data().filter((x) => kanaDone[script + ":" + x.k]).length;
+    $("#kanaTotal").textContent = total;
+    $("#kanaDoneCount").textContent = done;
     $("#kanaBar").style.width = total ? (done / total) * 100 + "%" : "0%";
   }
-  $$(".tab").forEach(t => t.addEventListener("click", () => {
-    script = t.dataset.script;
-    $$(".tab").forEach(x => x.classList.toggle("active", x === t));
-    kanaRow = "Semua"; kanaQuery = ""; kanaSearch.value = "";
-    buildChips(); renderKana();
-  }));
-  kanaSearch.addEventListener("input", e => { kanaQuery = e.target.value.trim(); renderKana(); });
+  $$(".tab").forEach((t) =>
+    t.addEventListener("click", () => {
+      script = t.dataset.script;
+      $$(".tab").forEach((x) => x.classList.toggle("active", x === t));
+      kanaRow = "Semua";
+      kanaQuery = "";
+      kanaSearch.value = "";
+      buildChips();
+      renderKana();
+    }),
+  );
+  kanaSearch.addEventListener("input", (e) => {
+    kanaQuery = e.target.value.trim();
+    renderKana();
+  });
   $("#kanaReset").addEventListener("click", () => {
-    Object.keys(kanaDone).forEach(k => { if (k.startsWith(script + ":")) delete kanaDone[k]; });
-    save(LS.kana, kanaDone); renderKana(); toast("Progres " + script + " direset");
+    Object.keys(kanaDone).forEach((k) => {
+      if (k.startsWith(script + ":")) delete kanaDone[k];
+    });
+    save(LS.kana, kanaDone);
+    renderKana();
+    toast("Progres " + script + " direset");
   });
 
   const pop = $("#kanaPop");
-  let popKey = null, popData = null;
+  let popKey = null,
+    popData = null;
+  // openKanaPop menampilkan detail satu huruf kana yang dipilih.
   function openKanaPop(ds) {
-    popData = ds; popKey = script + ":" + ds.k;
-    $("#popGlyph").textContent = ds.k; $("#popRom").textContent = ds.r;
+    popData = ds;
+    popKey = script + ":" + ds.k;
+    $("#popGlyph").textContent = ds.k;
+    $("#popRom").textContent = ds.r;
     $("#popRow").textContent = "Baris " + ds.row;
-    $("#popHint").innerHTML = `Cara baca: <b>${ds.k}</b> dilafalkan <b>"${ds.r}"</b>. Klik <b>Dengar</b> buat contoh suara, lalu <b>Tandai Hafal</b> kalau sudah ingat.`;
-    syncPopToggle(); pop.classList.add("open");
+    $("#popHint").innerHTML = `Cara baca: <b>${ds.k}</b> dilafalkan <b>"${ds.r}"</b>.
+       Klik <b>Dengar</b> buat contoh suara, lalu
+       <b>Tandai Hafal</b> kalau sudah ingat.`;
+    syncPopToggle();
+    pop.classList.add("open");
   }
-  function syncPopToggle() { $("#popToggle").textContent = kanaDone[popKey] ? "Sudah Hafal" : "Tandai Hafal"; }
+  // syncPopToggle menyamakan tombol popup dengan status belajar yang tersimpan.
+  function syncPopToggle() {
+    $("#popToggle").textContent = kanaDone[popKey] ? "Sudah Hafal" : "Tandai Hafal";
+  }
   $("#popClose").addEventListener("click", () => pop.classList.remove("open"));
-  pop.addEventListener("click", e => { if (e.target === pop) pop.classList.remove("open"); });
+  pop.addEventListener("click", (e) => {
+    if (e.target === pop) pop.classList.remove("open");
+  });
   $("#popSpeak").addEventListener("click", () => speak(popData.k));
   $("#popToggle").addEventListener("click", () => {
-    if (kanaDone[popKey]) delete kanaDone[popKey]; else kanaDone[popKey] = true;
-    save(LS.kana, kanaDone); syncPopToggle(); renderKana();
+    if (kanaDone[popKey]) delete kanaDone[popKey];
+    else kanaDone[popKey] = true;
+    save(LS.kana, kanaDone);
+    syncPopToggle();
+    renderKana();
   });
-  addEventListener("keydown", e => { if (e.key === "Escape") { pop.classList.remove("open"); closeAdmin(); } });
+  addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      pop.classList.remove("open");
+      closeAdmin();
+    }
+  });
+
+  /* Selesai: router mengatur panel; tombol navigasi mengubah route/hash. */
 
   /* =======================================================
      KOSAKATA
      ======================================================= */
-  const vGrid = $("#vocabGrid"), vChips = $("#vocabChips"), vSearch = $("#vocabSearch");
-  let vCat = "Semua", vQuery = "";
+  const vGrid = $("#vocabGrid"),
+    vChips = $("#vocabChips"),
+    vSearch = $("#vocabSearch");
+  let vCat = "Semua",
+    vQuery = "";
+  // buildVocabChips membentuk tombol kategori yang benar-benar ada di data kata.
   function buildVocabChips() {
-    const cats = ["Semua", ...new Set(KOSAKATA.map(x => x.kat))];
-    vChips.innerHTML = cats.map(c => `<button class="chip${c === vCat ? " active" : ""}" data-cat="${c}">${c}</button>`).join("");
-    vChips.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
-      vCat = c.dataset.cat; vChips.querySelectorAll(".chip").forEach(x => x.classList.toggle("active", x === c)); renderVocab();
-    }));
+    const cats = ["Semua", ...new Set(KOSAKATA.map((x) => x.kat))];
+    vChips.innerHTML = cats
+      .map((c) => `<button class="chip${c === vCat ? " active" : ""}" data-cat="${c}">${c}</button>`)
+      .join("");
+    vChips.querySelectorAll(".chip").forEach((c) =>
+      c.addEventListener("click", () => {
+        vCat = c.dataset.cat;
+        vChips.querySelectorAll(".chip").forEach((x) => x.classList.toggle("active", x === c));
+        renderVocab();
+      }),
+    );
   }
+  // renderVocab membangun hasil pencarian kosakata per kategori.
   function renderVocab() {
     const q = vQuery.toLowerCase();
-    const list = KOSAKATA.filter(x => {
+    const list = KOSAKATA.filter((x) => {
       if (vCat !== "Semua" && x.kat !== vCat) return false;
       if (!q) return true;
       return x.jp.includes(vQuery) || x.kana.toLowerCase().includes(q) || x.id.toLowerCase().includes(q);
     });
-    if (!list.length) { vGrid.innerHTML = `<div class="kana-empty" style="grid-column:1/-1">Kosakata tidak ditemukan.</div>`; return; }
-    const cats = [...new Set(list.map(x => x.kat))];
+    if (!list.length) {
+      vGrid.innerHTML = `<div class="kana-empty" style="grid-column:1/-1">Kosakata tidak ditemukan.</div>`;
+      return;
+    }
+    const cats = [...new Set(list.map((x) => x.kat))];
     const autoOpen = !!vQuery || vCat !== "Semua";
-    vGrid.innerHTML = cats.map(cat => {
-      const items = list.filter(x => x.kat === cat);
-      return `<section class="vocab-group acc${autoOpen ? " open" : ""}" data-cat="${esc(cat)}">
+    vGrid.innerHTML = cats
+      .map((cat) => {
+        const items = list.filter((x) => x.kat === cat);
+        return `<section class="vocab-group acc${autoOpen ? " open" : ""}" data-cat="${esc(cat)}">
         <div class="vocab-head acc-head">
           <span class="vocab-dot"></span>
           <h3>${esc(cat)}</h3>
@@ -319,13 +570,16 @@
         </div>
         <div class="acc-body"><div class="vocab-grid" data-built=""></div></div>
       </section>`;
-    }).join("");
-    vGrid.querySelectorAll(".vocab-group").forEach(sec => {
-      const items = list.filter(x => x.kat === sec.dataset.cat);
+      })
+      .join("");
+    vGrid.querySelectorAll(".vocab-group").forEach((sec) => {
+      const items = list.filter((x) => x.kat === sec.dataset.cat);
       const body = sec.querySelector(".vocab-grid");
       const build = () => {
         if (body.dataset.built) return;
-        body.innerHTML = items.map(x => `
+        body.innerHTML = items
+          .map(
+            (x) => `
           <article class="vocab-card">
             <span class="cat">${esc(x.kat)}</span>
             <div class="jp">${esc(x.jp)}</div>
@@ -334,12 +588,19 @@
             <div class="foot"><small>${esc(x.kat)}</small>
               <button class="speak" data-speak="${esc(x.jp)}" aria-label="Dengar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12"/></svg></button>
             </div>
-          </article>`).join("");
+          </article>`,
+          )
+          .join("");
         body.querySelectorAll(".vocab-card").forEach((card, i) => {
           card.classList.add("fade-up");
           card.style.animationDelay = Math.min(i * 0.03, 0.45) + "s";
         });
-        body.querySelectorAll(".speak").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); speak(b.dataset.speak); }));
+        body.querySelectorAll(".speak").forEach((b) =>
+          b.addEventListener("click", (e) => {
+            e.stopPropagation();
+            speak(b.dataset.speak);
+          }),
+        );
         body.dataset.built = "1";
       };
       if (sec.classList.contains("open")) build();
@@ -354,59 +615,139 @@
       g.style.animationDelay = Math.min(i * 0.05, 0.5) + "s";
     });
   }
-  vSearch.addEventListener("input", e => { vQuery = e.target.value.trim(); renderVocab(); });
+  vSearch.addEventListener("input", (e) => {
+    vQuery = e.target.value.trim();
+    renderVocab();
+  });
+
+  /* Selesai: render kana, filter, pencarian, progress, dan popup huruf. */
 
   /* =======================================================
      FORUM INFO (bisa diubah admin)
      ======================================================= */
   const DEFAULT_FORUM = window.Store.DEFAULT_FORUM;
   let forum = Object.assign({}, DEFAULT_FORUM);
+  // renderForum menyalin data pertemuan dari Store ke elemen HTML.
   function renderForum() {
     $("#forumHari").textContent = forum.hari;
     $("#forumTempat").textContent = forum.tempat;
     $("#forumWaktu").textContent = forum.waktu;
     $("#forumCatatan").textContent = forum.catatan;
   }
-  async function loadForum() { try { forum = await window.Store.getForum(); } catch (e) {} renderForum(); }
+  // loadForum mengambil pengumuman pertemuan; data default tetap tampil bila gagal.
+  async function loadForum() {
+    try {
+      forum = await window.Store.getForum();
+    } catch (e) {}
+    renderForum();
+  }
 
   /* =======================================================
      SLIDER TENTANG
      ======================================================= */
   const SLIDES = [
-    { e:"Tentang kami", t:"Bukan kelas yang tegang", p:"Di Aozora, kamu nggak harus sudah bisa bahasa Jepang buat mulai. Kita belajar santai, banyak ketawa, dan saling bantu. Yang penting berani coba." },
-    { e:"Cara belajar", t:"Satu huruf sehari, cukup", p:"Kita mulai dari hiragana & katakana, lanjut ke kosakata yang sering dipakai. Ada juga latihan ngobrol biar makin percaya diri." },
-    { e:"Siapa saja boleh", t:"Terbuka buat semua jurusan", p:"Mau dari TKJ, RPL, atau jurusan lain — semua boleh ikut. Nggak ada syarat khusus, cuma niat buat belajar bareng." },
-    { e:"Suasana", t:"Kadang belajar, kadang seru-seruan", p:"Sesekali kita bikin origami, kaligrafi, dengar lagu Jepang, atau sekadar ngobrol soal anime. Belajar jadi nggak membosankan." },
-    { e:"Pesan pengurus", t:"Jangan takut salah", p:"Salah itu bagian dari belajar. Justru dari salah kita cepat paham. Jadi, berani tampil dan tanya, ya!" },
+    {
+      e: "Tentang kami",
+      t: "Bukan kelas yang tegang",
+      p: "Di Aozora, kamu nggak harus sudah bisa bahasa Jepang buat mulai. Kita belajar santai, banyak ketawa, dan saling bantu. Yang penting berani coba.",
+    },
+    {
+      e: "Cara belajar",
+      t: "Satu huruf sehari, cukup",
+      p: "Kita mulai dari hiragana & katakana, lanjut ke kosakata yang sering dipakai. Ada juga latihan ngobrol biar makin percaya diri.",
+    },
+    {
+      e: "Siapa saja boleh",
+      t: "Terbuka buat semua jurusan",
+      p: "Mau dari TKJ, RPL, atau jurusan lain — semua boleh ikut. Nggak ada syarat khusus, cuma niat buat belajar bareng.",
+    },
+    {
+      e: "Suasana",
+      t: "Kadang belajar, kadang seru-seruan",
+      p: "Sesekali kita bikin origami, kaligrafi, dengar lagu Jepang, atau sekadar ngobrol soal anime. Belajar jadi nggak membosankan.",
+    },
+    {
+      e: "Pesan pengurus",
+      t: "Jangan takut salah",
+      p: "Salah itu bagian dari belajar. Justru dari salah kita cepat paham. Jadi, berani tampil dan tanya, ya!",
+    },
   ];
+  // slider mengisi isi slideshow dan menangani panah, titik, serta jeda otomatis.
   (function slider() {
-    const wrap = $("#aboutSlides"), dots = $("#slideDots");
+    const wrap = $("#aboutSlides"),
+      dots = $("#slideDots");
     if (!wrap) return;
-    wrap.innerHTML = SLIDES.map(s => `<div class="slide"><span class="s-eyebrow">${s.e}</span><h3>${s.t}</h3><p>${s.p}</p></div>`).join("");
-    dots.innerHTML = SLIDES.map((_, i) => `<button data-i="${i}" class="${i === 0 ? "on" : ""}" aria-label="Slide ${i + 1}"></button>`).join("");
-    let idx = 0, timer;
-    const go = i => { idx = (i + SLIDES.length) % SLIDES.length; wrap.style.transform = `translateX(-${idx * 100}%)`;
-      dots.querySelectorAll("button").forEach((b, j) => b.classList.toggle("on", j === idx)); };
-    const next = () => go(idx + 1), prev = () => go(idx - 1);
-    const restart = () => { clearInterval(timer); if (!matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(next, 5200); };
-    $("#slideNext").addEventListener("click", () => { next(); restart(); });
-    $("#slidePrev").addEventListener("click", () => { prev(); restart(); });
-    dots.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { go(+b.dataset.i); restart(); }));
+    wrap.innerHTML = SLIDES.map(
+      (s) =>
+        `<div class="slide"><span class="s-eyebrow">${s.e}</span><h3>${s.t}</h3><p>${s.p}</p></div>`,
+    ).join("");
+    dots.innerHTML = SLIDES.map(
+      (_, i) =>
+        `<button data-i="${i}" class="${i === 0 ? "on" : ""}" aria-label="Slide ${i + 1}"></button>`,
+    ).join("");
+    let idx = 0,
+      timer;
+    const go = (i) => {
+      idx = (i + SLIDES.length) % SLIDES.length;
+      wrap.style.transform = `translateX(-${idx * 100}%)`;
+      dots.querySelectorAll("button").forEach((b, j) => b.classList.toggle("on", j === idx));
+    };
+    const next = () => go(idx + 1),
+      prev = () => go(idx - 1);
+    const restart = () => {
+      clearInterval(timer);
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(next, 5200);
+    };
+    $("#slideNext").addEventListener("click", () => {
+      next();
+      restart();
+    });
+    $("#slidePrev").addEventListener("click", () => {
+      prev();
+      restart();
+    });
+    dots.querySelectorAll("button").forEach((b) =>
+      b.addEventListener("click", () => {
+        go(+b.dataset.i);
+        restart();
+      }),
+    );
     restart();
   })();
+
+  /* Selesai: slider kegiatan berisi data yang ditulis pada array SLIDES. */
 
   /* =======================================================
      GALERI — strip geser; jeda otomatis saat disentuh.
      ScrollLeft bergerak perlahan, berbalik di kedua ujung, dan berhenti untuk interaksi.
      ======================================================= */
   let gallery = [];
-  const gGrid = $("#galleryGrid"), gViewport = $("#galleryViewport");
-  let galleryTimer = 0, galleryDir = 1, galleryPaused = false, galleryManualPause = false, galleryResumeTimer = 0;
-  const galleryToggle=$("#galleryToggle");
-  function paintGalleryToggle(){if(galleryToggle){galleryToggle.textContent=galleryManualPause?"Gerakkan galeri":"Jeda gerakan";galleryToggle.setAttribute("aria-pressed",String(galleryManualPause));}}
+  const gGrid = $("#galleryGrid"),
+    gViewport = $("#galleryViewport");
+  let galleryTimer = 0,
+    galleryDir = 1,
+    galleryPaused = false,
+    galleryManualPause = false,
+    galleryResumeTimer = 0;
+  const galleryToggle = $("#galleryToggle");
+  // paintGalleryToggle mengubah teks dan aria-pressed sesuai status gerak galeri.
+  function paintGalleryToggle() {
+    if (galleryToggle) {
+      galleryToggle.textContent = galleryManualPause ? "Gerakkan galeri" : "Jeda gerakan";
+      galleryToggle.setAttribute("aria-pressed", String(galleryManualPause));
+    }
+  }
+  // galleryAuto menggerakkan strip pelan dan membalik arah di ujung viewport.
   function galleryAuto(on) {
     clearInterval(galleryTimer);
-    if (!on || document.hidden || galleryManualPause || currentPage!=="dokumentasi" || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (
+      !on ||
+      document.hidden ||
+      galleryManualPause ||
+      currentPage !== "dokumentasi" ||
+      matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     galleryPaused = false;
     galleryTimer = setInterval(() => {
       if (!gViewport || gViewport.scrollWidth <= gViewport.clientWidth + 4) return;
@@ -416,103 +757,290 @@
       gViewport.scrollLeft += galleryDir * 0.8;
     }, 32);
   }
+  // pauseGallery menghentikan gerak saat orang menyentuh, fokus, atau menggeser foto.
   function pauseGallery(resume = false) {
-    galleryPaused = true; clearInterval(galleryTimer); clearTimeout(galleryResumeTimer);
+    galleryPaused = true;
+    clearInterval(galleryTimer);
+    clearTimeout(galleryResumeTimer);
     if (resume && !galleryManualPause) galleryResumeTimer = setTimeout(() => galleryAuto(true), 1800);
   }
-  galleryToggle?.addEventListener("click",()=>{galleryManualPause=!galleryManualPause;clearInterval(galleryTimer);clearTimeout(galleryResumeTimer);if(!galleryManualPause)galleryAuto(true);paintGalleryToggle();});
+  galleryToggle?.addEventListener("click", () => {
+    galleryManualPause = !galleryManualPause;
+    clearInterval(galleryTimer);
+    clearTimeout(galleryResumeTimer);
+    if (!galleryManualPause) galleryAuto(true);
+    paintGalleryToggle();
+  });
+  // renderGallery menampilkan placeholder atau kartu foto, lalu menyiapkan gerak otomatis.
   function renderGallery() {
     if (!gGrid) return;
     clearInterval(galleryTimer);
     if (!gallery.length) {
-      gGrid.innerHTML = `<div class="gallery-empty"><b>Belum ada foto kegiatan</b><br><small>Pengurus bisa unggah foto dari panel Admin.</small></div>`;
+      gGrid.innerHTML = `
+        <div class="gallery-empty">
+          <b>Belum ada foto kegiatan</b><br />
+          <small>Pengurus bisa unggah foto dari panel Admin.</small>
+        </div>`;
       $("#galleryHint").textContent = "Foto kegiatan akan tampil di sini setelah diunggah.";
       return;
     }
-    gGrid.innerHTML = gallery.map(g => `<figure class="gallery-item"><img src="${esc(g.src)}" alt="${esc(g.caption || 'Foto kegiatan Aozora')}" loading="lazy" /><figcaption>${esc(g.caption || '')}</figcaption></figure>`).join("");
+    gGrid.innerHTML = gallery
+      .map(
+        (g) =>
+          `<figure class="gallery-item">
+            <img
+              src="${esc(g.src)}"
+              alt="${esc(g.caption || "Foto kegiatan Aozora")}" loading="lazy" />
+            <figcaption>${esc(g.caption || "")}</figcaption>
+          </figure>`,
+      )
+      .join("");
     requestAnimationFrame(() => galleryAuto(!galleryPaused));
-    $("#galleryHint").textContent = gallery.length > 1 ? "Galeri bergerak pelan. Geser atau tekan tombol panah untuk melihat foto." : "Satu foto kegiatan.";
+    $("#galleryHint").textContent =
+      gallery.length > 1
+        ? "Galeri bergerak pelan. Geser atau tekan tombol panah untuk melihat foto."
+        : "Satu foto kegiatan.";
     galleryAuto(!galleryPaused);
   }
-  $("#galleryPrev")?.addEventListener("click", () => { galleryDir=-1; pauseGallery(true); gViewport.scrollBy({left:-gViewport.clientWidth*.8,behavior:"smooth"}); });
-  $("#galleryNext")?.addEventListener("click", () => { galleryDir=1; pauseGallery(true); gViewport.scrollBy({left:gViewport.clientWidth*.8,behavior:"smooth"}); });
-  gViewport?.addEventListener("pointerdown", () => pauseGallery(false), {passive:true});
-  gViewport?.addEventListener("pointerup", () => pauseGallery(true), {passive:true});
-  gViewport?.addEventListener("pointercancel", () => pauseGallery(true), {passive:true});
-  gViewport?.addEventListener("keydown", e => { if(["ArrowLeft","ArrowRight","Home","End"].includes(e.key)) pauseGallery(true); });
-  gViewport?.addEventListener("touchstart", () => pauseGallery(false), {passive:true});
-  gViewport?.addEventListener("touchend", () => pauseGallery(true), {passive:true});
+  $("#galleryPrev")?.addEventListener("click", () => {
+    galleryDir = -1;
+    pauseGallery(true);
+    gViewport.scrollBy({
+      left: -gViewport.clientWidth * 0.8,
+      behavior: "smooth",
+    });
+  });
+  $("#galleryNext")?.addEventListener("click", () => {
+    galleryDir = 1;
+    pauseGallery(true);
+    gViewport.scrollBy({
+      left: gViewport.clientWidth * 0.8,
+      behavior: "smooth",
+    });
+  });
+  gViewport?.addEventListener("pointerdown", () => pauseGallery(false), {
+    passive: true,
+  });
+  gViewport?.addEventListener("pointerup", () => pauseGallery(true), {
+    passive: true,
+  });
+  gViewport?.addEventListener("pointercancel", () => pauseGallery(true), {
+    passive: true,
+  });
+  gViewport?.addEventListener("keydown", (e) => {
+    if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) pauseGallery(true);
+  });
+  gViewport?.addEventListener("touchstart", () => pauseGallery(false), {
+    passive: true,
+  });
+  gViewport?.addEventListener("touchend", () => pauseGallery(true), {
+    passive: true,
+  });
   gViewport?.addEventListener("mouseenter", () => pauseGallery(false));
-  gViewport?.addEventListener("mouseleave", () => {if(!galleryManualPause)galleryAuto(true);});
+  gViewport?.addEventListener("mouseleave", () => {
+    if (!galleryManualPause) galleryAuto(true);
+  });
   gViewport?.addEventListener("focusin", () => pauseGallery(false));
-  gViewport?.addEventListener("focusout", () => {if(!galleryManualPause)galleryAuto(true);});
-  gViewport?.addEventListener("scroll", () => {
-    const end=gViewport.scrollWidth-gViewport.clientWidth;
-    if(gViewport.scrollLeft<=2) galleryDir=1; else if(gViewport.scrollLeft>=end-2) galleryDir=-1;
-  },{passive:true});
+  gViewport?.addEventListener("focusout", () => {
+    if (!galleryManualPause) galleryAuto(true);
+  });
+  gViewport?.addEventListener(
+    "scroll",
+    () => {
+      const end = gViewport.scrollWidth - gViewport.clientWidth;
+      if (gViewport.scrollLeft <= 2) galleryDir = 1;
+      else if (gViewport.scrollLeft >= end - 2) galleryDir = -1;
+    },
+    { passive: true },
+  );
   document.addEventListener("visibilitychange", () => galleryAuto(!document.hidden && !galleryPaused));
   paintGalleryToggle();
-  async function loadGallery() { try { gallery = await window.Store.listGallery(); } catch (e) { gallery = []; } renderGallery(); }
+  // loadGallery membaca foto melalui store lalu menggambar ulang galeri.
+  async function loadGallery() {
+    try {
+      gallery = await window.Store.listGallery();
+    } catch (e) {
+      gallery = [];
+    }
+    renderGallery();
+  }
 
-  // Ubah foto jadi JPEG maksimal 1440px sebelum simpan; ini menghemat localStorage.
+  // Kompres foto sebelum simpan; base64 di database/browser storage harus tetap ringan.
   function resizePhoto(file) {
-    return new Promise((resolve,reject) => {
-      const img=new Image(), url=URL.createObjectURL(file);
-      img.onload=()=>{
-        const scale=Math.min(1,1440/Math.max(img.width,img.height));
-        const canvas=document.createElement("canvas"); canvas.width=Math.round(img.width*scale); canvas.height=Math.round(img.height*scale);
-        canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height); URL.revokeObjectURL(url);
-        resolve(canvas.toDataURL("image/jpeg",.78));
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = async () => {
+        URL.revokeObjectURL(objectUrl);
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        if (!context) {
+          reject(new Error("Browser tidak bisa memproses foto ini."));
+          return;
+        }
+
+        try {
+          for (const maxSide of [1024, 880, 740, 620]) {
+            const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+            canvas.width = Math.max(1, Math.round(img.width * scale));
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            for (const quality of [0.68, 0.56, 0.44]) {
+              const blob = await new Promise((done) => canvas.toBlob(done, "image/jpeg", quality));
+              if (!blob) continue;
+              if (blob.size > 150 * 1024) continue;
+
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = () => reject(new Error("Foto gagal dibaca."));
+              reader.readAsDataURL(blob);
+              return;
+            }
+          }
+          reject(new Error("Foto terlalu besar untuk penyimpanan galeri. Pilih foto yang lebih kecil."));
+        } catch {
+          reject(new Error("Foto gagal diperkecil. Pilih file gambar lain."));
+        }
       };
-      img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("Foto tidak bisa dibaca."));};
-      img.src=url;
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error("File tidak bisa dibuka sebagai gambar."));
+      };
+      img.src = objectUrl;
     });
   }
-  const uploadInput=$("#gFile"), uploadPreview=$("#uploadPreview");
-  uploadInput?.addEventListener("change",()=>{
-    uploadPreview.querySelectorAll("img").forEach(img=>URL.revokeObjectURL(img.src));
-    const files=[...uploadInput.files].filter(f=>f.type.startsWith("image/"));
-    uploadPreview.innerHTML=files.map(f=>`<img src="${URL.createObjectURL(f)}" alt="Pratinjau ${esc(f.name)}">`).join("")+(files.length?`<span class="upload-count">${files.length} foto dipilih</span>`:"");
-    $("#galleryResult").className="form-msg";
-  });
-  $("#gAdd").addEventListener("click",async()=>{
-    const files=[...uploadInput.files], caption=$("#gCaption").value.trim(), url=$("#gUrl").value.trim();
-    const result=$("#galleryResult"),btn=$("#gAdd");
-    if(!files.length&&!url){result.className="form-msg bad";result.textContent="Pilih foto atau masukkan URL foto dulu.";return;}
-    if(files.some(f=>!f.type.startsWith("image/"))){result.className="form-msg bad";result.textContent="Pilih file gambar saja.";return;}
-    if(files.length>12){result.className="form-msg bad";result.textContent="Maksimal 12 foto sekali upload.";return;}
-    btn.disabled=true;btn.setAttribute("aria-busy","true");result.className="form-msg";result.textContent="";
-    let saved=0;
-    try{
-      const items=files.length?await Promise.all(files.map(resizePhoto)):[url];
-      for(let i=0;i<items.length;i++){
-        btn.textContent=`Mengunggah ${i+1}/${items.length}…`;
-        const name=files[i]?.name.replace(/\.[^.]+$/,"")||"Foto kegiatan";
-        await window.Store.addGallery({src:items[i],caption:caption||name});saved++;
-      }
-      $("#gCaption").value="";$("#gUrl").value="";uploadInput.value="";uploadPreview.querySelectorAll("img").forEach(img=>URL.revokeObjectURL(img.src));uploadPreview.innerHTML="";
-      await loadGallery();renderGalleryAdmin();result.className="form-msg ok";result.textContent=`${saved} foto berhasil ditambahkan.`;
-    }catch(e){
-      await loadGallery();renderGalleryAdmin();result.className="form-msg bad";
-      result.textContent=saved?`${saved} foto tersimpan; unggahan berikutnya gagal. Pilihan foto tetap ada, cek galeri sebelum mencoba lagi.`:"Upload gagal. Pilihan foto tetap ada; coba lagi.";
+
+  const uploadInput = $("#gFile");
+  const uploadPreview = $("#uploadPreview");
+  const uploadResult = $("#galleryResult");
+  let uploadingPhotos = false;
+  const savedPhotoKeys = new Set();
+  const photoKey = (file) => `${file.name}:${file.size}:${file.lastModified}`;
+
+  function showUploadError(error) {
+    const name = error?.name || "";
+    uploadResult.className = "form-msg bad";
+    if (name === "QuotaExceededError" || name === "NS_ERROR_DOM_QUOTA_REACHED") {
+      uploadResult.textContent =
+        "Penyimpanan perangkat penuh. Hapus beberapa foto galeri lama, lalu unggah foto lebih sedikit.";
+      return;
     }
-    finally{btn.disabled=false;btn.removeAttribute("aria-busy");btn.textContent="Upload Foto";}
+    const reason = String(error?.message || "").toLowerCase();
+    if (reason.includes("payload too large") || reason.includes("request entity too large")) {
+      uploadResult.textContent =
+        "Database menolak ukuran foto. Pilih lebih sedikit foto atau foto beresolusi lebih kecil.";
+      return;
+    }
+    uploadResult.textContent = error?.message || "Foto gagal disimpan. Pilih foto lalu coba lagi.";
+  }
+
+  // Pilih file saja: setiap batch langsung diperkecil, disimpan, lalu dirender di galeri.
+  uploadInput?.addEventListener("change", async () => {
+    const files = [...uploadInput.files];
+    if (!files.length) return;
+    if (uploadingPhotos) return;
+    if (files.length > 12) {
+      uploadResult.className = "form-msg bad";
+      uploadResult.textContent = "Maksimal 12 foto sekali pilih.";
+      return;
+    }
+    const invalidFile = files.find((file) => !file.type.startsWith("image/"));
+    if (invalidFile) {
+      uploadResult.className = "form-msg bad";
+      uploadResult.textContent = "Pilih file gambar saja.";
+      return;
+    }
+    const oversizedFile = files.find((file) => file.size > 12 * 1024 * 1024);
+    if (oversizedFile) {
+      uploadResult.className = "form-msg bad";
+      uploadResult.textContent = "Ukuran foto asli maksimal 12 MB per file.";
+      uploadInput.value = "";
+      return;
+    }
+
+    const pendingFiles = files.filter((file) => !savedPhotoKeys.has(photoKey(file)));
+    if (!pendingFiles.length) {
+      uploadResult.className = "form-msg ok";
+      uploadResult.textContent = "Foto yang dipilih sudah tersimpan di galeri.";
+      return;
+    }
+
+    uploadingPhotos = true;
+    uploadInput.disabled = true;
+    uploadResult.className = "form-msg";
+    uploadResult.textContent = `Menyiapkan ${pendingFiles.length} foto…`;
+    uploadPreview.innerHTML = pendingFiles
+      .map((file) => `<span class="upload-count">${esc(file.name)}</span>`)
+      .join("");
+
+    let saved = 0;
+    try {
+      for (const file of pendingFiles) {
+        uploadResult.textContent = `Menyimpan foto ${saved + 1} dari ${pendingFiles.length}…`;
+        const photoData = await resizePhoto(file);
+        const caption = file.name.replace(/\.[^.]+$/, "") || "Foto kegiatan";
+        await window.Store.addGallery({ src: photoData, caption });
+        savedPhotoKeys.add(photoKey(file));
+        saved++;
+      }
+      await loadGallery();
+      if (isAdmin) renderGalleryAdmin();
+      uploadResult.className = "form-msg ok";
+      uploadResult.textContent = `${saved} foto berhasil disimpan dan sudah tampil di galeri.`;
+      uploadPreview.innerHTML = "";
+      uploadInput.value = "";
+      savedPhotoKeys.clear();
+    } catch (error) {
+      await loadGallery();
+      if (isAdmin) renderGalleryAdmin();
+      showUploadError(error);
+      if (saved) {
+        uploadResult.textContent += ` ${saved} foto sebelumnya berhasil disimpan dan sudah tampil.`;
+      }
+      // File tetap terpilih; tombol coba lagi mengulang hanya foto yang belum tersimpan.
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.className = "btn btn-ghost upload-retry";
+      retry.textContent = "Coba lagi";
+      retry.addEventListener("click", () =>
+        uploadInput.dispatchEvent(new Event("change", { bubbles: true })),
+      );
+      uploadPreview.append(retry);
+    } finally {
+      uploadingPhotos = false;
+      uploadInput.disabled = false;
+    }
   });
 
   // Mulai router setelah fungsi galeri dideklarasikan agar inisialisasi aman.
-  showRoute(location.hash||"#home",false);
+  showRoute(location.hash || "#home", false);
+
+  /* Selesai: galeri merender, mengecilkan, menyimpan, dan menjeda foto. */
 
   /* =======================================================
      PESAN — helper
      ======================================================= */
   let deviceId = localStorage.getItem(LS.device);
-  if (!deviceId) { deviceId = "d_" + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem(LS.device, deviceId); }
+  if (!deviceId) {
+    deviceId = "d_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem(LS.device, deviceId);
+  }
+  // anonName membuat nama samaran stabil untuk pengunjung yang sama.
   function anonName(id) {
-    let h = 0; const s = String(id);
+    let h = 0;
+    const s = String(id);
     for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
     return "Pengunjung " + ((h % 900) + 100);
   }
-  const initials = n => n.trim().split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() || "").join("") || "?";
+  const initials = (n) =>
+    n
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() || "")
+      .join("") || "?";
+  // timeAgo mengubah timestamp menjadi waktu relatif yang mudah dibaca.
   function timeAgo(ts) {
     const s = Math.floor((Date.now() - ts) / 1000);
     if (s < 60) return "baru saja";
@@ -520,18 +1048,25 @@
     if (s < 86400) return Math.floor(s / 3600) + " jam lalu";
     const d = Math.floor(s / 86400);
     if (d < 30) return d + " hari lalu";
-    return new Date(ts).toLocaleDateString("id-ID", { day:"numeric", month:"short", year:"numeric" });
+    return new Date(ts).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   }
-  const stars = n => n ? "★".repeat(n) + "☆".repeat(5 - n) : "";
+  const stars = (n) => (n ? "★".repeat(n) + "☆".repeat(5 - n) : "");
+
+  /* Selesai: helper pesan menyiapkan ID lokal, samaran, dan format waktu. */
 
   /* ---------- ADMIN STATE ---------- */
-  const ADMIN_HASH = "245c4800c06a59aa9e91771db88e8b514270f11fa9533e62daf3c37fa1858b4c"; // aozora2026
+  const ADMIN_HASH = "245c4800c06a59aa9e91771db88e8b514270f11fa9533e62daf3c37fa1858b4c"; // Hash untuk pemeriksaan login; bukan password asli.
   let isAdmin = sessionStorage.getItem("aozora.admin") === "1";
 
+  // sha256 membuat sidik teks untuk membandingkan login; bukan pengganti server auth.
   async function sha256(str) {
     if (crypto?.subtle) {
       const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+      return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
     }
     return "";
   }
@@ -539,58 +1074,99 @@
   /* =======================================================
      PESAN PUBLIK
      ======================================================= */
-  const fbForm = $("#fbForm"), fbList = $("#fbList"), fbFilter = $("#fbFilter");
+  const fbForm = $("#fbForm"),
+    fbList = $("#fbList"),
+    fbFilter = $("#fbFilter");
   let feedback = [];
-  let rating = 0, fbCat = "Semua";
+  let rating = 0,
+    fbCat = "Semua";
   const loadingFB = '<div class="fb-empty"><b>Memuat pesan…</b></div>';
 
   /* dropdown custom */
   (function select() {
-    const sel = $("#fbTypeSelect"), btn = $("#fbTypeBtn"), menu = $("#fbTypeMenu"),
-          icBox = $("#fbTypeIc"), label = $("#fbTypeLabel"), hidden = $("#fbType");
+    const sel = $("#fbTypeSelect"),
+      btn = $("#fbTypeBtn"),
+      menu = $("#fbTypeMenu"),
+      icBox = $("#fbTypeIc"),
+      label = $("#fbTypeLabel"),
+      hidden = $("#fbType");
     function paint(v) {
-      const t = TYPES.find(x => x.v === v) || TYPES[0];
-      icBox.innerHTML = t.ic; label.textContent = t.v; hidden.value = t.v;
-      menu.querySelectorAll("li").forEach(li => li.classList.toggle("on", li.dataset.v === t.v));
+      const t = TYPES.find((x) => x.v === v) || TYPES[0];
+      icBox.innerHTML = t.ic;
+      label.textContent = t.v;
+      hidden.value = t.v;
+      menu.querySelectorAll("li").forEach((li) => li.classList.toggle("on", li.dataset.v === t.v));
     }
-    menu.innerHTML = TYPES.map(t => `<li data-v="${t.v}"><span class="select-ic">${t.ic}</span>${t.v}</li>`).join("");
+    menu.innerHTML = TYPES.map(
+      (t) => `<li data-v="${t.v}"><span class="select-ic">${t.ic}</span>${t.v}</li>`,
+    ).join("");
     paint("Saran");
-    btn.addEventListener("click", e => { e.stopPropagation(); sel.classList.toggle("open"); });
-    menu.querySelectorAll("li").forEach(li => li.addEventListener("click", () => { paint(li.dataset.v); sel.classList.remove("open"); }));
-    document.addEventListener("click", e => { if (!sel.contains(e.target)) sel.classList.remove("open"); });
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      sel.classList.toggle("open");
+    });
+    menu.querySelectorAll("li").forEach((li) =>
+      li.addEventListener("click", () => {
+        paint(li.dataset.v);
+        sel.classList.remove("open");
+      }),
+    );
+    document.addEventListener("click", (e) => {
+      if (!sel.contains(e.target)) sel.classList.remove("open");
+    });
   })();
 
   /* rating bintang */
   (function ratingUI() {
     const box = $("#fbRating");
-    box.innerHTML = [1,2,3,4,5].map(v => `<button type="button" data-v="${v}" aria-label="${v} dari 5">${I.star}</button>`).join("");
-    box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
-      rating = +b.dataset.v;
-      box.querySelectorAll("button").forEach(x => x.classList.toggle("on", +x.dataset.v <= rating));
-    }));
+    box.innerHTML = [1, 2, 3, 4, 5]
+      .map((v) => `<button type="button" data-v="${v}" aria-label="${v} dari 5">${I.star}</button>`)
+      .join("");
+    box.querySelectorAll("button").forEach((b) =>
+      b.addEventListener("click", () => {
+        rating = +b.dataset.v;
+        box.querySelectorAll("button").forEach((x) => x.classList.toggle("on", +x.dataset.v <= rating));
+      }),
+    );
   })();
 
-  const likeCount = f => Number(f.likes) || 0;
-  const likedByMe = f => window.Store.liked.has(f.id);
-  const personOf = f => isAdmin
-    ? { name: f.name, avatar: initials(f.name), real: true }
-    : { name: anonName(f.id), avatar: "?", anon: true };
+  const likeCount = (f) => Number(f.likes) || 0;
+  const likedByMe = (f) => window.Store.liked.has(f.id);
+  const personOf = (f) =>
+    isAdmin
+      ? { name: f.name, avatar: initials(f.name), real: true }
+      : { name: anonName(f.id), avatar: "?", anon: true };
 
+  // renderFeedback menampilkan pesan publik dengan escaping dan nama samaran.
   function renderFeedback() {
-    const cats = ["Semua", ...new Set(feedback.map(f => f.type))];
-    fbFilter.innerHTML = cats.map(c => `<button class="chip${c === fbCat ? " active" : ""}" data-cat="${c}">${c}</button>`).join("");
-    fbFilter.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => { fbCat = c.dataset.cat; renderFeedback(); }));
+    const cats = ["Semua", ...new Set(feedback.map((f) => f.type))];
+    fbFilter.innerHTML = cats
+      .map((c) => `<button class="chip${c === fbCat ? " active" : ""}" data-cat="${c}">${c}</button>`)
+      .join("");
+    fbFilter.querySelectorAll(".chip").forEach((c) =>
+      c.addEventListener("click", () => {
+        fbCat = c.dataset.cat;
+        renderFeedback();
+      }),
+    );
 
-    const list = feedback.filter(f => fbCat === "Semua" || f.type === fbCat)
+    const list = feedback
+      .filter((f) => fbCat === "Semua" || f.type === fbCat)
       .sort((a, b) => (isAdmin ? b.ts - a.ts : likeCount(b) - likeCount(a) || b.ts - a.ts));
 
     if (!list.length) {
-      fbList.innerHTML = `<div class="fb-empty"><b>Belum ada pesan</b><br><small>Jadilah yang pertama menulis masukan atau cerita.</small></div>`;
+      fbList.innerHTML = `
+        <div class="fb-empty">
+          <b>Belum ada pesan</b><br />
+          <small>Jadilah yang pertama menulis masukan atau cerita.</small>
+        </div>`;
       return;
     }
-    fbList.innerHTML = list.map(f => {
-      const p = personOf(f), liked = likedByMe(f);
-      return `<div class="fb-item">
+    fbList.innerHTML = list
+      .map((f) => {
+        const p = personOf(f),
+          liked = likedByMe(f);
+        return `<div class="fb-item">
         ${isAdmin ? `<button class="del" data-del="${f.id}" title="Hapus">✕</button>` : ""}
         <div class="top">
           <div class="fb-avatar">${esc(p.avatar)}</div>
@@ -601,40 +1177,61 @@
         <p>${esc(f.msg)}</p>
         <div class="fb-actions"><button class="like-btn${liked ? " liked" : ""}" data-like="${f.id}">${I.heart(liked)}<span>${likeCount(f)}</span></button></div>
       </div>`;
-    }).join("");
-    fbList.querySelectorAll(".like-btn").forEach(b => b.addEventListener("click", () => toggleLike(b.dataset.like)));
-    fbList.querySelectorAll(".del").forEach(b => b.addEventListener("click", async () => {
-      const id = b.dataset.del;
-      feedback = feedback.filter(f => String(f.id) !== String(id));
-      renderFeedback(); updateStats();
-      try { await window.Store.deleteFeedback(id); } catch (e) { toast("Gagal menghapus (koneksi?)"); }
-      toast("Pesan dihapus");
-    }));
+      })
+      .join("");
+    fbList
+      .querySelectorAll(".like-btn")
+      .forEach((b) => b.addEventListener("click", () => toggleLike(b.dataset.like)));
+    fbList.querySelectorAll(".del").forEach((b) =>
+      b.addEventListener("click", async () => {
+        const id = b.dataset.del;
+        feedback = feedback.filter((f) => String(f.id) !== String(id));
+        renderFeedback();
+        updateStats();
+        try {
+          await window.Store.deleteFeedback(id);
+        } catch (e) {
+          toast("Gagal menghapus (koneksi?)");
+        }
+        toast("Pesan dihapus");
+      }),
+    );
   }
   async function loadFeedback() {
     fbList.innerHTML = loadingFB;
-    try { feedback = await window.Store.listFeedback(); }
-    catch (e) { feedback = []; toast("Gagal memuat pesan (cek koneksi)"); }
-    renderFeedback(); updateStats();
+    try {
+      feedback = await window.Store.listFeedback();
+    } catch (e) {
+      feedback = [];
+      toast("Gagal memuat pesan (cek koneksi)");
+    }
+    renderFeedback();
+    updateStats();
   }
   async function toggleLike(id) {
-    const f = feedback.find(x => String(x.id) === String(id)); if (!f) return;
+    const f = feedback.find((x) => String(x.id) === String(id));
+    if (!f) return;
     const wasLiked = window.Store.liked.has(id);
     const n = Math.max(0, likeCount(f) + (wasLiked ? -1 : 1));
     f.likes = n;
     window.Store.liked.set(id, !wasLiked);
     renderFeedback();
     if (!wasLiked) toast("Kamu menyukai pesan ini");
-    try { await window.Store.setLikes(id, n); } catch (e) { toast("Gagal menyimpan like (koneksi?)"); }
+    try {
+      await window.Store.setLikes(id, n);
+    } catch (e) {
+      toast("Gagal menyimpan like (koneksi?)");
+    }
   }
   const setInvalid = (sel, bad) => $(sel).classList.toggle("invalid", bad);
 
   // Form terasa responsif: hitung karakter dan cek input setelah pengguna selesai mengetik.
-  const fbMsg = $("#fbMsg"), fbMsgCount = $("#fbMsgCount");
+  const fbMsg = $("#fbMsg"),
+    fbMsgCount = $("#fbMsgCount");
   const updateMsgCount = () => {
     if (!fbMsgCount) return;
     fbMsgCount.textContent = `${fbMsg.value.length} / ${fbMsg.maxLength}`;
-    fbMsgCount.classList.toggle("near-limit", fbMsg.value.length >= fbMsg.maxLength * .85);
+    fbMsgCount.classList.toggle("near-limit", fbMsg.value.length >= fbMsg.maxLength * 0.85);
   };
   fbMsg?.addEventListener("input", () => {
     updateMsgCount();
@@ -653,118 +1250,206 @@
   updateMsgCount();
 
   let submittingFeedback = false;
-  fbForm.addEventListener("submit", async e => {
+  fbForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (submittingFeedback) return;
-    const name = $("#fbName").value.trim(), msg = $("#fbMsg").value.trim(), type = $("#fbType").value;
+    const name = $("#fbName").value.trim(),
+      msg = $("#fbMsg").value.trim(),
+      type = $("#fbType").value;
     let bad = false;
-    if (name.length < 2) { setInvalid("#fName", true); bad = true; } else setInvalid("#fName", false);
-    if (msg.length < 5)  { setInvalid("#fMsg", true); bad = true; } else setInvalid("#fMsg", false);
-    const res = $("#fbResult"), sendBtn = fbForm.querySelector('[type="submit"]');
+    if (name.length < 2) {
+      setInvalid("#fName", true);
+      bad = true;
+    } else setInvalid("#fName", false);
+    if (msg.length < 5) {
+      setInvalid("#fMsg", true);
+      bad = true;
+    } else setInvalid("#fMsg", false);
+    const res = $("#fbResult"),
+      sendBtn = fbForm.querySelector('[type="submit"]');
     res.className = "form-msg";
     if (bad) {
-      res.classList.add("bad"); res.textContent = "Lengkapi dulu: nama & pesan (min. 5 karakter).";
+      res.classList.add("bad");
+      res.textContent = "Lengkapi dulu: nama & pesan (min. 5 karakter).";
       fbForm.querySelector(".field.invalid input, .field.invalid textarea")?.focus();
       return;
     }
     submittingFeedback = true;
-    sendBtn.disabled = true; sendBtn.classList.add("is-sending");
-    sendBtn.setAttribute("aria-busy", "true"); sendBtn.textContent = "Mengirim…";
+    sendBtn.disabled = true;
+    sendBtn.classList.add("is-sending");
+    sendBtn.setAttribute("aria-busy", "true");
+    sendBtn.textContent = "Mengirim…";
     try {
       await window.Store.addFeedback({ name, msg, type, rating });
     } catch (err) {
-      res.classList.add("bad"); res.textContent = "Gagal mengirim. Periksa koneksi lalu coba lagi.";
+      res.classList.add("bad");
+      res.textContent = "Gagal mengirim. Periksa koneksi lalu coba lagi.";
       return;
     } finally {
       submittingFeedback = false;
-      sendBtn.disabled = false; sendBtn.classList.remove("is-sending");
-      sendBtn.removeAttribute("aria-busy"); sendBtn.textContent = "Kirim Pesan";
+      sendBtn.disabled = false;
+      sendBtn.classList.remove("is-sending");
+      sendBtn.removeAttribute("aria-busy");
+      sendBtn.textContent = "Kirim Pesan";
     }
-    fbForm.reset(); updateMsgCount(); rating = 0;
-    $("#fbRating").querySelectorAll("button").forEach(x => x.classList.remove("on"));
+    fbForm.reset();
+    updateMsgCount();
+    rating = 0;
+    $("#fbRating")
+      .querySelectorAll("button")
+      .forEach((x) => x.classList.remove("on"));
     await loadFeedback();
-    res.classList.add("ok"); res.textContent = "Terima kasih! Pesanmu terkirim. Nama kamu cuma terlihat oleh pengurus.";
+    res.classList.add("ok");
+    res.textContent = "Terima kasih! Pesanmu terkirim. Nama kamu cuma terlihat oleh pengurus.";
     toast("Pesan terkirim");
-    setTimeout(() => { res.className = "form-msg"; }, 6000);
+    setTimeout(() => {
+      res.className = "form-msg";
+    }, 6000);
   });
+
+  /* Selesai: pesan publik divalidasi, disimpan, difilter, dan dirender. */
 
   /* =======================================================
      PESAN PRIBADI
      ======================================================= */
   let privateMsgs = [];
   const pvForm = $("#pvForm");
-  pvForm.addEventListener("submit", async e => {
+  pvForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const name = $("#pvName").value.trim(), msg = $("#pvMsg").value.trim();
+    const name = $("#pvName").value.trim(),
+      msg = $("#pvMsg").value.trim();
     let bad = false;
-    if (name.length < 2) { setInvalid("#pvNameField", true); bad = true; } else setInvalid("#pvNameField", false);
-    if (msg.length < 5)  { setInvalid("#pvMsgField", true); bad = true; } else setInvalid("#pvMsgField", false);
-    const res = $("#pvResult"); res.className = "form-msg";
-    if (bad) { res.classList.add("bad"); res.textContent = "Lengkapi dulu: nama & pesan (min. 5 karakter)."; return; }
-    try { await window.Store.addPrivate({ name, msg }); }
-    catch (err) { res.classList.add("bad"); res.textContent = "Gagal mengirim. Coba lagi ya."; return; }
+    if (name.length < 2) {
+      setInvalid("#pvNameField", true);
+      bad = true;
+    } else setInvalid("#pvNameField", false);
+    if (msg.length < 5) {
+      setInvalid("#pvMsgField", true);
+      bad = true;
+    } else setInvalid("#pvMsgField", false);
+    const res = $("#pvResult");
+    res.className = "form-msg";
+    if (bad) {
+      res.classList.add("bad");
+      res.textContent = "Lengkapi dulu: nama & pesan (min. 5 karakter).";
+      return;
+    }
+    try {
+      await window.Store.addPrivate({ name, msg });
+    } catch (err) {
+      res.classList.add("bad");
+      res.textContent = "Gagal mengirim. Coba lagi ya.";
+      return;
+    }
     pvForm.reset();
-    res.classList.add("ok"); res.textContent = "Terkirim. Pesanmu cuma bisa dibaca pengurus, aman.";
+    res.classList.add("ok");
+    res.textContent = "Terkirim. Pesanmu cuma bisa dibaca pengurus, aman.";
     toast("Pesan pribadi terkirim");
-    await loadPrivate(); renderPrivateAdmin();
-    setTimeout(() => { res.className = "form-msg"; }, 6000);
+    await loadPrivate();
+    renderPrivateAdmin();
+    setTimeout(() => {
+      res.className = "form-msg";
+    }, 6000);
   });
   async function loadPrivate() {
-    try { privateMsgs = await window.Store.listPrivate(); } catch (e) { privateMsgs = []; }
+    try {
+      privateMsgs = await window.Store.listPrivate();
+    } catch (e) {
+      privateMsgs = [];
+    }
   }
 
   /* =======================================================
      PANE TABS (publik / pribadi)
      ======================================================= */
-  $$(".ptab").forEach(t => t.addEventListener("click", () => {
-    $$(".ptab").forEach(x => x.classList.toggle("active", x === t));
-    $$(".pesan-pane").forEach(p => p.classList.toggle("hidden", p.dataset.pane !== t.dataset.ptab));
-  }));
+  $$(".ptab").forEach((t) =>
+    t.addEventListener("click", () => {
+      $$(".ptab").forEach((x) => x.classList.toggle("active", x === t));
+      $$(".pesan-pane").forEach((p) => p.classList.toggle("hidden", p.dataset.pane !== t.dataset.ptab));
+    }),
+  );
+
+  /* Selesai: pesan pribadi divalidasi dan hanya ditampilkan ke admin. */
 
   /* =======================================================
      ADMIN MODAL
      ======================================================= */
   const modal = $("#adminModal");
-  const openAdmin  = () => modal.classList.add("open");
+  const openAdmin = () => modal.classList.add("open");
   const closeAdmin = () => modal.classList.remove("open");
 
+  // applyAdminUI menyamakan tampilan tombol/panel dengan status admin saat ini.
   function applyAdminUI() {
     document.body.classList.toggle("is-admin", isAdmin);
     $("#adminLoginView").classList.toggle("hidden", isAdmin);
     $("#adminDash").classList.toggle("hidden", !isAdmin);
     $("#fbClear").classList.toggle("hidden", !isAdmin);
     renderFeedback();
-    if (isAdmin) { fillForumForm(); loadPrivate().then(renderPrivateAdmin); renderGalleryAdmin(); }
+    if (isAdmin) {
+      fillForumForm();
+      loadPrivate().then(renderPrivateAdmin);
+      renderGalleryAdmin();
+    }
   }
 
-  $("#adminCorner").addEventListener("click", () => { openAdmin(); });
+  $("#adminCorner").addEventListener("click", () => {
+    openAdmin();
+  });
   $("#adminClose").addEventListener("click", closeAdmin);
-  modal.addEventListener("click", e => { if (e.target === modal) closeAdmin(); });
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeAdmin();
+  });
 
-  $("#adminLogin").addEventListener("submit", async e => {
+  $("#adminLogin").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const u = $("#adminUser").value.trim().toLowerCase(), p = $("#adminPass").value, err = $("#adminErr");
+    const u = $("#adminUser").value.trim().toLowerCase(),
+      p = $("#adminPass").value,
+      err = $("#adminErr");
     err.style.display = "none";
-    if (u !== "admin") { err.textContent = "Username salah (gunakan: admin)."; err.style.display = "block"; return; }
+    if (u !== "admin") {
+      err.textContent = "Username salah (gunakan: admin).";
+      err.style.display = "block";
+      return;
+    }
     const h = await sha256(p);
-    if (!h) { err.textContent = "Buka lewat server (http/localhost) supaya login bisa diverifikasi."; err.style.display = "block"; return; }
-    if (h !== ADMIN_HASH) { err.textContent = "Password salah."; err.style.display = "block"; return; }
-    isAdmin = true; sessionStorage.setItem("aozora.admin", "1");
-    $("#adminPass").value = ""; applyAdminUI(); toast("Login pengurus berhasil");
+    if (!h) {
+      err.textContent = "Buka lewat server (http/localhost) supaya login bisa diverifikasi.";
+      err.style.display = "block";
+      return;
+    }
+    if (h !== ADMIN_HASH) {
+      err.textContent = "Password salah.";
+      err.style.display = "block";
+      return;
+    }
+    isAdmin = true;
+    sessionStorage.setItem("aozora.admin", "1");
+    $("#adminPass").value = "";
+    applyAdminUI();
+    toast("Login pengurus berhasil");
   });
   $("#adminLogout").addEventListener("click", () => {
-    isAdmin = false; sessionStorage.removeItem("aozora.admin"); applyAdminUI(); closeAdmin(); toast("Keluar dari mode pengurus");
+    isAdmin = false;
+    sessionStorage.removeItem("aozora.admin");
+    applyAdminUI();
+    closeAdmin();
+    toast("Keluar dari mode pengurus");
   });
 
-  $$(".atab").forEach(t => t.addEventListener("click", () => {
-    $$(".atab").forEach(x => x.classList.toggle("active", x === t));
-    $$(".admin-pane").forEach(p => p.classList.toggle("hidden", p.dataset.apane !== t.dataset.atab));
-  }));
+  $$(".atab").forEach((t) =>
+    t.addEventListener("click", () => {
+      $$(".atab").forEach((x) => x.classList.toggle("active", x === t));
+      $$(".admin-pane").forEach((p) => p.classList.toggle("hidden", p.dataset.apane !== t.dataset.atab));
+    }),
+  );
 
   /* forum form */
+  // fillForumForm mengisi form admin dengan data pertemuan saat ini.
   function fillForumForm() {
-    $("#fHari").value = forum.hari; $("#fTempat").value = forum.tempat;
-    $("#fWaktu").value = forum.waktu; $("#fCatatan").value = forum.catatan;
+    $("#fHari").value = forum.hari;
+    $("#fTempat").value = forum.tempat;
+    $("#fWaktu").value = forum.waktu;
+    $("#fCatatan").value = forum.catatan;
   }
   $("#fSave").addEventListener("click", async () => {
     forum = {
@@ -773,72 +1458,97 @@
       waktu: $("#fWaktu").value.trim() || DEFAULT_FORUM.waktu,
       catatan: $("#fCatatan").value.trim() || DEFAULT_FORUM.catatan,
     };
-    try { await window.Store.setForum(forum); } catch (e) { toast("Gagal menyimpan (cek koneksi)"); }
-    renderForum(); toast("Info pertemuan disimpan");
+    try {
+      await window.Store.setForum(forum);
+    } catch (e) {
+      toast("Gagal menyimpan (cek koneksi)");
+    }
+    renderForum();
+    toast("Info pertemuan disimpan");
   });
 
   /* private list (admin) */
+  // renderPrivateAdmin menampilkan pesan pribadi hanya dalam panel admin.
   function renderPrivateAdmin() {
-    const box = $("#privateList"); if (!box) return;
-    if (!privateMsgs.length) { box.innerHTML = `<div class="admin-empty">Belum ada pesan pribadi.</div>`; return; }
-    box.innerHTML = privateMsgs.slice().sort((a,b) => b.ts - a.ts).map(m => `
+    const box = $("#privateList");
+    if (!box) return;
+    if (!privateMsgs.length) {
+      box.innerHTML = `<div class="admin-empty">Belum ada pesan pribadi.</div>`;
+      return;
+    }
+    box.innerHTML = privateMsgs
+      .slice()
+      .sort((a, b) => b.ts - a.ts)
+      .map(
+        (m) => `
       <div class="admin-item">
         <div class="ai-top"><span class="ai-who">${esc(m.name)}</span><span class="ai-when">${timeAgo(m.ts)}</span></div>
         <p>${esc(m.msg)}</p>
         <button class="ai-del" data-pvdel="${m.id}">Hapus</button>
-      </div>`).join("");
-    box.querySelectorAll("[data-pvdel]").forEach(b => b.addEventListener("click", async () => {
-      const id = b.dataset.pvdel;
-      privateMsgs = privateMsgs.filter(m => String(m.id) !== String(id));
-      renderPrivateAdmin();
-      try { await window.Store.deletePrivate(id); } catch (e) { toast("Gagal menghapus (koneksi?)"); }
-      toast("Pesan pribadi dihapus");
-    }));
+      </div>`,
+      )
+      .join("");
+    box.querySelectorAll("[data-pvdel]").forEach((b) =>
+      b.addEventListener("click", async () => {
+        const id = b.dataset.pvdel;
+        privateMsgs = privateMsgs.filter((m) => String(m.id) !== String(id));
+        renderPrivateAdmin();
+        try {
+          await window.Store.deletePrivate(id);
+        } catch (e) {
+          toast("Gagal menghapus (koneksi?)");
+        }
+        toast("Pesan pribadi dihapus");
+      }),
+    );
   }
 
   /* gallery admin */
+  // renderGalleryAdmin membuat daftar penghapusan foto untuk pengurus.
   function renderGalleryAdmin() {
-    const box = $("#galleryAdminList"); if (!box) return;
-    if (!gallery.length) { box.innerHTML = `<div class="admin-empty">Belum ada foto.</div>`; return; }
-    box.innerHTML = gallery.map(g => `
-      <div class="g-item"><img src="${esc(g.src)}" alt="" /><span class="g-cap">${esc(g.caption || '(tanpa keterangan)')}</span>
-      <button class="ai-del" data-gdel="${g.id}">Hapus</button></div>`).join("");
-    box.querySelectorAll("[data-gdel]").forEach(b => b.addEventListener("click", async () => {
-      const id = b.dataset.gdel;
-      gallery = gallery.filter(g => String(g.id) !== String(id));
-      renderGallery(); renderGalleryAdmin();
-      try { await window.Store.deleteGallery(id); } catch (e) { toast("Gagal menghapus (koneksi?)"); }
-      toast("Foto dihapus");
-    }));
-  }
-  $("#gAdd").addEventListener("click", async () => {
-    const cap = $("#gCaption").value.trim();
-    const url = $("#gUrl").value.trim();
-    const file = $("#gFile").files[0];
-    const add = async src => {
-      try { await window.Store.addGallery({ src, caption: cap }); }
-      catch (e) { toast("Gagal menambah foto (cek koneksi)"); return; }
-      $("#gCaption").value = ""; $("#gUrl").value = ""; $("#gFile").value = "";
-      await loadGallery(); renderGalleryAdmin();
-      toast("Foto ditambahkan");
-    };
-    if (file) {
-      if (file.size > 3.5 * 1024 * 1024) { toast("Foto terlalu besar (maks ~3.5MB). Pakai link/URL untuk foto besar."); return; }
-      const r = new FileReader(); r.onload = () => add(r.result); r.readAsDataURL(file);
-    } else if (url) {
-      add(url);
-    } else {
-      toast("Isi link foto atau pilih file dulu");
+    const box = $("#galleryAdminList");
+    if (!box) return;
+    if (!gallery.length) {
+      box.innerHTML = `<div class="admin-empty">Belum ada foto.</div>`;
+      return;
     }
-  });
-
+    box.innerHTML = gallery
+      .map(
+        (g) => `
+      <div class="g-item"><img src="${esc(g.src)}" alt="" /><span class="g-cap">${esc(g.caption || "(tanpa keterangan)")}</span>
+      <button class="ai-del" data-gdel="${g.id}">Hapus</button></div>`,
+      )
+      .join("");
+    box.querySelectorAll("[data-gdel]").forEach((b) =>
+      b.addEventListener("click", async () => {
+        const id = b.dataset.gdel;
+        gallery = gallery.filter((g) => String(g.id) !== String(id));
+        renderGallery();
+        renderGalleryAdmin();
+        try {
+          await window.Store.deleteGallery(id);
+        } catch (e) {
+          toast("Gagal menghapus (koneksi?)");
+        }
+        toast("Foto dihapus");
+      }),
+    );
+  }
   /* clear all (admin) */
   $("#fbClear").addEventListener("click", async () => {
     if (!isAdmin) return;
-    if (!feedback.length) { toast("Belum ada pesan untuk dihapus"); return; }
+    if (!feedback.length) {
+      toast("Belum ada pesan untuk dihapus");
+      return;
+    }
     if (confirm("Hapus SEMUA pesan di papan publik?")) {
-      try { await window.Store.clearFeedback(); } catch (e) { toast("Gagal menghapus (koneksi?)"); }
-      await loadFeedback(); toast("Semua pesan dihapus");
+      try {
+        await window.Store.clearFeedback();
+      } catch (e) {
+        toast("Gagal menghapus (koneksi?)");
+      }
+      await loadFeedback();
+      toast("Semua pesan dihapus");
     }
   });
 
@@ -847,27 +1557,46 @@
      ======================================================= */
   (function quiz() {
     const TOTAL = 10;
-    let qScript = "hiragana", questions = [], idx = 0, score = 0, answered = false;
-    const startEl = $("#quizStart"), playEl = $("#quizPlay"), doneEl = $("#quizDone");
-    const glyphEl = $("#quizGlyph"), optsEl = $("#quizOpts"), fbEl = $("#quizFb"), numEl = $("#quizNum");
+    let qScript = "hiragana",
+      questions = [],
+      idx = 0,
+      score = 0,
+      answered = false;
+    const startEl = $("#quizStart"),
+      playEl = $("#quizPlay"),
+      doneEl = $("#quizDone");
+    const glyphEl = $("#quizGlyph"),
+      optsEl = $("#quizOpts"),
+      fbEl = $("#quizFb"),
+      numEl = $("#quizNum");
 
-    $$("#quizBox .quiz-tabs .tab").forEach(t => t.addEventListener("click", () => {
-      qScript = t.dataset.qs;
-      $$("#quizBox .quiz-tabs .tab").forEach(x => x.classList.toggle("active", x === t));
-    }));
+    $$("#quizBox .quiz-tabs .tab").forEach((t) =>
+      t.addEventListener("click", () => {
+        qScript = t.dataset.qs;
+        $$("#quizBox .quiz-tabs .tab").forEach((x) => x.classList.toggle("active", x === t));
+      }),
+    );
 
     function pool() {
       if (qScript === "campur") return [...HIRAGANA, ...KATAKANA];
       return qScript === "katakana" ? [...KATAKANA] : [...HIRAGANA];
     }
-    function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = (Math.random() * (i + 1)) | 0;
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
 
+    // generate memilih soal acak dan membuat pilihan jawaban.
     function generate() {
-      const p = pool(); shuffle(p);
+      const p = pool();
+      shuffle(p);
       const picked = p.slice(0, TOTAL);
-      const allRom = [...new Set(p.map(x => x.r))];
-      questions = picked.map(q => {
-        const wrongs = shuffle(allRom.filter(r => r !== q.r)).slice(0, 3);
+      const allRom = [...new Set(p.map((x) => x.r))];
+      questions = picked.map((q) => {
+        const wrongs = shuffle(allRom.filter((r) => r !== q.r)).slice(0, 3);
         return { glyph: q.k, answer: q.r, opts: shuffle([q.r, ...wrongs]) };
       });
     }
@@ -876,62 +1605,89 @@
       const q = questions[idx];
       numEl.textContent = idx + 1;
       glyphEl.textContent = q.glyph;
-      glyphEl.style.animation = "none"; void glyphEl.offsetWidth; glyphEl.style.animation = "";
-      fbEl.textContent = ""; fbEl.className = "quiz-fb";
+      glyphEl.style.animation = "none";
+      void glyphEl.offsetWidth;
+      glyphEl.style.animation = "";
+      fbEl.textContent = "";
+      fbEl.className = "quiz-fb";
       answered = false;
-      optsEl.innerHTML = q.opts.map(o => `<button class="quiz-opt" data-r="${esc(o)}">${esc(o)}</button>`).join("");
-      optsEl.querySelectorAll(".quiz-opt").forEach(b => b.addEventListener("click", () => pick(b)));
+      optsEl.innerHTML = q.opts
+        .map((o) => `<button class="quiz-opt" data-r="${esc(o)}">${esc(o)}</button>`)
+        .join("");
+      optsEl.querySelectorAll(".quiz-opt").forEach((b) => b.addEventListener("click", () => pick(b)));
     }
 
+    // pick menilai jawaban sekali, memperbarui skor, lalu lanjut ke soal berikutnya.
     function pick(btn) {
       if (answered) return;
       answered = true;
-      const q = questions[idx], chosen = btn.dataset.r;
-      optsEl.querySelectorAll(".quiz-opt").forEach(b => {
+      const q = questions[idx],
+        chosen = btn.dataset.r;
+      optsEl.querySelectorAll(".quiz-opt").forEach((b) => {
         b.classList.add("disabled");
         if (b.dataset.r === q.answer) b.classList.add("correct");
       });
       if (chosen === q.answer) {
-        score++; btn.classList.add("correct");
-        fbEl.textContent = "Benar!"; fbEl.className = "quiz-fb ok";
+        score++;
+        btn.classList.add("correct");
+        fbEl.textContent = "Benar!";
+        fbEl.className = "quiz-fb ok";
       } else {
         btn.classList.add("wrong");
-        fbEl.textContent = `Salah — jawabannya "${q.answer}"`; fbEl.className = "quiz-fb bad";
+        fbEl.textContent = `Salah — jawabannya "${q.answer}"`;
+        fbEl.className = "quiz-fb bad";
       }
       setTimeout(() => {
         idx++;
-        if (idx < TOTAL) show(); else finish();
+        if (idx < TOTAL) show();
+        else finish();
       }, 1200);
     }
 
     function finish() {
-      playEl.classList.add("hidden"); doneEl.classList.remove("hidden");
+      playEl.classList.add("hidden");
+      doneEl.classList.remove("hidden");
       $("#quizScore").textContent = score;
       const pct = score / TOTAL;
-      $("#quizVerdict").textContent = pct === 1 ? "Sempurna! Kamu luar biasa!" :
-        pct >= .7 ? "Bagus! Terus latihan ya." :
-        pct >= .4 ? "Lumayan, coba lagi biar makin hafal." : "Jangan menyerah — ulangi pelan-pelan.";
+      $("#quizVerdict").textContent =
+        pct === 1
+          ? "Sempurna! Kamu luar biasa!"
+          : pct >= 0.7
+            ? "Bagus! Terus latihan ya."
+            : pct >= 0.4
+              ? "Lumayan, coba lagi biar makin hafal."
+              : "Jangan menyerah — ulangi pelan-pelan.";
     }
 
+    // start mengatur ulang ronde dan menampilkan pertanyaan pertama.
     function start() {
-      generate(); idx = 0; score = 0;
-      startEl.classList.add("hidden"); doneEl.classList.add("hidden"); playEl.classList.remove("hidden");
+      generate();
+      idx = 0;
+      score = 0;
+      startEl.classList.add("hidden");
+      doneEl.classList.add("hidden");
+      playEl.classList.remove("hidden");
       show();
     }
 
     $("#quizGo").addEventListener("click", start);
     $("#quizRetry").addEventListener("click", start);
     $("#quizBack").addEventListener("click", () => {
-      playEl.classList.add("hidden"); doneEl.classList.add("hidden"); startEl.classList.remove("hidden");
+      playEl.classList.add("hidden");
+      doneEl.classList.add("hidden");
+      startEl.classList.remove("hidden");
     });
   })();
+
+  /* Selesai: modal admin mengatur login, tab pengelolaan, dan data klub. */
 
   /* =======================================================
      KATA HARI INI
      ======================================================= */
   (function kotd() {
     // Hash tanggal hari ini supaya kata berubah tiap hari
-    const d = new Date(), seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+    const d = new Date(),
+      seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
     const word = KOSAKATA[seed % KOSAKATA.length];
     if (!word) return;
     $("#kotdJp").textContent = word.jp;
@@ -944,19 +1700,40 @@
   /* =======================================================
      STATS + INIT
      ======================================================= */
+  // updateStats memasang nilai statistik dari data aktual, bukan angka contoh.
   function updateStats() {
-    $("#statKana").textContent  = HIRAGANA.length + KATAKANA.length;
+    $("#statKana").textContent = HIRAGANA.length + KATAKANA.length;
     $("#statVocab").textContent = KOSAKATA.length;
-    $("#statFb").textContent    = feedback.length;
+    $("#statFb").textContent = feedback.length;
   }
-  function countUp(el, to) { let n = 0; const step = Math.max(1, Math.ceil(to / 40)); const t = setInterval(() => { n += step; if (n >= to) { n = to; clearInterval(t); } el.textContent = n; }, 26); }
-  function animateStats() { countUp($("#statKana"), HIRAGANA.length + KATAKANA.length); countUp($("#statVocab"), KOSAKATA.length); countUp($("#statFb"), feedback.length); }
+  // countUp menganimasikan angka statistik dari nol ke nilai sebenarnya.
+  function countUp(el, to) {
+    let n = 0;
+    const step = Math.max(1, Math.ceil(to / 40));
+    const t = setInterval(() => {
+      n += step;
+      if (n >= to) {
+        n = to;
+        clearInterval(t);
+      }
+      el.textContent = n;
+    }, 26);
+  }
+  function animateStats() {
+    countUp($("#statKana"), HIRAGANA.length + KATAKANA.length);
+    countUp($("#statVocab"), KOSAKATA.length);
+    countUp($("#statFb"), feedback.length);
+  }
 
   $("#year").textContent = new Date().getFullYear();
-  buildChips(); renderKana();
-  buildVocabChips(); renderVocab();
+  buildChips();
+  renderKana();
+  buildVocabChips();
+  renderVocab();
   applyAdminUI();
   setTimeout(animateStats, 600);
+
+  /* Selesai: kuis dan kata harian memakai data.js serta helper suara. */
 
   /* muat data dari store (Supabase / lokal) */
   loadFeedback();
@@ -964,8 +1741,31 @@
   loadGallery();
   loadPrivate();
   if (window.Store.mode === "local") {
-    setTimeout(() => toast("Mode lokal: pesan hanya tersimpan di perangkat ini. Hubungkan database untuk mode online."), 2500);
+    setTimeout(
+      () =>
+        toast(
+          "Mode lokal: pesan hanya tersimpan di perangkat ini. Hubungkan database untuk mode online.",
+        ),
+      2500,
+    );
   }
 
-  window.AOZORA = { speak, renderKana, renderVocab, renderFeedback, get feedback() { return feedback; }, get privateMsgs() { return privateMsgs; }, get gallery() { return gallery; }, get mode() { return window.Store.mode; } };
+  window.AOZORA = {
+    speak,
+    renderKana,
+    renderVocab,
+    renderFeedback,
+    get feedback() {
+      return feedback;
+    },
+    get privateMsgs() {
+      return privateMsgs;
+    },
+    get gallery() {
+      return gallery;
+    },
+    get mode() {
+      return window.Store.mode;
+    },
+  };
 })();

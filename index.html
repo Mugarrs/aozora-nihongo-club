@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--
   ============================================================================
   AOZORA NIHONGO CLUB — index.html
@@ -21,30 +21,40 @@
       8. Footer         : penutup halaman
       9. Popup & Modal  : elemen tersembunyi yang muncul saat diklik
 
-  TIPS BELAJAR: setiap bagian diberi komentar penanda di atasnya.
-  Komentar TIDAK tampil di browser — isinya catatan untuk kita.
+  BACA KODE: setelah blok utama ada komentar penutup yang merangkum fungsi.
+  Uraian langkah demi langkah dan contoh tersedia di PANDUAN-KODE.md.
+  Komentar HTML tidak tampil sebagai konten halaman.
   ============================================================================
 -->
 <html lang="id">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#4ecdc4" />
-<title>青空日本語 — Aozora Nihongo Club | SMK N 1 Purwokerto</title>
-<meta name="description" content="Aozora Nihongo Club — ekstrakurikuler bahasa Jepang SMK N 1 Purwokerto. Belajar Hiragana, Katakana, kosakata, dan dokumentasi kegiatan." />
-<link rel="icon" href="assets/logo.jpg" />
-<link rel="apple-touch-icon" href="assets/logo.jpg" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css" />
-<script>
-  try { if (localStorage.getItem("aozora.theme") === "dark") document.documentElement.classList.add("dark-pre"); } catch (e) {}
-</script>
-</head>
-<body class="locked">
-
-<!--
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#4ecdc4" />
+    <title>青空日本語 — Aozora Nihongo Club | SMK N 1 Purwokerto</title>
+    <meta
+      name="description"
+      content="Aozora Nihongo Club — ekstrakurikuler bahasa Jepang SMK N 1 Purwokerto. Belajar Hiragana, Katakana, kosakata, dan dokumentasi kegiatan."
+    />
+    <link rel="icon" href="assets/logo.jpg" />
+    <link rel="apple-touch-icon" href="assets/logo.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- style.css mengatur tampilan; JavaScript dimuat sebelum penutup body. -->
+    <link rel="stylesheet" href="css/style.css" />
+    <script>
+      try {
+        if (localStorage.getItem("aozora.theme") === "dark")
+          document.documentElement.classList.add("dark-pre");
+      } catch (e) {}
+    </script>
+  </head>
+  <body class="locked">
+    <!--
   ============================================================
   1. PAGE TRANSITION (tirai animasi)
   ============================================================
@@ -54,13 +64,15 @@
   karena ini cuma hiasan, bukan konten.
   ============================================================
 -->
-<div class="curtain" id="curtain" aria-hidden="true">
-  <div class="panel p1"></div>
-  <div class="panel p2"></div>
-  <div class="mark"><div><img src="assets/logo-nobg.png" alt="" /><b>青空日本語</b></div></div>
-</div>
+    <div class="curtain" id="curtain" aria-hidden="true">
+      <div class="panel p1"></div>
+      <div class="panel p2"></div>
+      <div class="mark">
+        <div><img src="assets/logo-nobg.png" alt="" /><b>青空日本語</b></div>
+      </div>
+    </div>
 
-<!--
+    <!--
   ============================================================
   2. PRELOADER (layar loading)
   ============================================================
@@ -71,18 +83,18 @@
   Setelah selesai, JS menambahkan class "done" supaya hilang.
   ============================================================
 -->
-<div id="preloader">
-  <div class="pl-inner">
-    <img class="pl-logo" src="assets/logo-nobg.png" alt="Logo Aozora Nihongo Club" />
-    <h1 class="pl-name">Aozora <span>Nihongo</span> Club</h1>
-    <div class="pl-sub">青空日本語 · SMK N 1 Purwokerto</div>
-    <div class="pl-bar"><i id="plBar"></i></div>
-    <div class="pl-pct"><span id="plPct">0</span>%</div>
-    <div class="pl-tip" id="plTip">Menyiapkan kelas…</div>
-  </div>
-</div>
+    <div id="preloader">
+      <div class="pl-inner">
+        <img class="pl-logo" src="assets/logo-nobg.png" alt="Logo Aozora Nihongo Club" />
+        <h1 class="pl-name">Aozora <span>Nihongo</span> Club</h1>
+        <div class="pl-sub">青空日本語 · SMK N 1 Purwokerto</div>
+        <div class="pl-bar"><i id="plBar"></i></div>
+        <div class="pl-pct"><span id="plPct">0</span>%</div>
+        <div class="pl-tip" id="plTip">Menyiapkan kelas…</div>
+      </div>
+    </div>
 
-<!--
+    <!--
   ============================================================
   3. BACKDROP (latar hiasan)
   ============================================================
@@ -92,17 +104,17 @@
   .cursor-ring / .cursor-dot -> kursor kustom (hanya di komputer)
   ============================================================
 -->
-<div class="backdrop">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
-</div>
-<div class="grid-overlay"></div>
-<div class="scroll-progress" id="scrollProgress"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-<div class="cursor-dot" id="cursorDot"></div>
+    <div class="backdrop">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+    </div>
+    <div class="grid-overlay"></div>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+    <div class="cursor-dot" id="cursorDot"></div>
 
-<!--
+    <!--
   ============================================================
   4. NAV (menu navigasi atas)
   ============================================================
@@ -122,43 +134,140 @@
   Menu hamburger dipakai pada ukuran tablet/layar menengah.
   ============================================================
 -->
-<nav class="nav" id="nav">
-  <button class="admin-corner" id="adminCorner" title="Masuk sebagai admin" aria-label="Admin">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
-    <span>Admin</span>
-  </button>
-  <a class="brand" href="#home">
-    <img src="assets/logo-nobg.png" alt="Logo" />
-    <span class="brand-txt">
-      <b>Aozora Nihongo Club</b>
-      <small>青空日本語 · SMKN 1 Purwokerto</small>
-    </span>
-  </a>
-  <div class="nav-links" id="navLinks">
-    <a href="#home" class="active">Beranda</a>
-    <a href="#belajar">Belajar</a>
-    <a href="#kegiatan">Kegiatan</a>
-    <a href="#dokumentasi">Galeri</a>
-    <a href="#pesan">Pesan</a>
-  </div>
-  <button class="icon-btn" id="themeToggle" aria-label="Ganti tema" title="Mode gelap / terang">
-    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
-    <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg>
-  </button>
-  <button class="nav-burger" id="navBurger" aria-label="Menu"><i></i><i></i><i></i></button>
-  <a href="#pesan" class="nav-cta">Kirim Pesan</a>
-</nav>
+    <nav class="nav" id="nav">
+      <button class="admin-corner" id="adminCorner" title="Masuk sebagai admin" aria-label="Admin">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.9"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5" />
+          <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+        </svg>
+        <span>Admin</span>
+      </button>
+      <a class="brand" href="#home">
+        <img src="assets/logo-nobg.png" alt="Logo" />
+        <span class="brand-txt">
+          <b>Aozora Nihongo Club</b>
+          <small>青空日本語 · SMKN 1 Purwokerto</small>
+        </span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#home" class="active">Beranda</a>
+        <a href="#belajar">Belajar</a>
+        <a href="#kegiatan">Kegiatan</a>
+        <a href="#dokumentasi">Galeri</a>
+        <a href="#pesan">Pesan</a>
+      </div>
+      <button class="icon-btn" id="themeToggle" aria-label="Ganti tema" title="Mode gelap / terang">
+        <svg
+          class="sun"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.9"
+          stroke-linecap="round"
+        >
+          <circle cx="12" cy="12" r="4.2" />
+          <path
+            d="M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"
+          />
+        </svg>
+        <svg
+          class="moon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.9"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z" />
+        </svg>
+      </button>
+      <button class="nav-burger" id="navBurger" aria-label="Menu"><i></i><i></i><i></i></button>
+      <a href="#pesan" class="nav-cta">Kirim Pesan</a>
+    </nav>
 
-<!-- Navigasi HP: lima tujuan utama; status aktif mengikuti panel yang dipilih. -->
-<nav class="mobile-dock" id="mobileDock" aria-label="Navigasi utama">
-  <a href="#home" class="active" aria-label="Beranda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Beranda</span></a>
-  <a href="#belajar" aria-label="Belajar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 1-2-2z"/><path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 0 2-2z"/></svg><span>Belajar</span></a>
-  <a href="#kegiatan" aria-label="Kegiatan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Kegiatan</span></a>
-  <a href="#dokumentasi" aria-label="Galeri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg><span>Galeri</span></a>
-  <a href="#pesan" aria-label="Pesan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/></svg><span>Pesan</span></a>
-</nav>
+    <!-- Navigasi HP: lima tujuan utama; status aktif mengikuti panel yang dipilih. -->
+    <nav class="mobile-dock" id="mobileDock" aria-label="Navigasi utama">
+      <a href="#home" class="active" aria-label="Beranda"
+        ><svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" /></svg
+        ><span>Beranda</span></a
+      >
+      <a href="#belajar" aria-label="Belajar"
+        ><svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 1-2-2z" />
+          <path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 0 2-2z" /></svg
+        ><span>Belajar</span></a
+      >
+      <a href="#kegiatan" aria-label="Kegiatan"
+        ><svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M16 3v4M8 3v4M3 10h18" /></svg
+        ><span>Kegiatan</span></a
+      >
+      <a href="#dokumentasi" aria-label="Galeri"
+        ><svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <circle cx="8.5" cy="9" r="1.5" />
+          <path d="m21 15-5-5L5 20" /></svg
+        ><span>Galeri</span></a
+      >
+      <a href="#pesan" aria-label="Pesan"
+        ><svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z" /></svg
+        ><span>Pesan</span></a
+      >
+    </nav>
+    <!-- Selesai: nav atas berisi identitas, tautan utama, tema, dan kontrol admin. -->
 
-<!--
+    <!--
   ============================================================
   5. HERO (banner pembuka)
   ============================================================
@@ -169,79 +278,74 @@
                    (semua dibuat pakai CSS + SVG, bukan file foto)
     .hero-grid  -> TEKS: sapaan, judul, tombol, statistik angka
 
-  Kenapa pakai SVG untuk gunung?
-    SVG = gambar berbasis rumus matematika, jadi tetap tajam di layar
-    sebesar apa pun dan ukurannya cuma beberapa kilobyte.
-
-  <path d="..."> adalah perintah menggambar:
-    M = pindah pena ke titik (move)
-    L = tarik garis lurus (line)
-    Q = garis melengkung (quadratic curve)
-    Z = tutup bentuk kembali ke titik awal (close)
+  Gunung digambar menggunakan SVG supaya tetap tajam ketika ukuran layar berubah.
+  Path SVG berisi perintah menggambar garis dan kurva; detail latihan SVG ada di PANDUAN-KODE.md.
   ============================================================
 -->
-<header class="hero page-panel" id="home" data-page="home">
-  <div class="wrap">
-    <div class="hero-card">
-      <div class="scene" aria-hidden="true">
-        <div class="hero-sun"></div>
-        <div class="cloud c3"></div>
-        <div class="cloud c1"></div>
-        <div class="cloud c2"></div>
-        <svg class="fuji" viewBox="0 0 1200 470" preserveAspectRatio="xMidYMax meet">
-          <defs>
-            <linearGradient id="fujiG" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="var(--fuji-1)"/>
-              <stop offset="0.55" stop-color="var(--fuji-2)"/>
-              <stop offset="1" stop-color="var(--fuji-3)"/>
-            </linearGradient>
-          </defs>
-          <!-- badan gunung -->
-          <path d="M0,470 L520,120 Q600,72 680,120 L1200,470 Z" fill="url(#fujiG)"/>
-          <!-- salju di puncak (mengikuti kontur gunung) -->
-          <path d="M394,205 L520,120 Q600,72 680,120 L806,205
+    <header class="hero page-panel" id="home" data-page="home">
+      <div class="wrap">
+        <div class="hero-card">
+          <div class="scene" aria-hidden="true">
+            <div class="hero-sun"></div>
+            <div class="cloud c3"></div>
+            <div class="cloud c1"></div>
+            <div class="cloud c2"></div>
+            <svg class="fuji" viewBox="0 0 1200 470" preserveAspectRatio="xMidYMax meet">
+              <defs>
+                <linearGradient id="fujiG" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="var(--fuji-1)" />
+                  <stop offset="0.55" stop-color="var(--fuji-2)" />
+                  <stop offset="1" stop-color="var(--fuji-3)" />
+                </linearGradient>
+              </defs>
+              <!-- badan gunung -->
+              <path d="M0,470 L520,120 Q600,72 680,120 L1200,470 Z" fill="url(#fujiG)" />
+              <!-- salju di puncak (mengikuti kontur gunung) -->
+              <path
+                d="M394,205 L520,120 Q600,72 680,120 L806,205
                    L765,158 L722,196 L680,148 L640,186 L600,132 L560,186 L520,148 L478,196 L435,158 Z"
-                fill="var(--snow)"/>
-        </svg>
-        <div class="hills"></div>
-        <div class="petals" id="petals"></div>
-      </div>
-
-      <div class="hero-grid">
-        <div>
-          <p class="hero-jp reveal">ようこそ — Selamat datang di Aozora</p>
-          <h2 class="hero-title">
-            <span class="line l1"><span>Aozora Nihongo Club</span></span>
-          </h2>
-          <p class="hero-tag reveal d1">Ganbaruzo!</p>
-          <p class="lead reveal d1">
-            Halo! Ini tempat ngumpulnya anak <b>SMK N 1 Purwokerto</b> yang pengin bisa bahasa Jepang.
-            Kita mulai dari huruf paling gampang, lanjut ke kosakata, sampai berani ngobrol bareng.
-            Santai aja — <b>nggak perlu jago dulu buat ikut</b>.
-          </p>
-          <div class="hero-cta reveal d2">
-            <a href="#kana" class="btn btn-primary">Mulai dari huruf pertama</a>
-            <a href="#pesan" class="btn btn-ghost">Tulis pesan atau curhat</a>
+                fill="var(--snow)"
+              />
+            </svg>
+            <div class="hills"></div>
+            <div class="petals" id="petals"></div>
           </div>
-          <div class="hero-stats reveal d3">
-            <div><b id="statKana">0</b><small>Huruf Kana</small></div>
-            <div><b id="statVocab">0</b><small>Kosakata</small></div>
-            <div><b id="statFb">0</b><small>Pesan Masuk</small></div>
+
+          <div class="hero-grid">
+            <div>
+              <p class="hero-jp reveal">ようこそ — Selamat datang di Aozora</p>
+              <h2 class="hero-title">
+                <span class="line l1"><span>Aozora Nihongo Club</span></span>
+              </h2>
+              <p class="hero-tag reveal d1">Ganbaruzo!</p>
+              <p class="lead reveal d1">
+                Halo! Ini tempat ngumpulnya anak <b>SMK N 1 Purwokerto</b> yang pengin bisa bahasa
+                Jepang. Kita mulai dari huruf paling gampang, lanjut ke kosakata, sampai berani ngobrol
+                bareng. Santai aja — <b>nggak perlu jago dulu buat ikut</b>.
+              </p>
+              <div class="hero-cta reveal d2">
+                <a href="#kana" class="btn btn-primary">Mulai dari huruf pertama</a>
+                <a href="#pesan" class="btn btn-ghost">Tulis pesan atau curhat</a>
+              </div>
+              <div class="hero-stats reveal d3">
+                <div><b id="statKana">0</b><small>Huruf Kana</small></div>
+                <div><b id="statVocab">0</b><small>Kosakata</small></div>
+                <div><b id="statFb">0</b><small>Pesan Masuk</small></div>
+              </div>
+            </div>
+
+            <div class="hero-visual reveal d2">
+              <div class="logo-disc">
+                <img src="assets/logo-nobg.png" alt="Logo Aozora Nihongo Club" />
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="hero-visual reveal d2">
-          <div class="logo-disc">
-            <img src="assets/logo-nobg.png" alt="Logo Aozora Nihongo Club" />
-          </div>
-        </div>
+        <div class="scroll-hint"><span class="wheel"></span>Gulir</div>
       </div>
-    </div>
-    <div class="scroll-hint"><span class="wheel"></span>Gulir</div>
-  </div>
-</header>
+    </header>
 
-<!--
+    <!--
   ============================================================
   6. MARQUEE (teks berjalan)
   ============================================================
@@ -251,20 +355,20 @@
   aria-hidden="true" karena ini hiasan, isinya sudah ada di bagian lain.
   ============================================================
 -->
-<div class="marquee page-decoration" aria-hidden="true">
-  <div class="marquee-track">
-    <span>ひらがな Hiragana</span><span>カタカナ Katakana</span><span>漢字 Kanji</span>
-    <span>語彙 Kosakata</span><span>青空日本語</span><span>SMK N 1 Purwokerto</span>
-    <span>ひらがな Hiragana</span><span>カタカナ Katakana</span><span>漢字 Kanji</span>
-    <span>語彙 Kosakata</span><span>青空日本語</span><span>SMK N 1 Purwokerto</span>
-  </div>
-</div>
+    <div class="marquee page-decoration" aria-hidden="true">
+      <div class="marquee-track">
+        <span>ひらがな Hiragana</span><span>カタカナ Katakana</span><span>漢字 Kanji</span>
+        <span>語彙 Kosakata</span><span>青空日本語</span><span>SMK N 1 Purwokerto</span>
+        <span>ひらがな Hiragana</span><span>カタカナ Katakana</span><span>漢字 Kanji</span>
+        <span>語彙 Kosakata</span><span>青空日本語</span><span>SMK N 1 Purwokerto</span>
+      </div>
+    </div>
 
-<!--
+    <!--
   ============================================================
   7. KANA (Hiragana & Katakana)
   ============================================================
-  <section id="kana"> = bagian halaman, id-nya dipakai untuk lompatan link.
+  Bagian Kana berada di panel Belajar; id setiap materi menjadi tujuan subtab.
 
   .tabs        -> 2 tombol: Hiragana / Katakana
                   data-script="hiragana" dibaca JS untuk tahu mana yang aktif
@@ -277,37 +381,49 @@
   Kenapa? Biar tidak perlu tulis 104 huruf manual di HTML.
   ============================================================
 -->
-<section id="belajar" class="page-panel" data-page="belajar" aria-label="Halaman Belajar">
-  <!-- Subnavigasi mengganti materi di dalam halaman Belajar, bukan halaman utama. -->
-  <nav class="page-subnav" aria-label="Menu belajar"><a href="#kana" class="subnav-link active">Kana</a><a href="#kuis" class="subnav-link">Kuis</a><a href="#kotd" class="subnav-link">Kata Hari Ini</a><a href="#kosakata" class="subnav-link">Kosakata</a></nav>
-  <section id="kana" class="learn-pane" data-learn="kana">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Daftar Isi Huruf</span>
-      <h2 class="h2">Hiragana &amp; <em>Katakana</em></h2>
-      <p class="lead">Tiap baris dipisah per kelompok (a–o, ka–ko, sa–so, dan seterusnya). Klik hurufnya buat lihat bacaan &amp; dengar suaranya. Huruf yang sudah kamu tandai tersimpan di perangkatmu.</p>
-    </div>
-    <div class="tabs reveal d1">
-      <button class="tab active" data-script="hiragana">ひらがな Hiragana</button>
-      <button class="tab" data-script="katakana">カタカナ Katakana</button>
-    </div>
-    <div class="kana-toolbar reveal d2">
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="search" id="kanaSearch" placeholder="Cari huruf atau romaji…" />
-      </div>
-      <div class="chips" id="kanaChips"></div>
-    </div>
-    <div class="kana-groups" id="kanaGroups"></div>
-    <div class="kana-progress reveal">
-      <small>Sudah ditandai: <b id="kanaDoneCount">0</b> / <span id="kanaTotal">0</span></small>
-      <div class="bar"><i id="kanaBar"></i></div>
-      <button class="btn btn-ghost" id="kanaReset" style="padding:9px 18px;font-size:13px">Reset</button>
-    </div>
-  </div>
-</section>
+    <section id="belajar" class="page-panel" data-page="belajar" aria-label="Halaman Belajar">
+      <!-- Subnavigasi mengganti materi di dalam halaman Belajar, bukan halaman utama. -->
+      <nav class="page-subnav" aria-label="Menu belajar">
+        <a href="#kana" class="subnav-link active">Kana</a><a href="#kuis" class="subnav-link">Kuis</a
+        ><a href="#kotd" class="subnav-link">Kata Hari Ini</a
+        ><a href="#kosakata" class="subnav-link">Kosakata</a>
+      </nav>
+      <section id="kana" class="learn-pane" data-learn="kana">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">Daftar Isi Huruf</span>
+            <h2 class="h2">Hiragana &amp; <em>Katakana</em></h2>
+            <p class="lead">
+              Tiap baris dipisah per kelompok (a–o, ka–ko, sa–so, dan seterusnya). Klik hurufnya buat
+              lihat bacaan &amp; dengar suaranya. Huruf yang sudah kamu tandai tersimpan di perangkatmu.
+            </p>
+          </div>
+          <div class="tabs reveal d1">
+            <button class="tab active" data-script="hiragana">ひらがな Hiragana</button>
+            <button class="tab" data-script="katakana">カタカナ Katakana</button>
+          </div>
+          <div class="kana-toolbar reveal d2">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input type="search" id="kanaSearch" placeholder="Cari huruf atau romaji…" />
+            </div>
+            <div class="chips" id="kanaChips"></div>
+          </div>
+          <div class="kana-groups" id="kanaGroups"></div>
+          <div class="kana-progress reveal">
+            <small>Sudah ditandai: <b id="kanaDoneCount">0</b> / <span id="kanaTotal">0</span></small>
+            <div class="bar"><i id="kanaBar"></i></div>
+            <button class="btn btn-ghost" id="kanaReset" style="padding: 9px 18px; font-size: 13px">
+              Reset
+            </button>
+          </div>
+        </div>
+      </section>
 
-<!--
+      <!--
   ============================================================
   7a. KUIS KANA (pilihan ganda)
   ============================================================
@@ -316,41 +432,44 @@
   Muncul di antara bagian Kana dan Kosakata.
   ============================================================
 -->
-<section id="kuis" class="learn-pane hidden" data-learn="kuis">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">クイズ · Kuis</span>
-      <h2 class="h2">Kuis <em>Kana</em></h2>
-      <p class="lead">Pilih romaji yang tepat untuk huruf kana yang ditampilkan. 10 soal per ronde — coba sampai skor sempurna!</p>
-    </div>
-    <div class="quiz-box glass reveal d1" id="quizBox">
-      <div class="quiz-start" id="quizStart">
-        <div class="quiz-tabs">
-          <button class="tab active" data-qs="hiragana">Hiragana</button>
-          <button class="tab" data-qs="katakana">Katakana</button>
-          <button class="tab" data-qs="campur">Campur</button>
+      <section id="kuis" class="learn-pane hidden" data-learn="kuis">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">クイズ · Kuis</span>
+            <h2 class="h2">Kuis <em>Kana</em></h2>
+            <p class="lead">
+              Pilih romaji yang tepat untuk huruf kana yang ditampilkan. 10 soal per ronde — coba sampai
+              skor sempurna!
+            </p>
+          </div>
+          <div class="quiz-box glass reveal d1" id="quizBox">
+            <div class="quiz-start" id="quizStart">
+              <div class="quiz-tabs">
+                <button class="tab active" data-qs="hiragana">Hiragana</button>
+                <button class="tab" data-qs="katakana">Katakana</button>
+                <button class="tab" data-qs="campur">Campur</button>
+              </div>
+              <button class="btn btn-primary" id="quizGo">Mulai Kuis</button>
+            </div>
+            <div class="quiz-play hidden" id="quizPlay">
+              <div class="quiz-progress"><span id="quizNum">1</span>/10</div>
+              <div class="quiz-glyph" id="quizGlyph">あ</div>
+              <div class="quiz-opts" id="quizOpts"></div>
+              <div class="quiz-fb" id="quizFb"></div>
+            </div>
+            <div class="quiz-done hidden" id="quizDone">
+              <div class="quiz-score">
+                <span class="quiz-score-num" id="quizScore">0</span><small>/10</small>
+              </div>
+              <p id="quizVerdict"></p>
+              <button class="btn btn-primary" id="quizRetry">Coba Lagi</button>
+              <button class="btn btn-ghost" id="quizBack">Kembali</button>
+            </div>
+          </div>
         </div>
-        <button class="btn btn-primary" id="quizGo">Mulai Kuis</button>
-      </div>
-      <div class="quiz-play hidden" id="quizPlay">
-        <div class="quiz-progress"><span id="quizNum">1</span>/10</div>
-        <div class="quiz-glyph" id="quizGlyph">あ</div>
-        <div class="quiz-opts" id="quizOpts"></div>
-        <div class="quiz-fb" id="quizFb"></div>
-      </div>
-      <div class="quiz-done hidden" id="quizDone">
-        <div class="quiz-score">
-          <span class="quiz-score-num" id="quizScore">0</span><small>/10</small>
-        </div>
-        <p id="quizVerdict"></p>
-        <button class="btn btn-primary" id="quizRetry">Coba Lagi</button>
-        <button class="btn btn-ghost" id="quizBack">Kembali</button>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
-<!--
+      <!--
   ============================================================
   7b. KATA HARI INI
   ============================================================
@@ -358,27 +477,37 @@
   Ditampilkan sebagai kartu kecil di antara Kuis dan Kosakata.
   ============================================================
 -->
-<section id="kotd" class="learn-pane hidden" data-learn="kotd">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">今日の言葉 · Kata Hari Ini</span>
-      <h2 class="h2">Kata <em>Hari Ini</em></h2>
-      <p class="lead">Tiap hari satu kata baru. Klik ikon suara buat dengar pelafalannya.</p>
-    </div>
-    <div class="kotd-card glass reveal d1" id="kotdCard">
-      <div class="kotd-jp" id="kotdJp">—</div>
-      <div class="kotd-kana" id="kotdKana">—</div>
-      <div class="kotd-id" id="kotdId">—</div>
-      <div class="kotd-kat" id="kotdKat">—</div>
-      <button class="btn btn-ghost kotd-speak" id="kotdSpeak">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12"/></svg>
-        Dengar
-      </button>
-    </div>
-  </div>
-</section>
+      <section id="kotd" class="learn-pane hidden" data-learn="kotd">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">今日の言葉 · Kata Hari Ini</span>
+            <h2 class="h2">Kata <em>Hari Ini</em></h2>
+            <p class="lead">Tiap hari satu kata baru. Klik ikon suara buat dengar pelafalannya.</p>
+          </div>
+          <div class="kotd-card glass reveal d1" id="kotdCard">
+            <div class="kotd-jp" id="kotdJp">—</div>
+            <div class="kotd-kana" id="kotdKana">—</div>
+            <div class="kotd-id" id="kotdId">—</div>
+            <div class="kotd-kat" id="kotdKat">—</div>
+            <button class="btn btn-ghost kotd-speak" id="kotdSpeak">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M11 5L6 9H3v6h3l5 4z" />
+                <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12" />
+              </svg>
+              Dengar
+            </button>
+          </div>
+        </div>
+      </section>
 
-<!--
+      <!--
   ============================================================
   8. KOSAKATA
   ============================================================
@@ -391,26 +520,32 @@
   dan tombol speaker untuk mendengar pelafalan.
   ============================================================
 -->
-<section id="kosakata" class="learn-pane hidden" data-learn="kosakata">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">語彙 · Kosakata</span>
-      <h2 class="h2">Kosakata <em>Sehari-hari</em></h2>
-      <p class="lead">Kata-kata yang sering dipakai waktu latihan. Klik ikon suara untuk mendengar pelafalannya.</p>
-    </div>
-    <div class="kana-toolbar reveal d1">
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="search" id="vocabSearch" placeholder="Cari kosakata…" />
-      </div>
-      <div class="chips" id="vocabChips"></div>
-    </div>
-    <div class="vocab-grid" id="vocabGrid"></div>
-  </div>
-</section>
-</section> <!-- penutup panel halaman Belajar -->
+      <section id="kosakata" class="learn-pane hidden" data-learn="kosakata">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">語彙 · Kosakata</span>
+            <h2 class="h2">Kosakata <em>Sehari-hari</em></h2>
+            <p class="lead">
+              Kata-kata yang sering dipakai waktu latihan. Klik ikon suara untuk mendengar pelafalannya.
+            </p>
+          </div>
+          <div class="kana-toolbar reveal d1">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input type="search" id="vocabSearch" placeholder="Cari kosakata…" />
+            </div>
+            <div class="chips" id="vocabChips"></div>
+          </div>
+          <div class="vocab-grid" id="vocabGrid"></div>
+        </div>
+      </section>
+    </section>
+    <!-- penutup panel halaman Belajar -->
 
-<!--
+    <!--
   ============================================================
   9. KEGIATAN (info pertemuan + tentang eskul)
   ============================================================
@@ -423,76 +558,159 @@
   .about-grid -> 4 kartu kecil berisi keunggulan eskul
   ============================================================
 -->
-<section id="kegiatan" class="page-panel hidden" data-page="kegiatan">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">活動 · Kegiatan</span>
-      <h2 class="h2">Kenalan dulu, <em>yuk</em></h2>
-      <p class="lead">Aozora Nihongo Club itu bukan kelas yang tegang. Kita kumpul tiap minggu, belajar sambil ngobrol, dan sesekali main hal-hal seru soal Jepang.</p>
-    </div>
-
-    <div class="kegiatan-top">
-      <!-- info forum (bisa diubah admin) -->
-      <div class="glass forum-card reveal">
-        <div class="forum-head">
-          <span class="forum-ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-          </span>
-          <div><b>Info Pertemuan</b><small>diperbarui pengurus tiap minggu</small></div>
+    <section id="kegiatan" class="page-panel hidden" data-page="kegiatan">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">活動 · Kegiatan</span>
+          <h2 class="h2">Kenalan dulu, <em>yuk</em></h2>
+          <p class="lead">
+            Aozora Nihongo Club itu bukan kelas yang tegang. Kita kumpul tiap minggu, belajar sambil
+            ngobrol, dan sesekali main hal-hal seru soal Jepang.
+          </p>
         </div>
-        <ul class="forum-list">
-          <li><span>Hari</span><b id="forumHari">Kamis</b></li>
-          <li><span>Tempat</span><b id="forumTempat">C107</b></li>
-          <li><span>Waktu</span><b id="forumWaktu">15.30 – selesai</b></li>
-        </ul>
-        <p class="forum-note" id="forumCatatan">Bawa buku catatan &amp; semangat. Kalau pindah ruang, bakal diinfokan lewat grup.</p>
-      </div>
 
-      <!-- slider tentang -->
-      <div class="glass slider reveal d1" id="aboutSlider">
-        <div class="slides" id="aboutSlides"></div>
-        <div class="slider-nav">
-          <button class="sl-btn" id="slidePrev" aria-label="Sebelumnya">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
-          </button>
-          <div class="dots" id="slideDots"></div>
-          <button class="sl-btn" id="slideNext" aria-label="Berikutnya">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
-          </button>
+        <div class="kegiatan-top">
+          <!-- info forum (bisa diubah admin) -->
+          <div class="glass forum-card reveal">
+            <div class="forum-head">
+              <span class="forum-ic">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="5" width="18" height="16" rx="3" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                </svg>
+              </span>
+              <div><b>Info Pertemuan</b><small>diperbarui pengurus tiap minggu</small></div>
+            </div>
+            <ul class="forum-list">
+              <li><span>Hari</span><b id="forumHari">Kamis</b></li>
+              <li><span>Tempat</span><b id="forumTempat">C107</b></li>
+              <li><span>Waktu</span><b id="forumWaktu">15.30 – selesai</b></li>
+            </ul>
+            <p class="forum-note" id="forumCatatan">
+              Bawa buku catatan &amp; semangat. Kalau pindah ruang, bakal diinfokan lewat grup.
+            </p>
+          </div>
+
+          <!-- slider tentang -->
+          <div class="glass slider reveal d1" id="aboutSlider">
+            <div class="slides" id="aboutSlides"></div>
+            <div class="slider-nav">
+              <button class="sl-btn" id="slidePrev" aria-label="Sebelumnya">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M15 5l-7 7 7 7" />
+                </svg>
+              </button>
+              <div class="dots" id="slideDots"></div>
+              <button class="sl-btn" id="slideNext" aria-label="Berikutnya">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-card reveal">
+            <span class="ic">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 1-2-2z" />
+                <path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 0 2-2z" />
+              </svg>
+            </span>
+            <div>
+              <h3>Belajar kana</h3>
+              <p>Hiragana &amp; katakana dari nol — baca, tulis, dan hafalin bareng-bareng.</p>
+            </div>
+          </div>
+          <div class="about-card reveal d1">
+            <span class="ic">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M4 6h16M4 12h16M4 18h10" />
+              </svg>
+            </span>
+            <div>
+              <h3>Kosakata harian</h3>
+              <p>Kata-kata yang langsung kepake: di kelas, kantin, sampai ngobrol santai.</p>
+            </div>
+          </div>
+          <div class="about-card reveal d2">
+            <span class="ic">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 3l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L7.5 16.8l.9-5L4.8 8.3l5-.7z" />
+              </svg>
+            </span>
+            <div>
+              <h3>Budaya Jepang</h3>
+              <p>Origami, kaligrafi, lagu, sampai budaya pop — belajar sambil main.</p>
+            </div>
+          </div>
+          <div class="about-card reveal d3">
+            <span class="ic">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z" />
+              </svg>
+            </span>
+            <div>
+              <h3>Latihan ngobrol</h3>
+              <p>Kaiwa (会話) sederhana biar berani ngomong, salah pun nggak apa-apa.</p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
+    <!-- Selesai: kegiatan berisi info pertemuan, slider, dan pengenalan klub. -->
 
-    <div class="about-grid">
-      <div class="about-card reveal">
-        <span class="ic">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 1-2-2z"/><path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 0 2-2z"/></svg>
-        </span>
-        <div><h3>Belajar kana</h3><p>Hiragana &amp; katakana dari nol — baca, tulis, dan hafalin bareng-bareng.</p></div>
-      </div>
-      <div class="about-card reveal d1">
-        <span class="ic">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-        </span>
-        <div><h3>Kosakata harian</h3><p>Kata-kata yang langsung kepake: di kelas, kantin, sampai ngobrol santai.</p></div>
-      </div>
-      <div class="about-card reveal d2">
-        <span class="ic">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L7.5 16.8l.9-5L4.8 8.3l5-.7z"/></svg>
-        </span>
-        <div><h3>Budaya Jepang</h3><p>Origami, kaligrafi, lagu, sampai budaya pop — belajar sambil main.</p></div>
-      </div>
-      <div class="about-card reveal d3">
-        <span class="ic">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>
-        </span>
-        <div><h3>Latihan ngobrol</h3><p>Kaiwa (会話) sederhana biar berani ngomong, salah pun nggak apa-apa.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!--
+    <!--
   ============================================================
   10. DOKUMENTASI (galeri foto)
   ============================================================
@@ -501,26 +719,49 @@
   Kalau belum ada foto, JS menampilkan pesan "belum ada foto".
   ============================================================
 -->
-<section id="dokumentasi" class="page-panel hidden" data-page="dokumentasi">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">写真 · Dokumentasi</span>
-      <h2 class="h2">Momen <em>Kita</em></h2>
-      <p class="lead">Kumpulan foto &amp; kenangan dari kegiatan eskul. Pengurus bisa menambah foto lewat panel admin.</p>
-    </div>
-    <!-- Galeri: viewport memotong strip foto; pengunjung bisa geser, berhenti, atau lanjutkan gerak otomatis. -->
-    <div class="gallery-shell">
-      <button class="gallery-arrow prev" id="galleryPrev" type="button" aria-label="Foto sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
-      <div class="gallery-viewport" id="galleryViewport" tabindex="0" aria-label="Galeri foto, bisa digeser ke samping"><div class="gallery-grid" id="galleryGrid"></div></div>
-      <!-- Tombol pause memberi kendali manual selain swipe/drag. -->
-      <button class="gallery-toggle" id="galleryToggle" type="button" aria-pressed="false">Jeda gerakan</button>
-      <button class="gallery-arrow next" id="galleryNext" type="button" aria-label="Foto berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></button>
-    </div>
-    <p class="gallery-hint" id="galleryHint">Geser foto ke samping. Galeri berhenti saat disentuh.</p>
-  </div>
-</section>
+    <section id="dokumentasi" class="page-panel hidden" data-page="dokumentasi">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">写真 · Dokumentasi</span>
+          <h2 class="h2">Momen <em>Kita</em></h2>
+          <p class="lead">
+            Kumpulan foto &amp; kenangan dari kegiatan eskul. Pengurus bisa menambah foto lewat panel
+            admin.
+          </p>
+        </div>
+        <!-- Galeri: viewport memotong strip foto; pengunjung bisa geser, berhenti, atau lanjutkan gerak otomatis. -->
+        <div class="gallery-shell">
+          <button class="gallery-arrow prev" id="galleryPrev" type="button" aria-label="Foto sebelumnya">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <div
+            class="gallery-viewport"
+            id="galleryViewport"
+            tabindex="0"
+            aria-label="Galeri foto, bisa digeser ke samping"
+          >
+            <div class="gallery-grid" id="galleryGrid"></div>
+          </div>
+          <!-- Tombol pause memberi kendali manual selain swipe/drag. -->
+          <button class="gallery-toggle" id="galleryToggle" type="button" aria-pressed="false">
+            Jeda gerakan
+          </button>
+          <button class="gallery-arrow next" id="galleryNext" type="button" aria-label="Foto berikutnya">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+        <p class="gallery-hint" id="galleryHint">
+          Geser foto ke samping. Galeri berhenti saat disentuh.
+        </p>
+      </div>
+    </section>
+    <!-- Selesai: galeri menampung strip foto yang digeser oleh JavaScript. -->
 
-<!--
+    <!--
   ============================================================
   11. PESAN & KRITIK
   ============================================================
@@ -543,100 +784,155 @@
   pakai pesan error sendiri yang lebih rapi.
   ============================================================
 -->
-<section id="pesan" class="page-panel hidden" data-page="pesan">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">意見 · Pesan</span>
-      <h2 class="h2">Pesan &amp; <em>Kritik</em></h2>
-      <p class="lead">Ada usul, masukan, atau sekadar mau cerita soal eskul? Tulis di sini. Pesanmu tampil buat semua orang, tapi <b>namamu disamarkan</b> — cuma pengurus yang tahu siapa pengirimnya. Kamu juga bisa kasih tanda suka ke pesan orang lain.</p>
-    </div>
+    <section id="pesan" class="page-panel hidden" data-page="pesan">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">意見 · Pesan</span>
+          <h2 class="h2">Pesan &amp; <em>Kritik</em></h2>
+          <p class="lead">
+            Ada usul, masukan, atau sekadar mau cerita soal eskul? Tulis di sini. Pesanmu tampil buat
+            semua orang, tapi
+            <b>namamu disamarkan</b> — cuma pengurus yang tahu siapa pengirimnya. Kamu juga bisa kasih
+            tanda suka ke pesan orang lain.
+          </p>
+        </div>
 
-    <div class="pesan-tabs reveal d1">
-      <button class="ptab active" data-ptab="publik">Papan Pesan</button>
-      <button class="ptab" data-ptab="pribadi">Pesan Pribadi ke Admin</button>
-    </div>
+        <div class="pesan-tabs reveal d1">
+          <button class="ptab active" data-ptab="publik">Papan Pesan</button>
+          <button class="ptab" data-ptab="pribadi">Pesan Pribadi ke Admin</button>
+        </div>
 
-    <div class="pesan-pane" data-pane="publik">
-      <div class="feedback-grid">
-        <form class="glass form-card reveal" id="fbForm" novalidate>
-          <div class="field" id="fName">
-            <label for="fbName">Nama / Kelas</label>
-            <input type="text" id="fbName" placeholder="mis. Rina — XI RPL 2" maxlength="40" />
-            <div class="err">Nama wajib diisi.</div>
-          </div>
+        <div class="pesan-pane" data-pane="publik">
+          <div class="feedback-grid">
+            <form class="glass form-card reveal" id="fbForm" novalidate>
+              <div class="field" id="fName">
+                <label for="fbName">Nama / Kelas</label>
+                <input type="text" id="fbName" placeholder="mis. Rina — XI RPL 2" maxlength="40" />
+                <div class="err">Nama wajib diisi.</div>
+              </div>
 
-          <div class="field" id="fTypeField">
-            <label>Jenis Pesan</label>
-            <div class="select" id="fbTypeSelect" data-value="Saran">
-              <button type="button" class="select-btn" id="fbTypeBtn">
-                <span class="select-ic" id="fbTypeIc"></span>
-                <span class="select-label" id="fbTypeLabel">Saran</span>
-                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-              <ul class="select-menu" id="fbTypeMenu"></ul>
+              <div class="field" id="fTypeField">
+                <label>Jenis Pesan</label>
+                <div class="select" id="fbTypeSelect" data-value="Saran">
+                  <button type="button" class="select-btn" id="fbTypeBtn">
+                    <span class="select-ic" id="fbTypeIc"></span>
+                    <span class="select-label" id="fbTypeLabel">Saran</span>
+                    <svg
+                      class="select-arrow"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  <ul class="select-menu" id="fbTypeMenu"></ul>
+                </div>
+                <input type="hidden" id="fbType" value="Saran" />
+              </div>
+
+              <div class="field">
+                <label>Seberapa seru kegiatannya?</label>
+                <div class="rating" id="fbRating"></div>
+              </div>
+
+              <div class="field" id="fMsg">
+                <label for="fbMsg">Pesan / Kritik</label>
+                <textarea
+                  id="fbMsg"
+                  placeholder="Tulis pesanmu di sini… (min. 5 karakter)"
+                  maxlength="600"
+                  aria-describedby="fbMsgCount"
+                ></textarea>
+                <div class="field-meta">
+                  <small id="fbMsgCount">0 / 600</small>
+                </div>
+                <div class="err">Pesan minimal 5 karakter.</div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%">Kirim Pesan</button>
+              <div class="form-msg" id="fbResult" role="status" aria-live="polite"></div>
+            </form>
+
+            <div class="reveal d2">
+              <div class="kana-toolbar" style="margin-bottom: 14px">
+                <div class="chips" id="fbFilter"></div>
+                <button
+                  class="btn btn-ghost hidden"
+                  id="fbClear"
+                  style="padding: 9px 16px; font-size: 13px; margin-left: auto"
+                >
+                  Hapus Semua
+                </button>
+              </div>
+              <div class="fb-list" id="fbList"></div>
             </div>
-            <input type="hidden" id="fbType" value="Saran" />
           </div>
+        </div>
 
-          <div class="field">
-            <label>Seberapa seru kegiatannya?</label>
-            <div class="rating" id="fbRating"></div>
+        <div class="pesan-pane hidden" data-pane="pribadi">
+          <div class="private-wrap">
+            <form class="glass form-card reveal" id="pvForm" novalidate>
+              <div class="private-head">
+                <span class="private-ic">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5" />
+                    <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+                  </svg>
+                </span>
+                <div>
+                  <b>Pesan Pribadi ke Pengurus</b
+                  ><small>cuma pengurus yang bisa baca — pengguna lain nggak lihat</small>
+                </div>
+              </div>
+              <div class="field" id="pvNameField">
+                <label for="pvName">Nama / Kelas</label>
+                <input type="text" id="pvName" placeholder="mis. Dina — X TKJ 1" maxlength="40" />
+                <div class="err">Nama wajib diisi.</div>
+              </div>
+              <div class="field" id="pvMsgField">
+                <label for="pvMsg">Isi Pesan</label>
+                <textarea
+                  id="pvMsg"
+                  placeholder="Tulis apa saja — pertanyaan, saran, atau sekadar curhat… (min. 5 karakter)"
+                  maxlength="800"
+                ></textarea>
+                <div class="err">Pesan minimal 5 karakter.</div>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%">
+                Kirim ke Pengurus
+              </button>
+              <div class="form-msg" id="pvResult"></div>
+            </form>
+            <div class="glass private-info reveal d1">
+              <h3>Apa itu pesan pribadi?</h3>
+              <p>
+                Pesan ini <b>tidak muncul di papan pesan umum</b>. Hanya pengurus (admin) yang bisa
+                membacanya. Cocok buat hal yang kamu nggak mau orang lain tahu, atau sekadar butuh teman
+                cerita.
+              </p>
+              <p class="muted">
+                Kalau butuh bantuan cepat, kamu juga bisa sampaikan langsung ke pengurus saat pertemuan
+                Kamis.
+              </p>
+            </div>
           </div>
-
-          <div class="field" id="fMsg">
-            <label for="fbMsg">Pesan / Kritik</label>
-            <textarea id="fbMsg" placeholder="Tulis pesanmu di sini… (min. 5 karakter)" maxlength="600" aria-describedby="fbMsgCount"></textarea>
-            <div class="field-meta"><small id="fbMsgCount">0 / 600</small></div>
-            <div class="err">Pesan minimal 5 karakter.</div>
-          </div>
-
-          <button type="submit" class="btn btn-primary" style="width:100%">Kirim Pesan</button>
-          <div class="form-msg" id="fbResult" role="status" aria-live="polite"></div>
-        </form>
-
-        <div class="reveal d2">
-          <div class="kana-toolbar" style="margin-bottom:14px">
-            <div class="chips" id="fbFilter"></div>
-            <button class="btn btn-ghost hidden" id="fbClear" style="padding:9px 16px;font-size:13px;margin-left:auto">Hapus Semua</button>
-          </div>
-          <div class="fb-list" id="fbList"></div>
         </div>
       </div>
-    </div>
+    </section>
+    <!-- Penjelasan: panel Pesan menggabungkan form publik dan form pribadi. -->
 
-    <div class="pesan-pane hidden" data-pane="pribadi">
-      <div class="private-wrap">
-        <form class="glass form-card reveal" id="pvForm" novalidate>
-          <div class="private-head">
-            <span class="private-ic">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
-            </span>
-            <div><b>Pesan Pribadi ke Pengurus</b><small>cuma pengurus yang bisa baca — pengguna lain nggak lihat</small></div>
-          </div>
-          <div class="field" id="pvNameField">
-            <label for="pvName">Nama / Kelas</label>
-            <input type="text" id="pvName" placeholder="mis. Dina — X TKJ 1" maxlength="40" />
-            <div class="err">Nama wajib diisi.</div>
-          </div>
-          <div class="field" id="pvMsgField">
-            <label for="pvMsg">Isi Pesan</label>
-            <textarea id="pvMsg" placeholder="Tulis apa saja — pertanyaan, saran, atau sekadar curhat… (min. 5 karakter)" maxlength="800"></textarea>
-            <div class="err">Pesan minimal 5 karakter.</div>
-          </div>
-          <button type="submit" class="btn btn-primary" style="width:100%">Kirim ke Pengurus</button>
-          <div class="form-msg" id="pvResult"></div>
-        </form>
-        <div class="glass private-info reveal d1">
-          <h3>Apa itu pesan pribadi?</h3>
-          <p>Pesan ini <b>tidak muncul di papan pesan umum</b>. Hanya pengurus (admin) yang bisa membacanya. Cocok buat hal yang kamu nggak mau orang lain tahu, atau sekadar butuh teman cerita.</p>
-          <p class="muted">Kalau butuh bantuan cepat, kamu juga bisa sampaikan langsung ke pengurus saat pertemuan Kamis.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!--
+    <!--
   ============================================================
   12. FOOTER (penutup)
   ============================================================
@@ -645,54 +941,76 @@
   dengan tahun sekarang, jadi tidak perlu ganti manual tiap tahun.
   ============================================================
 -->
-<footer class="page-panel hidden" data-page="pesan">
-  <div class="wrap">
-    <div class="foot-inner">
-      <div class="foot-grid">
-        <div>
-          <div class="foot-brand">
-            <img src="assets/logo-nobg.png" alt="Logo" />
-            <span><b>Aozora Nihongo Club</b><small>青空日本語</small></span>
+    <footer class="page-panel hidden" data-page="pesan">
+      <div class="wrap">
+        <div class="foot-inner">
+          <div class="foot-grid">
+            <div>
+              <div class="foot-brand">
+                <img src="assets/logo-nobg.png" alt="Logo" />
+                <span><b>Aozora Nihongo Club</b><small>青空日本語</small></span>
+              </div>
+              <p>
+                Ekstrakurikuler bahasa Jepang SMK N 1 Purwokerto. Belajar, ngobrol, dan seru-seruan
+                bareng tiap Kamis.
+              </p>
+            </div>
+            <div>
+              <h4>Jelajahi</h4>
+              <ul>
+                <li><a href="#home">Beranda</a></li>
+                <li><a href="#kana">Hiragana &amp; Katakana</a></li>
+                <li><a href="#kosakata">Kosakata</a></li>
+                <li><a href="#kegiatan">Kegiatan</a></li>
+                <li><a href="#dokumentasi">Dokumentasi</a></li>
+                <li><a href="#pesan">Pesan &amp; Kritik</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4>Ikuti Aozora</h4>
+              <ul>
+                <li>
+                  <a
+                    href="https://www.instagram.com/ancsmecone/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram Aozora Nihongo Club"
+                    >Instagram @ancsmecone</a
+                  >
+                </li>
+              </ul>
+              <h4>Belajar</h4>
+              <ul>
+                <li><a href="#kana">ひらがな Hiragana</a></li>
+                <li><a href="#kana">カタカナ Katakana</a></li>
+                <li><a href="#kosakata">語彙 Kosakata</a></li>
+                <li><a href="#kegiatan">活動 Kegiatan</a></li>
+              </ul>
+            </div>
           </div>
-          <p>Ekstrakurikuler bahasa Jepang SMK N 1 Purwokerto. Belajar, ngobrol, dan seru-seruan bareng tiap Kamis.</p>
-        </div>
-        <div>
-          <h4>Jelajahi</h4>
-          <ul>
-            <li><a href="#home">Beranda</a></li>
-            <li><a href="#kana">Hiragana &amp; Katakana</a></li>
-            <li><a href="#kosakata">Kosakata</a></li>
-            <li><a href="#kegiatan">Kegiatan</a></li>
-            <li><a href="#dokumentasi">Dokumentasi</a></li>
-            <li><a href="#pesan">Pesan &amp; Kritik</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Ikuti Aozora</h4>
-          <ul><li><a href="https://www.instagram.com/ancsmecone/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Aozora Nihongo Club">Instagram @ancsmecone</a></li></ul>
-          <h4>Belajar</h4>
-          <ul>
-            <li><a href="#kana">ひらがな Hiragana</a></li>
-            <li><a href="#kana">カタカナ Katakana</a></li>
-            <li><a href="#kosakata">語彙 Kosakata</a></li>
-            <li><a href="#kegiatan">活動 Kegiatan</a></li>
-          </ul>
+          <div class="foot-bottom">
+            <span>© <span id="year"></span> Aozora Nihongo Club · SMK N 1 Purwokerto</span>
+            <span>青空の下で日本語を学ぼう · Belajar di bawah langit biru</span>
+          </div>
         </div>
       </div>
-      <div class="foot-bottom">
-        <span>© <span id="year"></span> Aozora Nihongo Club · SMK N 1 Purwokerto</span>
-        <span>青空の下で日本語を学ぼう · Belajar di bawah langit biru</span>
-      </div>
-    </div>
-  </div>
-</footer>
+    </footer>
 
-<button class="to-top" id="toTop" aria-label="Ke atas">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-</button>
-<div class="toast-wrap" id="toastWrap"></div>
+    <button class="to-top" id="toTop" aria-label="Ke atas">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 19V5M5 12l7-7 7 7" />
+      </svg>
+    </button>
+    <div class="toast-wrap" id="toastWrap"></div>
 
-<!--
+    <!--
   ============================================================
   13. KANA POPUP (detail huruf)
   ============================================================
@@ -704,21 +1022,21 @@
   Isinya 3 tombol: Dengar / Tandai Hafal / Tutup.
   ============================================================
 -->
-<div class="kana-pop" id="kanaPop">
-  <div class="glass kana-pop-card">
-    <div class="big" id="popGlyph">あ</div>
-    <div class="rom2" id="popRom">a</div>
-    <div class="row-tag" id="popRow">Vokal</div>
-    <div class="kana-pop-actions">
-      <button class="btn btn-primary" id="popSpeak">Dengar</button>
-      <button class="btn btn-ghost" id="popToggle">Tandai Hafal</button>
-      <button class="btn btn-ghost" id="popClose">Tutup</button>
+    <div class="kana-pop" id="kanaPop">
+      <div class="glass kana-pop-card">
+        <div class="big" id="popGlyph">あ</div>
+        <div class="rom2" id="popRom">a</div>
+        <div class="row-tag" id="popRow">Vokal</div>
+        <div class="kana-pop-actions">
+          <button class="btn btn-primary" id="popSpeak">Dengar</button>
+          <button class="btn btn-ghost" id="popToggle">Tandai Hafal</button>
+          <button class="btn btn-ghost" id="popClose">Tutup</button>
+        </div>
+        <div class="stroke-hint" id="popHint"></div>
+      </div>
     </div>
-    <div class="stroke-hint" id="popHint"></div>
-  </div>
-</div>
 
-<!--
+    <!--
   ============================================================
   14. ADMIN MODAL (panel pengurus)
   ============================================================
@@ -732,67 +1050,138 @@
   Di dalam panel ada 3 tab: Info Pertemuan, Pesan Pribadi, Galeri.
   ============================================================
 -->
-<div class="modal" id="adminModal">
-  <div class="modal-card glass">
-    <button class="modal-x" id="adminClose" aria-label="Tutup">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
+    <div class="modal" id="adminModal">
+      <div class="modal-card glass">
+        <button class="modal-x" id="adminClose" aria-label="Tutup">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
 
-    <div id="adminLoginView">
-      <div class="modal-head">
-        <span class="modal-ic">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
-        </span>
-        <div><h3>Masuk Pengurus</h3><p>Khusus pengurus Aozora Nihongo Club.</p></div>
+        <div id="adminLoginView">
+          <div class="modal-head">
+            <span class="modal-ic">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5" />
+                <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+              </svg>
+            </span>
+            <div>
+              <h3>Masuk Pengurus</h3>
+              <p>Khusus pengurus Aozora Nihongo Club.</p>
+            </div>
+          </div>
+          <form id="adminLogin">
+            <div class="field">
+              <label for="adminUser">Username</label
+              ><input type="text" id="adminUser" placeholder="admin" autocomplete="username" />
+            </div>
+            <div class="field">
+              <label for="adminPass">Password</label
+              ><input
+                type="password"
+                id="adminPass"
+                placeholder="••••••••"
+                autocomplete="current-password"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%">Masuk</button>
+            <div class="admin-err" id="adminErr"></div>
+          </form>
+        </div>
+
+        <div id="adminDash" class="hidden">
+          <div class="modal-head">
+            <span class="modal-ic ok">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </span>
+            <div>
+              <h3>Panel Pengurus</h3>
+              <p>Kelola info, pesan pribadi, dan galeri.</p>
+            </div>
+            <button
+              class="btn btn-ghost"
+              id="adminLogout"
+              style="margin-left: auto; padding: 9px 16px; font-size: 13px"
+            >
+              Keluar
+            </button>
+          </div>
+
+          <div class="admin-tabs">
+            <button class="atab active" data-atab="forum">Info Pertemuan</button>
+            <button class="atab" data-atab="private">Pesan Pribadi</button>
+            <button class="atab" data-atab="gallery">Galeri</button>
+          </div>
+
+          <div class="admin-pane" data-apane="forum">
+            <div class="field">
+              <label for="fHari">Hari</label
+              ><input type="text" id="fHari" placeholder="Kamis" maxlength="20" />
+            </div>
+            <div class="field">
+              <label for="fTempat">Tempat</label
+              ><input type="text" id="fTempat" placeholder="C107" maxlength="30" />
+            </div>
+            <div class="field">
+              <label for="fWaktu">Waktu</label
+              ><input type="text" id="fWaktu" placeholder="15.30 – selesai" maxlength="30" />
+            </div>
+            <div class="field">
+              <label for="fCatatan">Catatan</label
+              ><textarea
+                id="fCatatan"
+                style="min-height: 80px"
+                maxlength="200"
+                placeholder="Info tambahan…"
+              ></textarea>
+            </div>
+            <button class="btn btn-primary" id="fSave" style="width: 100%">Simpan Info</button>
+          </div>
+
+          <div class="admin-pane hidden" data-apane="private">
+            <div class="admin-list" id="privateList"></div>
+          </div>
+
+          <div class="admin-pane hidden" data-apane="gallery">
+            <div class="field">
+              <label for="gFile">Pilih foto dari perangkat</label>
+              <input type="file" id="gFile" accept="image/*" multiple />
+              <small class="upload-help">
+                Pilih satu atau beberapa foto. Setelah tersimpan, foto langsung muncul di galeri.
+              </small>
+              <div id="uploadPreview" class="upload-preview" aria-live="polite"></div>
+            </div>
+            <div class="form-msg" id="galleryResult" role="status" aria-live="polite"></div>
+            <div class="admin-list" id="galleryAdminList"></div>
+          </div>
+        </div>
       </div>
-      <form id="adminLogin">
-        <div class="field"><label for="adminUser">Username</label><input type="text" id="adminUser" placeholder="admin" autocomplete="username" /></div>
-        <div class="field"><label for="adminPass">Password</label><input type="password" id="adminPass" placeholder="••••••••" autocomplete="current-password" /></div>
-        <button type="submit" class="btn btn-primary" style="width:100%">Masuk</button>
-        <div class="admin-err" id="adminErr"></div>
-      </form>
     </div>
 
-    <div id="adminDash" class="hidden">
-      <div class="modal-head">
-        <span class="modal-ic ok">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-        </span>
-        <div><h3>Panel Pengurus</h3><p>Kelola info, pesan pribadi, dan galeri.</p></div>
-        <button class="btn btn-ghost" id="adminLogout" style="margin-left:auto;padding:9px 16px;font-size:13px">Keluar</button>
-      </div>
-
-      <div class="admin-tabs">
-        <button class="atab active" data-atab="forum">Info Pertemuan</button>
-        <button class="atab" data-atab="private">Pesan Pribadi</button>
-        <button class="atab" data-atab="gallery">Galeri</button>
-      </div>
-
-      <div class="admin-pane" data-apane="forum">
-        <div class="field"><label for="fHari">Hari</label><input type="text" id="fHari" placeholder="Kamis" maxlength="20" /></div>
-        <div class="field"><label for="fTempat">Tempat</label><input type="text" id="fTempat" placeholder="C107" maxlength="30" /></div>
-        <div class="field"><label for="fWaktu">Waktu</label><input type="text" id="fWaktu" placeholder="15.30 – selesai" maxlength="30" /></div>
-        <div class="field"><label for="fCatatan">Catatan</label><textarea id="fCatatan" style="min-height:80px" maxlength="200" placeholder="Info tambahan…"></textarea></div>
-        <button class="btn btn-primary" id="fSave" style="width:100%">Simpan Info</button>
-      </div>
-
-      <div class="admin-pane hidden" data-apane="private">
-        <div class="admin-list" id="privateList"></div>
-      </div>
-
-      <div class="admin-pane hidden" data-apane="gallery">
-        <div class="field"><label for="gCaption">Keterangan foto</label><input type="text" id="gCaption" placeholder="mis. Latihan kana minggu ke-3" maxlength="60" /></div>
-        <div class="field"><label for="gUrl">Link foto (URL)</label><input type="text" id="gUrl" placeholder="https://…" /></div>
-        <div class="or-line"><span>atau</span></div>
-        <div class="field"><label for="gFile">Pilih foto dari perangkat</label><input type="file" id="gFile" accept="image/*" multiple /><small class="upload-help">Pilih beberapa foto sekaligus. Foto diperkecil otomatis sebelum disimpan.</small><div id="uploadPreview" class="upload-preview" aria-live="polite"></div></div>
-        <button class="btn btn-primary" id="gAdd" style="width:100%">Upload Foto</button><div class="form-msg" id="galleryResult" role="status" aria-live="polite"></div>
-        <div class="admin-list" id="galleryAdminList"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!--
+    <!--
   ============================================================
   15. MEMUAT JAVASCRIPT
   ============================================================
@@ -807,10 +1196,10 @@
   Kalau store.js dimuat sebelum config.js, dia tidak tahu mau konek ke mana.
   ============================================================
 -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js"></script>
-<script src="js/store.js"></script>
-<script src="js/data.js"></script>
-<script src="js/main.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+  </body>
 </html>

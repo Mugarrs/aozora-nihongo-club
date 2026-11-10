@@ -8,16 +8,9 @@ dan pesan pribadi ke pengurus. Ada mode gelap/terang & animasi.
 
 ---
 
-## 🔑 Login Pengurus (admin)
+## Akses Pengurus (Admin)
 
-| | |
-|---|---|
-| **Username** | `admin` |
-| **Password** | `aozora2026` |
-
-Tombol **Admin** ada di **pojok kiri atas**. Ganti password: cari `ADMIN_HASH` di
-`js/main.js`, isi dengan hasil SHA-256 password baru
-(buka https://emn178.github.io/online-tools/sha256.html).
+Detail login admin tidak dicantumkan di panduan publik. Simpan dan bagikan akses hanya kepada pengurus yang berwenang. Hash di kode browser bukan pengganti autentikasi backend yang kuat.
 
 ---
 
@@ -30,7 +23,7 @@ Tombol **Admin** ada di **pojok kiri atas**. Ganti password: cari `ADMIN_HASH` d
   siapa pun terkumpul dan bisa dilihat pengurus. **Ini yang dipakai kalau web sudah
   dibuka banyak orang.**
 
-Web otomatis mendeteksi mode. Kalau `js/config.js` masih kosong → mode lokal.
+`window.Store.mode` memilih Supabase bila konfigurasi dan client tersedia; bila belum, website memakai penyimpanan lokal per perangkat.
 
 ---
 
@@ -54,22 +47,26 @@ Web otomatis mendeteksi mode. Kalau `js/config.js` masih kosong → mode lokal.
 ## 🗄️ CARA 2 — Pasang database Supabase (biar pesan terkumpul)
 
 **1. Buat akun & project**
+
 - Buka https://supabase.com → **Start your project** → daftar (gratis).
 - **New project** → isi nama (mis. `aozora`), pilih region terdekat, buat password DB.
 
 **2. Buat tabel-tabelnya**
+
 - Di dashboard project, buka **SQL Editor → New query**.
 - Buka file **`supabase-schema.sql`** di folder ini, **copy semua isinya**, tempel ke
   editor, lalu klik **Run**. (Ini membuat tabel feedback, private_messages, gallery,
   forum + izin akses.)
 
 **3. Ambil kunci API**
+
 - Buka **Project Settings (ikon gerigi) → API**.
 - Copy dua hal:
   - **Project URL** (contoh: `https://abcdefghijklmn.supabase.co`)
   - **anon / public** key (kunci panjang)
 
 **4. Isi ke web**
+
 - Buka file **`js/config.js`**, isi seperti ini:
   ```js
   window.AOZORA_CONFIG = {
@@ -80,11 +77,18 @@ Web otomatis mendeteksi mode. Kalau `js/config.js` masih kosong → mode lokal.
 - Simpan, lalu **upload ulang** `js/config.js` ke GitHub (atau push kalau pakai git).
 
 **5. Selesai**
+
 - Buka web → sekarang pesan, pesan pribadi, foto, dan info pertemuan tersimpan
   **online** dan bisa dilihat dari HP mana saja.
 
 > ✅ Kunci `anon` memang untuk dipakai di web (bukan rahasia).
 > ⚠️ Jangan pernah menaruh **service_role key** di file web.
+
+---
+
+## Panduan kode
+
+Penjelasan struktur HTML, aturan CSS, fungsi JavaScript, data kana, dan penyimpanan ada di [`PANDUAN-KODE.md`](PANDUAN-KODE.md). Setiap contoh kode langsung diikuti arti baris-barisnya.
 
 ---
 
@@ -109,21 +113,23 @@ aozora-nihongo-club/
 
 Klik 2× **`MULAI-DISINI.bat`** (Windows) → browser terbuka otomatis.
 Atau lewat terminal:
+
 ```bash
 python -m http.server 8000
 # buka http://localhost:8000
 ```
+
 Login pengurus hanya bisa diverifikasi lewat `http://localhost` atau `https://`
 (tidak bisa dari `file://`).
 
 ---
 
 ## 📝 Catatan
+
 - Suara memakai Web Speech API bawaan browser (voice Jepang kalau tersedia).
-- Foto galeri: disarankan pakai **link/URL** (mis. upload ke Google Drive/imgur lalu
-  ambil link). Unggah file dibatasi ~3.5MB karena disimpan sebagai teks.
-- Kalau mau semua orang bisa mengirim foto langsung, foto bisa diunggah ke
-  **Supabase Storage** (fitur lanjutan).
+- Foto galeri: pilih file di panel Admin; foto diperkecil dan langsung muncul sesudah tersimpan.
+- Mode lokal menyimpan foto di perangkat browser. Jika kuota penuh, hapus foto lama dari galeri atau pilih foto lebih sedikit. Untuk penyimpanan bersama, perlu Supabase Storage (belum dihubungkan oleh alur saat ini).
 
 ---
+
 Dibuat untuk **Aozora Nihongo Club** · 青空の下で日本語を学ぼう
