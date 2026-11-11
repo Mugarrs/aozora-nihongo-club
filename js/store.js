@@ -295,6 +295,40 @@ window.Store = (function () {
     },
   };
 
-  // Ekspor satu pintu: pilih implementasi aktif dan bagikan helper umum.
-  return Object.assign({ mode, liked, DEFAULT_FORUM }, hasSB ? remote : local);
+  // Galeri tetap dapat dipakai saat database tak terjangkau; item fallback ditandai localOnly.
+  let galleryLocalOnly = !hasSB;
+  async function listGallery() {
+    const localRows = await local.listGallery();
+    if (galleryLocalOnly) return localRows.map((row) => ({ ...row, localOnly: true }));
+    try {
+      const remoteRows = await remote.listGallery();
+      return [...localRows.map((row) => ({ ...row, localOnly: true })), ...remoteRows];
+    } catch {
+      galleryLocalOnly = true;
+      return localRows.map((row) => ({ ...row, localOnly: true }));
+    }
+  }
+  async function addGallery(item) {
+    if (!galleryLocalOnly) {
+      try {
+        return await remote.addGallery(item);
+      } catch {
+        galleryLocalOnly = true;
+      }
+    }
+    return { ...(await local.addGallery(item)), localOnly: true };
+  }
+  async function deleteGallery(id) {
+    const localRows = await local.listGallery();
+    const isLocalPhoto = localRows.some((row) => String(row.id) === String(id));
+    await local.deleteGallery(id);
+    if (!isLocalPhoto && !galleryLocalOnly) await remote.deleteGallery(id);
+  }
+
+  // Ekspor satu pintu: galeri memakai fallback lokal khusus; operasi lain mengikuti mode biasa.
+  return Object.assign({ mode, liked, DEFAULT_FORUM }, hasSB ? remote : local, {
+    listGallery,
+    addGallery,
+    deleteGallery,
+  });
 })();

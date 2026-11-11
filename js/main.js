@@ -791,7 +791,7 @@
             <img
               src="${esc(g.src)}"
               alt="${esc(g.caption || "Foto kegiatan Aozora")}" loading="lazy" />
-            <figcaption>${esc(g.caption || "")}</figcaption>
+            <figcaption>${esc(g.caption || "")}${g.localOnly ? " · tersimpan di perangkat ini" : ""}</figcaption>
           </figure>`,
       )
       .join("");
@@ -933,7 +933,7 @@
     const reason = String(error?.message || "").toLowerCase();
     if (name === "TypeError" && (reason.includes("failed to fetch") || reason.includes("network"))) {
       uploadResult.textContent =
-        "Server penyimpanan tidak bisa dijangkau. Foto belum terunggah; pengurus perlu memeriksa Project URL Supabase di js/config.js.";
+        "Server galeri belum terhubung. Foto disimpan di perangkat ini saja; pengurus perlu memperbaiki koneksi Supabase.";
       return;
     }
     if (reason.includes("payload too large") || reason.includes("request entity too large")) {
@@ -979,19 +979,23 @@
       .join("");
 
     let saved = 0;
+    let savedLocalOnly = false;
     try {
       for (const file of pendingFiles) {
         uploadResult.textContent = `Menyimpan foto ${saved + 1} dari ${pendingFiles.length}…`;
         const photoData = await resizePhoto(file);
         const caption = file.name.replace(/\.[^.]+$/, "") || "Foto kegiatan";
-        await window.Store.addGallery({ src: photoData, caption });
+        const storedPhoto = await window.Store.addGallery({ src: photoData, caption });
+        savedLocalOnly ||= !!storedPhoto.localOnly;
         savedPhotoKeys.add(photoKey(file));
         saved++;
       }
       await loadGallery();
       if (isAdmin) renderGalleryAdmin();
       uploadResult.className = "form-msg ok";
-      uploadResult.textContent = `${saved} foto berhasil disimpan dan sudah tampil di galeri.`;
+      uploadResult.textContent = savedLocalOnly
+        ? `${saved} foto tampil di perangkat ini saja. Server belum terhubung; pengurus perlu memperbaiki koneksi Supabase.`
+        : `${saved} foto berhasil disimpan dan sudah tampil di galeri.`;
       uploadPreview.innerHTML = "";
       uploadInput.value = "";
       savedPhotoKeys.clear();
