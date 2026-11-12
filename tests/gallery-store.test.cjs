@@ -29,22 +29,19 @@ function makeStore({ failWrite = false } = {}) {
 }
 
 async function main() {
-  assert.doesNotMatch(
-    html,
-    /dokumentasi|galleryGrid|galleryUploadFields|data-atab="gallery"|Galeri/i,
-    "gallery UI must be removed from the website",
-  );
-  assert.doesNotMatch(
-    appSource,
-    /galleryAuto|loadGallery|galleryAdminList|gFile|galleryTimer/i,
-    "gallery upload and rendering logic must be removed",
-  );
-  assert.match(html, /id="adminCorner"[^>]*aria-controls="adminModal"/);
-  assert.match(appSource, /\$\("#adminCorner"\)\.addEventListener\("click"/);
-  const { store: working } = makeStore();
-  assert.equal((await working.listGallery()).length, 0, "old gallery data may remain unused without UI");
-  assert.equal(working.mode, "local", "removing gallery UI must not alter other storage features");
+  assert.doesNotMatch(html, /id="dokumentasi"|id="galleryGrid"|id="gFile"|data-atab="gallery"/);
+  assert.doesNotMatch(html, /href="#dokumentasi"|aria-label="Galeri"/);
+  for (const id of ["home", "belajar", "kegiatan", "pesan", "adminModal"]) assert.match(html, new RegExp(`id="${id}"`));
+  assert.match(appSource, /function showRoute/);
+  assert.match(appSource, /showRoute\(location\.hash \|\| "#home", false\)/);
+  assert.match(appSource, /function applyAdminUI/);
+  assert.doesNotMatch(appSource, /galleryAuto|loadGallery|galleryAdmin|gFile|renderGalleryAdmin|refreshGalleryAdminAuth/);
+  const { store } = makeStore();
+  await store.addGallery({ src: "data:image/jpeg;base64,AA==", caption: "data lama" });
+  assert.equal((await store.listGallery()).length, 1, "gallery records stay preserved");
+  console.log("gallery removal, remaining pages/admin, and preserved photo data passed");
 }
+
 
 main().catch((error) => {
   console.error(error);

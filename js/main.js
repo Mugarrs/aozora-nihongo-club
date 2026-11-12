@@ -13,6 +13,7 @@
     fb: "aozora.feedback.v1",
     pv: "aozora.private.v1",
     forum: "aozora.forum.v1",
+    gal: "aozora.gallery.v1",
     theme: "aozora.theme",
     device: "aozora.deviceId",
   };
@@ -710,7 +711,7 @@
 
   /* Selesai: slider kegiatan berisi data yang ditulis pada array SLIDES. */
 
-  // Mulai router setelah deklarasi helper halaman.
+  // Router tetap membuka panel awal setelah helper halaman siap.
   showRoute(location.hash || "#home", false);
 
   /* =======================================================
@@ -1197,6 +1198,24 @@
       }),
     );
   }
+
+  /* clear all (admin) */
+  $("#fbClear").addEventListener("click", async () => {
+    if (!isAdmin) return;
+    if (!feedback.length) {
+      toast("Belum ada pesan untuk dihapus");
+      return;
+    }
+    if (confirm("Hapus SEMUA pesan di papan publik?")) {
+      try {
+        await window.Store.clearFeedback();
+      } catch (e) {
+        toast("Gagal menghapus (koneksi?)");
+      }
+      await loadFeedback();
+      toast("Semua pesan dihapus");
+    }
+  });
 
   /* =======================================================
      KUIS KANA
