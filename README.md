@@ -58,14 +58,14 @@ Detail login admin tidak dicantumkan di panduan publik. Simpan dan bagikan akses
   editor, lalu klik **Run**. Skema ini membuat tabel feedback, private_messages,
   gallery, forum, dan izin akses. Bucket foto publik diatur terpisah.
 
-**3. Siapkan bucket foto dan akun pengurus**
+**3. Siapkan bucket foto (tanpa akun)**
 
-- Buka file **`supabase-gallery-storage.sql`**, salin seluruh isinya ke **SQL Editor → New query**, lalu klik **Run**. File ini membuat bucket publik `aozora-gallery` untuk JPG terkompresi maksimal 1 MB. Foto di bucket bisa dilihat publik; jangan unggah foto pribadi/sensitif.
-- Di **Authentication → Users**, undang/buat akun email Supabase pengurus. Setelah itu jalankan query terakhir berkomentar di bawah file tersebut, dengan UUID akun pengurus.
-- Upload/hapus foto bersama hanya bisa dilakukan oleh akun pengurus Supabase yang sudah didaftarkan.
+- Buka file **`supabase-gallery-open.sql`**, salin seluruh isinya ke **SQL Editor**, klik **Run**. Ini membuat bucket publik `aozora-gallery` (JPG maksimal 1,5 MB) dan mengizinkan siapa pun mengunggah foto lewat situs.
+- Tidak perlu membuat akun atau login. Siapa pun yang membuka situs bisa mengunggah foto, dan semua pengunjung melihatnya.
+- Risikonya: orang yang tahu situs juga bisa menghapus foto galeri. Untuk komunitas kelas ini biasanya cukup; kalau mulai disalahgunakan, ganti kode di file SQL dan di `js/store.js` (baris `GALLERY_CODE`).
 - Foto di bucket ini dapat dilihat publik melalui URL. Jangan unggah foto pribadi/sensitif; hapus metadata foto dari admin website dan minta pengurus membersihkan file lama dari Storage bila perlu.
 
-**4. Ambil kunci API**.
+**4. Ambil kunci API**
 
 - Buka **Project Settings (ikon gerigi) → API**.
 - Copy dua hal:

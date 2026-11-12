@@ -49,20 +49,20 @@ async function main() {
   assert.match(appSource, /\$\("#adminCorner"\)\.addEventListener\("click"/);
   assert.match(appSource, /File tidak bisa dibuka|Browser tidak bisa membaca format foto/);
   assert.match(appSource, /Server galeri belum terhubung/);
+  assert.doesNotMatch(html, /id="galleryAdminPassword"/, "gallery must not ask visitors for a password");
+  assert.match(source, /GALLERY_CODE/, "upload must carry a shared upload code");
   assert.match(
-    html,
-    /id="galleryAuthForm"/,
-    "shared photo uploads must have a Supabase admin sign-in form",
+    source,
+    /"x-aozora-code": GALLERY_CODE/,
+    "storage upload must send the share-code header",
   );
-  assert.match(source, /signInGalleryAdmin/);
-  assert.match(source, /GALLERY_ADMIN_LOGIN_REQUIRED/);
-  const storageSql = fs.readFileSync(path.join(project, "supabase-gallery-storage.sql"), "utf8");
-  assert.match(storageSql, /gallery_upload_admins/);
-  assert.match(storageSql, /for insert to authenticated/);
-  assert.doesNotMatch(storageSql, /for insert to anon with check \(bucket_id = 'aozora-gallery'\)/);
+  const openSql = fs.readFileSync(path.join(project, "supabase-gallery-open.sql"), "utf8");
+  assert.match(openSql, /'aozora-gallery'/, "open setup must create the bucket");
+  assert.match(openSql, /for insert to anon/, "anonymous visitors may upload photos");
+  assert.doesNotMatch(openSql, /gallery_upload_admins/, "open flow must not depend on admin accounts");
   assert.match(
     fs.readFileSync(path.join(project, "supabase-schema.sql"), "utf8"),
-    /supabase-gallery-storage.sql/,
+    /supabase-gallery-open.sql/,
   );
 
   const { store: working } = makeStore();
@@ -157,20 +157,6 @@ async function main() {
     fetch,
     Blob,
   });
-  assert.equal(
-    await storageWindow.Store.isGalleryAdmin(),
-    false,
-    "upload must require a signed-in gallery admin",
-  );
-  await assert.rejects(
-    storageWindow.Store.addGallery({
-      src: new Blob(["x"], { type: "image/jpeg" }),
-      caption: "tanpa login",
-    }),
-    /GALLERY_ADMIN_LOGIN_REQUIRED/,
-  );
-  assert.equal(uploadedObjects.length, 0, "anonymous visitors must not upload");
-  await storageWindow.Store.signInGalleryAdmin("admin@example.test", "test-password");
   const sharedPhoto = await storageWindow.Store.addGallery({
     src: "data:image/jpeg;base64,AA==",
     caption: "uji publik",
@@ -178,6 +164,11 @@ async function main() {
   assert.equal(uploadedObjects.length, 1, "photo binary must upload to object storage");
   assert.equal(uploadedObjects[0].bucket, "aozora-gallery");
   assert.equal(uploadedObjects[0].options.contentType, "image/jpeg");
+  assert.equal(
+    uploadedObjects[0].options.headers["x-aozora-code"],
+    "AOSORA-UP-2026",
+    "upload must send the share code",
+  );
   await assert.rejects(
     storageWindow.Store.addGallery({
       src: new Blob([new Uint8Array(1024 * 1024 + 1)], { type: "image/jpeg" }),
@@ -247,14 +238,18 @@ async function main() {
   const fallbackStore = remoteWindow.Store;
   await assert.rejects(
     fallbackStore.addGallery({ src: "data:image/jpeg;base64,AA==", caption: "fallback" }),
-    /GALLERY_ADMIN_LOGIN_REQUIRED/,
-    "configured public backend must not silently save a local-only photo",
+    /storage|undefined|Failed to fetch|from/i,
+    "configured backend must surface upload failures instead of claiming success",
   );
-  assert.equal((await fallbackStore.listGallery()).length, 0);
+  assert.equal(
+    (await fallbackStore.listGallery()).length,
+    0,
+    "failed upload must not create a fake item",
+  );
   assert.equal(
     remoteWindow.Store.mode,
     "supabase",
-    "gallery rejection must not change other store features offline",
+    "gallery failure must not switch other store features to local",
   );
 }
 

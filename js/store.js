@@ -81,7 +81,8 @@ window.Store = (function () {
     ts: ms(r),
   });
   const GALLERY_BUCKET = "aozora-gallery";
-  const GALLERY_ADMIN_LOGIN_REQUIRED = "GALLERY_ADMIN_LOGIN_REQUIRED";
+  // Kode unggah bersama: siapa pun yang punya tautan situs bisa mengunggah foto.
+  const GALLERY_CODE = "AOSORA-UP-2026";
   const isBlob = (value) =>
     value && typeof value.arrayBuffer === "function" && typeof value.size === "number";
   const imageBlob = async (source) => {
@@ -213,40 +214,6 @@ window.Store = (function () {
     return true;
   }
 
-  async function isGalleryAdmin() {
-    if (!hasSB || !sb.auth) return false;
-    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
-    if (sessionError || !sessionData.session) return false;
-    const userId = sessionData.session.user.id;
-    const { data, error } = await sb
-      .from("gallery_upload_admins")
-      .select("user_id")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (error) throw error;
-    return !!data;
-  }
-
-  async function signInGalleryAdmin(email, password) {
-    if (!hasSB || !sb.auth) throw new Error("Supabase Auth tidak tersedia.");
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    const { data: access, error: accessError } = await sb
-      .from("gallery_upload_admins")
-      .select("user_id")
-      .eq("user_id", data.user.id)
-      .maybeSingle();
-    if (accessError || !access) {
-      await sb.auth.signOut();
-      throw new Error("Akun ini belum diberi izin sebagai pengurus galeri.");
-    }
-    return true;
-  }
-
-  async function signOutGalleryAdmin() {
-    if (sb?.auth) await sb.auth.signOut();
-  }
-
   const remote = {
     // Ambil semua pesan publik dan normalkan field-nya.
     async listFeedback() {
@@ -341,15 +308,15 @@ window.Store = (function () {
       if (error) throw error;
       return (data || []).map(normG);
     },
-    // Unggah file asli ke Storage; tabel galeri hanya menyimpan URL publiknya.
+    // Unggah foto terbuka untuk pemilik kode; tidak perlu akun atau login.
     async addGallery(o) {
       const blob = await imageBlob(o.src);
-      const extension = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
-      const path = `${Date.now().toString(36)}-${uid().slice(1)}.${extension}`;
+      const path = `${Date.now().toString(36)}-${uid().slice(1)}.jpg`;
       const { error: uploadError } = await sb.storage.from(GALLERY_BUCKET).upload(path, blob, {
-        contentType: blob.type || "image/jpeg",
+        contentType: "image/jpeg",
         cacheControl: "31536000",
         upsert: false,
+        headers: { "x-aozora-code": GALLERY_CODE },
       });
       if (uploadError) throw uploadError;
       const { data: publicData } = sb.storage.from(GALLERY_BUCKET).getPublicUrl(path);
@@ -358,15 +325,11 @@ window.Store = (function () {
         .insert([{ src: publicData.publicUrl, caption: o.caption || "" }])
         .select()
         .single();
-      if (error) {
-        await sb.storage.from(GALLERY_BUCKET).remove([path]);
-        throw error;
-      }
+      if (error) throw error;
       return normG(data);
     },
     // Hapus metadata galeri; file publik dibersihkan pengurus dari Supabase Storage.
     async deleteGallery(id) {
-      if (!(await isGalleryAdmin())) throw new Error(GALLERY_ADMIN_LOGIN_REQUIRED);
       const { error } = await sb.from("gallery").delete().eq("id", id);
       if (error) throw error;
     },
@@ -395,7 +358,6 @@ window.Store = (function () {
         localOnly: true,
       };
     }
-    if (!(await isGalleryAdmin())) throw new Error(GALLERY_ADMIN_LOGIN_REQUIRED);
     const blob = await imageBlob(item.src);
     return remote.addGallery({ ...item, src: blob });
   }
@@ -403,7 +365,6 @@ window.Store = (function () {
     const localRows = await local.listGallery();
     const isLocalPhoto = localRows.some((row) => String(row.id) === String(id));
     if (isLocalPhoto) return local.deleteGallery(id);
-    if (!(await isGalleryAdmin())) throw new Error(GALLERY_ADMIN_LOGIN_REQUIRED);
     await remote.deleteGallery(id);
   }
 
@@ -413,8 +374,5 @@ window.Store = (function () {
     addGallery,
     deleteGallery,
     checkGalleryConnection,
-    isGalleryAdmin,
-    signInGalleryAdmin,
-    signOutGalleryAdmin,
   });
 })();

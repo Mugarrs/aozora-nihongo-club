@@ -73,7 +73,7 @@ drop policy if exists g_delete on gallery;
 create policy g_read on gallery for select using (true);
 
 -- Bucket dan kebijakan foto publik diatur terpisah:
--- jalankan supabase-gallery-storage.sql setelah membuat akun admin Supabase.
+-- jalankan supabase-gallery-open.sql (tanpa akun).
 
 -- forum
 drop policy if exists f_read   on forum;

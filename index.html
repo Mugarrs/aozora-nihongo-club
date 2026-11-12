@@ -1174,28 +1174,8 @@
           </div>
 
           <div class="admin-pane hidden" data-apane="gallery">
-            <form id="galleryAuthForm" class="field">
-              <label for="galleryAdminEmail">Email pengurus Supabase</label>
-              <input
-                id="galleryAdminEmail"
-                type="email"
-                autocomplete="username"
-                required
-                placeholder="email pengurus"
-              />
-              <label for="galleryAdminPassword">Password akun Supabase</label>
-              <input
-                id="galleryAdminPassword"
-                type="password"
-                autocomplete="current-password"
-                required
-                placeholder="Password Supabase"
-              />
-              <button class="btn btn-ghost" type="submit">Masuk ke penyimpanan foto</button>
-              <button class="btn btn-ghost hidden" type="button" id="galleryAdminSignOut">Keluar</button>
-              <small id="galleryAuthStatus" class="upload-help" aria-live="polite"></small>
-            </form>
-            <div id="galleryUploadFields" class="hidden">
+            <small id="galleryAuthStatus" class="upload-help" aria-live="polite"></small>
+            <div id="galleryUploadFields">
               <div class="field">
                 <label for="gFile">Pilih foto dari perangkat</label>
                 <input

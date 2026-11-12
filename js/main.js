@@ -915,62 +915,27 @@
   const uploadInput = $("#gFile");
   const uploadPreview = $("#uploadPreview");
   const uploadResult = $("#galleryResult");
-  const galleryAuthForm = $("#galleryAuthForm");
   const galleryUploadFields = $("#galleryUploadFields");
   const galleryAuthStatus = $("#galleryAuthStatus");
-  const galleryAdminPassword = $("#galleryAdminPassword");
-  const galleryAdminSignOut = $("#galleryAdminSignOut");
   let galleryAdminSignedIn = false;
+  // Unggah foto terbuka untuk semua orang; hanya server penyimpanan yang perlu hidup.
   async function refreshGalleryAdminAuth() {
-    try {
-      const localMode = window.Store.mode === "local";
-      if (!localMode) await window.Store.checkGalleryConnection();
-      galleryAdminSignedIn = localMode ? false : await window.Store.isGalleryAdmin();
-      galleryUploadFields.classList.toggle("hidden", !(localMode || galleryAdminSignedIn));
-      galleryAdminPassword.classList.toggle("hidden", galleryAdminSignedIn || localMode);
-      $("#galleryAdminEmail").classList.toggle("hidden", galleryAdminSignedIn || localMode);
-      galleryAuthForm
-        .querySelectorAll("label")
-        .forEach((label) => label.classList.toggle("hidden", galleryAdminSignedIn || localMode));
-      galleryAuthForm
-        .querySelector('button[type="submit"]')
-        .classList.toggle("hidden", galleryAdminSignedIn || localMode);
-      galleryAdminSignOut.classList.toggle("hidden", !galleryAdminSignedIn);
-      galleryAuthStatus.textContent = galleryAdminSignedIn
-        ? "Login pengurus aktif. Foto yang diunggah dapat dilihat publik."
-        : localMode
-          ? "Mode lokal: foto hanya tersimpan di perangkat ini."
-          : "Masuk memakai akun Supabase pengurus yang telah diberi izin.";
+    const localMode = window.Store.mode === "local";
+    galleryAdminSignedIn = false;
+    galleryUploadFields.classList.remove("hidden");
+    if (localMode) {
+      galleryAuthStatus.textContent = "Mode lokal: foto hanya tersimpan di perangkat ini.";
       renderGalleryAdmin();
-    } catch {
-      galleryAdminSignedIn = false;
-      galleryUploadFields.classList.add("hidden");
-      galleryAuthStatus.textContent =
-        "Server Supabase belum terjangkau atau izin galeri belum disiapkan.";
+      return;
     }
-  }
-  galleryAuthForm?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const button = galleryAuthForm.querySelector('button[type="submit"]');
-    button.disabled = true;
-    galleryAuthStatus.textContent = "Memeriksa akun pengurus…";
     try {
-      await window.Store.signInGalleryAdmin(
-        $("#galleryAdminEmail").value.trim(),
-        galleryAdminPassword.value,
-      );
-      galleryAdminPassword.value = "";
-      await refreshGalleryAdminAuth();
-    } catch (error) {
-      galleryAuthStatus.textContent = error.message || "Login pengurus gagal.";
-    } finally {
-      button.disabled = false;
+      await window.Store.checkGalleryConnection();
+      galleryAuthStatus.textContent = "Foto akan tampil untuk semua orang setelah terunggah.";
+    } catch {
+      galleryAuthStatus.textContent = "Server foto belum terjangkau. Coba lagi sebentar.";
     }
-  });
-  galleryAdminSignOut?.addEventListener("click", async () => {
-    await window.Store.signOutGalleryAdmin();
-    await refreshGalleryAdminAuth();
-  });
+    renderGalleryAdmin();
+  }
   let uploadingPhotos = false;
   const savedPhotoKeys = new Set();
   const photoKey = (file) => `${file.name}:${file.size}:${file.lastModified}`;
@@ -1472,10 +1437,9 @@
       fillForumForm();
       loadPrivate().then(renderPrivateAdmin);
       renderGalleryAdmin();
-      refreshGalleryAdminAuth();
-    } else {
-      galleryUploadFields.classList.add("hidden");
     }
+    // Unggah foto terbuka untuk semua pengunjung, jadi kontrolnya tidak ikut dikunci.
+    refreshGalleryAdminAuth();
   }
 
   $("#adminCorner").addEventListener("click", () => {
