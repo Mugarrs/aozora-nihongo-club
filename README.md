@@ -143,3 +143,5 @@ Login pengurus hanya bisa diverifikasi lewat `http://localhost` atau `https://`
 ---
 
 Dibuat untuk **Aozora Nihongo Club** · 青空の下で日本語を学ぼう
+
+Galeri foto dihapus dari antarmuka website. Data foto lama di Supabase dan penyimpanan perangkat tidak dihapus.

@@ -13,7 +13,6 @@
     fb: "aozora.feedback.v1",
     pv: "aozora.private.v1",
     forum: "aozora.forum.v1",
-    gal: "aozora.gallery.v1",
     theme: "aozora.theme",
     device: "aozora.deviceId",
   };
@@ -179,7 +178,7 @@
       ring.style.transform = `translate(${rx}px,${ry}px)`;
       requestAnimationFrame(loop);
     })();
-    const sel = "a,button,.kana-cell,.vocab-card,.chip,.tab,input,textarea,.select-btn,.gallery-item";
+    const sel = "a,button,.kana-cell,.vocab-card,.chip,.tab,input,textarea,.select-btn";
     addEventListener("mouseover", (e) => {
       if (e.target.closest(sel)) document.body.classList.add("cursor-hover");
     });
@@ -207,7 +206,6 @@
     ["kotd", "belajar"],
     ["kosakata", "belajar"],
     ["kegiatan", "kegiatan"],
-    ["dokumentasi", "dokumentasi"],
     ["pesan", "pesan"],
   ]);
   let currentPage = "home",
@@ -249,11 +247,6 @@
     });
     navLinks?.classList.remove("open");
     burger?.classList.remove("open");
-    if (page === "dokumentasi") galleryAuto(true);
-    else {
-      clearInterval(galleryTimer);
-      clearTimeout(galleryResumeTimer);
-    }
     setTimeout(() => pagePanels.forEach((p) => p.classList.remove("page-enter")), 280);
     onScroll();
   }
@@ -717,354 +710,8 @@
 
   /* Selesai: slider kegiatan berisi data yang ditulis pada array SLIDES. */
 
-  /* =======================================================
-     GALERI — strip geser; jeda otomatis saat disentuh.
-     ScrollLeft bergerak perlahan, berbalik di kedua ujung, dan berhenti untuk interaksi.
-     ======================================================= */
-  let gallery = [];
-  const gGrid = $("#galleryGrid"),
-    gViewport = $("#galleryViewport");
-  let galleryTimer = 0,
-    galleryDir = 1,
-    galleryPaused = false,
-    galleryManualPause = false,
-    galleryResumeTimer = 0;
-  const galleryToggle = $("#galleryToggle");
-  // paintGalleryToggle mengubah teks dan aria-pressed sesuai status gerak galeri.
-  function paintGalleryToggle() {
-    if (galleryToggle) {
-      galleryToggle.textContent = galleryManualPause ? "Gerakkan galeri" : "Jeda gerakan";
-      galleryToggle.setAttribute("aria-pressed", String(galleryManualPause));
-    }
-  }
-  // galleryAuto menggerakkan strip pelan dan membalik arah di ujung viewport.
-  function galleryAuto(on) {
-    clearInterval(galleryTimer);
-    if (
-      !on ||
-      document.hidden ||
-      galleryManualPause ||
-      currentPage !== "dokumentasi" ||
-      matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
-    galleryPaused = false;
-    galleryTimer = setInterval(() => {
-      if (!gViewport || gViewport.scrollWidth <= gViewport.clientWidth + 4) return;
-      const end = gViewport.scrollWidth - gViewport.clientWidth;
-      if (gViewport.scrollLeft >= end - 2) galleryDir = -1;
-      else if (gViewport.scrollLeft <= 2) galleryDir = 1;
-      gViewport.scrollLeft += galleryDir * 0.8;
-    }, 32);
-  }
-  // pauseGallery menghentikan gerak saat orang menyentuh, fokus, atau menggeser foto.
-  function pauseGallery(resume = false) {
-    galleryPaused = true;
-    clearInterval(galleryTimer);
-    clearTimeout(galleryResumeTimer);
-    if (resume && !galleryManualPause) galleryResumeTimer = setTimeout(() => galleryAuto(true), 1800);
-  }
-  galleryToggle?.addEventListener("click", () => {
-    galleryManualPause = !galleryManualPause;
-    clearInterval(galleryTimer);
-    clearTimeout(galleryResumeTimer);
-    if (!galleryManualPause) galleryAuto(true);
-    paintGalleryToggle();
-  });
-  // renderGallery menampilkan placeholder atau kartu foto, lalu menyiapkan gerak otomatis.
-  function renderGallery() {
-    if (!gGrid) return;
-    clearInterval(galleryTimer);
-    if (!gallery.length) {
-      gGrid.innerHTML = `
-        <div class="gallery-empty">
-          <b>Belum ada foto kegiatan</b><br />
-          <small>Pengurus bisa unggah foto dari panel Admin.</small>
-        </div>`;
-      $("#galleryHint").textContent = "Foto kegiatan akan tampil di sini setelah diunggah.";
-      return;
-    }
-    gGrid.innerHTML = gallery
-      .map(
-        (g) =>
-          `<figure class="gallery-item">
-            <img
-              src="${esc(g.src)}"
-              alt="${esc(g.caption || "Foto kegiatan Aozora")}" loading="lazy" />
-            <figcaption>${esc(g.caption || "")}${g.localOnly ? " · tersimpan di perangkat ini" : ""}</figcaption>
-          </figure>`,
-      )
-      .join("");
-    requestAnimationFrame(() => galleryAuto(!galleryPaused));
-    $("#galleryHint").textContent =
-      gallery.length > 1
-        ? "Galeri bergerak pelan. Geser atau tekan tombol panah untuk melihat foto."
-        : "Satu foto kegiatan.";
-    galleryAuto(!galleryPaused);
-  }
-  $("#galleryPrev")?.addEventListener("click", () => {
-    galleryDir = -1;
-    pauseGallery(true);
-    gViewport.scrollBy({
-      left: -gViewport.clientWidth * 0.8,
-      behavior: "smooth",
-    });
-  });
-  $("#galleryNext")?.addEventListener("click", () => {
-    galleryDir = 1;
-    pauseGallery(true);
-    gViewport.scrollBy({
-      left: gViewport.clientWidth * 0.8,
-      behavior: "smooth",
-    });
-  });
-  gViewport?.addEventListener("pointerdown", () => pauseGallery(false), {
-    passive: true,
-  });
-  gViewport?.addEventListener("pointerup", () => pauseGallery(true), {
-    passive: true,
-  });
-  gViewport?.addEventListener("pointercancel", () => pauseGallery(true), {
-    passive: true,
-  });
-  gViewport?.addEventListener("keydown", (e) => {
-    if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) pauseGallery(true);
-  });
-  gViewport?.addEventListener("touchstart", () => pauseGallery(false), {
-    passive: true,
-  });
-  gViewport?.addEventListener("touchend", () => pauseGallery(true), {
-    passive: true,
-  });
-  gViewport?.addEventListener("mouseenter", () => pauseGallery(false));
-  gViewport?.addEventListener("mouseleave", () => {
-    if (!galleryManualPause) galleryAuto(true);
-  });
-  gViewport?.addEventListener("focusin", () => pauseGallery(false));
-  gViewport?.addEventListener("focusout", () => {
-    if (!galleryManualPause) galleryAuto(true);
-  });
-  gViewport?.addEventListener(
-    "scroll",
-    () => {
-      const end = gViewport.scrollWidth - gViewport.clientWidth;
-      if (gViewport.scrollLeft <= 2) galleryDir = 1;
-      else if (gViewport.scrollLeft >= end - 2) galleryDir = -1;
-    },
-    { passive: true },
-  );
-  document.addEventListener("visibilitychange", () => galleryAuto(!document.hidden && !galleryPaused));
-  paintGalleryToggle();
-  // loadGallery membaca foto melalui store lalu menggambar ulang galeri.
-  async function loadGallery() {
-    try {
-      gallery = await window.Store.listGallery();
-    } catch (e) {
-      gallery = [];
-    }
-    renderGallery();
-  }
-
-  // Kompres foto sebelum simpan; base64 di database/browser storage harus tetap ringan.
-  function resizePhoto(file) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
-      img.onload = async () => {
-        URL.revokeObjectURL(objectUrl);
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-        if (!context) {
-          reject(new Error("Browser tidak bisa memproses foto ini."));
-          return;
-        }
-
-        try {
-          for (const maxSide of [1024, 880, 740, 620]) {
-            const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
-            canvas.width = Math.max(1, Math.round(img.width * scale));
-            canvas.height = Math.max(1, Math.round(img.height * scale));
-            context.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-            for (const quality of [0.68, 0.56, 0.44]) {
-              const blob = await new Promise((done) => canvas.toBlob(done, "image/jpeg", quality));
-              if (!blob) continue;
-              if (blob.size > 150 * 1024) continue;
-
-              resolve(blob);
-              return;
-            }
-          }
-          reject(new Error("Foto terlalu besar untuk penyimpanan galeri. Pilih foto yang lebih kecil."));
-        } catch {
-          reject(new Error("Foto gagal diperkecil. Pilih file gambar lain."));
-        }
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
-        reject(
-          new Error(
-            "Browser tidak bisa membaca format foto ini. Pilih JPG, PNG, WebP, GIF, BMP, atau AVIF; HEIC/HEIF perlu dikonversi ke JPG.",
-          ),
-        );
-      };
-      img.src = objectUrl;
-    });
-  }
-
-  const uploadInput = $("#gFile");
-  const uploadPreview = $("#uploadPreview");
-  const uploadResult = $("#galleryResult");
-  const galleryUploadFields = $("#galleryUploadFields");
-  const galleryAuthStatus = $("#galleryAuthStatus");
-  let galleryAdminSignedIn = false;
-  // Unggah foto terbuka untuk semua orang; hanya server penyimpanan yang perlu hidup.
-  async function refreshGalleryAdminAuth() {
-    const localMode = window.Store.mode === "local";
-    galleryAdminSignedIn = false;
-    galleryUploadFields.classList.remove("hidden");
-    if (localMode) {
-      galleryAuthStatus.textContent = "Mode lokal: foto hanya tersimpan di perangkat ini.";
-      renderGalleryAdmin();
-      return;
-    }
-    try {
-      await window.Store.checkGalleryConnection();
-      galleryAuthStatus.textContent = "Foto akan tampil untuk semua orang setelah terunggah.";
-    } catch {
-      galleryAuthStatus.textContent = "Server foto belum terjangkau. Coba lagi sebentar.";
-    }
-    renderGalleryAdmin();
-  }
-  let uploadingPhotos = false;
-  const savedPhotoKeys = new Set();
-  const photoKey = (file) => `${file.name}:${file.size}:${file.lastModified}`;
-
-  function showUploadError(error) {
-    const name = error?.name || "";
-    uploadResult.className = "form-msg bad";
-    if (name === "QuotaExceededError" || name === "NS_ERROR_DOM_QUOTA_REACHED") {
-      uploadResult.textContent =
-        "Penyimpanan perangkat penuh. Hapus beberapa foto galeri lama, lalu unggah foto lebih sedikit.";
-      return;
-    }
-    const reason = String(error?.message || "").toLowerCase();
-    if (reason === "gallery_admin_login_required") {
-      uploadResult.textContent =
-        "Login dulu dengan akun pengurus Supabase di atas untuk mengunggah foto bersama.";
-      return;
-    }
-    if (reason.includes("akun ini belum diberi izin")) {
-      uploadResult.textContent = "Akun Supabase ini belum terdaftar sebagai pengurus galeri.";
-      return;
-    }
-    if (name === "TypeError" && (reason.includes("failed to fetch") || reason.includes("network"))) {
-      uploadResult.textContent =
-        "Server galeri belum terhubung. Foto belum tersimpan online; pengurus perlu memeriksa Project URL Supabase.";
-      return;
-    }
-    if (reason.includes("maksimal 1 mb")) {
-      uploadResult.textContent = "Foto setelah dikompres harus berukuran maksimal 1 MB.";
-      return;
-    }
-    if (reason.includes("payload too large") || reason.includes("request entity too large")) {
-      uploadResult.textContent =
-        "Database menolak ukuran foto. Pilih lebih sedikit foto atau foto beresolusi lebih kecil.";
-      return;
-    }
-    if (
-      reason.includes("bucket not found") ||
-      reason.includes("row-level security") ||
-      reason.includes("permission denied")
-    ) {
-      uploadResult.textContent =
-        "Penyimpanan foto bersama belum disiapkan. Pengurus perlu mengaktifkan bucket aozora-gallery di Supabase.";
-      return;
-    }
-    uploadResult.textContent = error?.message || "Foto gagal disimpan. Pilih foto lalu coba lagi.";
-  }
-
-  // Pilih file saja: setiap batch langsung diperkecil, disimpan, lalu dirender di galeri.
-  uploadInput?.addEventListener("change", async () => {
-    const files = [...uploadInput.files];
-    if (!files.length) return;
-    if (uploadingPhotos) return;
-    if (files.length > 12) {
-      uploadResult.className = "form-msg bad";
-      uploadResult.textContent = "Maksimal 12 foto sekali pilih.";
-      return;
-    }
-    // MIME di Windows kadang kosong/salah; decoder gambar yang memutuskan apakah file bisa dibaca.
-    const oversizedFile = files.find((file) => file.size > 12 * 1024 * 1024);
-    if (oversizedFile) {
-      uploadResult.className = "form-msg bad";
-      uploadResult.textContent = "Ukuran foto asli maksimal 12 MB per file.";
-      uploadInput.value = "";
-      return;
-    }
-
-    const pendingFiles = files.filter((file) => !savedPhotoKeys.has(photoKey(file)));
-    if (!pendingFiles.length) {
-      uploadResult.className = "form-msg ok";
-      uploadResult.textContent = "Foto yang dipilih sudah tersimpan di galeri.";
-      return;
-    }
-
-    uploadingPhotos = true;
-    uploadInput.disabled = true;
-    uploadResult.className = "form-msg";
-    uploadResult.textContent = `Menyiapkan ${pendingFiles.length} foto…`;
-    uploadPreview.innerHTML = pendingFiles
-      .map((file) => `<span class="upload-count">${esc(file.name)}</span>`)
-      .join("");
-
-    let saved = 0;
-    let savedLocalOnly = false;
-    try {
-      for (const file of pendingFiles) {
-        uploadResult.textContent = `Menyimpan foto ${saved + 1} dari ${pendingFiles.length}…`;
-        const photoData = await resizePhoto(file);
-        const caption = file.name.replace(/\.[^.]+$/, "") || "Foto kegiatan";
-        const storedPhoto = await window.Store.addGallery({ src: photoData, caption });
-        savedLocalOnly ||= !!storedPhoto.localOnly;
-        savedPhotoKeys.add(photoKey(file));
-        saved++;
-      }
-      await loadGallery();
-      if (isAdmin) renderGalleryAdmin();
-      uploadResult.className = "form-msg ok";
-      uploadResult.textContent = savedLocalOnly
-        ? `${saved} foto tampil di perangkat ini saja. Server belum terhubung; pengurus perlu memperbaiki koneksi Supabase.`
-        : `${saved} foto berhasil disimpan dan sudah tampil di galeri.`;
-      uploadPreview.innerHTML = "";
-      uploadInput.value = "";
-      savedPhotoKeys.clear();
-    } catch (error) {
-      await loadGallery();
-      if (isAdmin) renderGalleryAdmin();
-      showUploadError(error);
-      if (saved) {
-        uploadResult.textContent += ` ${saved} foto sebelumnya berhasil disimpan dan sudah tampil.`;
-      }
-      // File tetap terpilih; tombol coba lagi mengulang hanya foto yang belum tersimpan.
-      const retry = document.createElement("button");
-      retry.type = "button";
-      retry.className = "btn btn-ghost upload-retry";
-      retry.textContent = "Coba lagi";
-      retry.addEventListener("click", () =>
-        uploadInput.dispatchEvent(new Event("change", { bubbles: true })),
-      );
-      uploadPreview.append(retry);
-    } finally {
-      uploadingPhotos = false;
-      uploadInput.disabled = false;
-    }
-  });
-
-  // Mulai router setelah fungsi galeri dideklarasikan agar inisialisasi aman.
+  // Mulai router setelah deklarasi helper halaman.
   showRoute(location.hash || "#home", false);
-
-  /* Selesai: galeri merender, mengecilkan, menyimpan, dan menjeda foto. */
 
   /* =======================================================
      PESAN — helper
@@ -1436,10 +1083,8 @@
     if (isAdmin) {
       fillForumForm();
       loadPrivate().then(renderPrivateAdmin);
-      renderGalleryAdmin();
     }
     // Unggah foto terbuka untuk semua pengunjung, jadi kontrolnya tidak ikut dikunci.
-    refreshGalleryAdminAuth();
   }
 
   $("#adminCorner").addEventListener("click", () => {
@@ -1552,55 +1197,6 @@
       }),
     );
   }
-
-  /* gallery admin */
-  // renderGalleryAdmin membuat daftar penghapusan foto untuk pengurus.
-  function renderGalleryAdmin() {
-    const box = $("#galleryAdminList");
-    if (!box) return;
-    if (!gallery.length) {
-      box.innerHTML = `<div class="admin-empty">Belum ada foto.</div>`;
-      return;
-    }
-    box.innerHTML = gallery
-      .map(
-        (g) => `
-      <div class="g-item"><img src="${esc(g.src)}" alt="" /><span class="g-cap">${esc(g.caption || "(tanpa keterangan)")}</span>
-      ${galleryAdminSignedIn ? `<button class="ai-del" data-gdel="${g.id}">Hapus</button>` : ""}</div>`,
-      )
-      .join("");
-    box.querySelectorAll("[data-gdel]").forEach((b) =>
-      b.addEventListener("click", async () => {
-        const id = b.dataset.gdel;
-        gallery = gallery.filter((g) => String(g.id) !== String(id));
-        renderGallery();
-        renderGalleryAdmin();
-        try {
-          await window.Store.deleteGallery(id);
-        } catch (e) {
-          toast("Gagal menghapus (koneksi?)");
-        }
-        toast("Foto dihapus");
-      }),
-    );
-  }
-  /* clear all (admin) */
-  $("#fbClear").addEventListener("click", async () => {
-    if (!isAdmin) return;
-    if (!feedback.length) {
-      toast("Belum ada pesan untuk dihapus");
-      return;
-    }
-    if (confirm("Hapus SEMUA pesan di papan publik?")) {
-      try {
-        await window.Store.clearFeedback();
-      } catch (e) {
-        toast("Gagal menghapus (koneksi?)");
-      }
-      await loadFeedback();
-      toast("Semua pesan dihapus");
-    }
-  });
 
   /* =======================================================
      KUIS KANA
@@ -1788,7 +1384,6 @@
   /* muat data dari store (Supabase / lokal) */
   loadFeedback();
   loadForum();
-  loadGallery();
   loadPrivate();
   if (window.Store.mode === "local") {
     setTimeout(
@@ -1810,9 +1405,6 @@
     },
     get privateMsgs() {
       return privateMsgs;
-    },
-    get gallery() {
-      return gallery;
     },
     get mode() {
       return window.Store.mode;

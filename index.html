@@ -16,7 +16,6 @@
       3. Hero           : banner besar (Gunung Fuji, matahari, sakura)
       4. Belajar        : Kana, kuis, kata hari ini, kosakata
       5. Kegiatan       : info pertemuan + slider "Tentang"
-      6. Dokumentasi    : galeri foto
       7. Pesan          : form pesan/kritik + pesan pribadi
       8. Footer         : penutup halaman
       9. Popup & Modal  : elemen tersembunyi yang muncul saat diklik
@@ -34,7 +33,7 @@
     <title>青空日本語 — Aozora Nihongo Club | SMK N 1 Purwokerto</title>
     <meta
       name="description"
-      content="Aozora Nihongo Club — ekstrakurikuler bahasa Jepang SMK N 1 Purwokerto. Belajar Hiragana, Katakana, kosakata, dan dokumentasi kegiatan."
+      content="Aozora Nihongo Club — ekstrakurikuler bahasa Jepang SMK N 1 Purwokerto. Belajar Hiragana, Katakana, kosakata, dan kegiatan Aozora Nihongo Club."
     />
     <link rel="icon" href="assets/logo.jpg" />
     <link rel="apple-touch-icon" href="assets/logo.jpg" />
@@ -168,7 +167,6 @@
         <a href="#home" class="active">Beranda</a>
         <a href="#belajar">Belajar</a>
         <a href="#kegiatan">Kegiatan</a>
-        <a href="#dokumentasi">Galeri</a>
         <a href="#pesan">Pesan</a>
       </div>
       <button class="icon-btn" id="themeToggle" aria-label="Ganti tema" title="Mode gelap / terang">
@@ -243,21 +241,6 @@
           <rect x="3" y="5" width="18" height="16" rx="2" />
           <path d="M16 3v4M8 3v4M3 10h18" /></svg
         ><span>Kegiatan</span></a
-      >
-      <a href="#dokumentasi" aria-label="Galeri"
-        ><svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="3" y="4" width="18" height="16" rx="2" />
-          <circle cx="8.5" cy="9" r="1.5" />
-          <path d="m21 15-5-5L5 20" /></svg
-        ><span>Galeri</span></a
       >
       <a href="#pesan" aria-label="Pesan"
         ><svg
@@ -720,57 +703,6 @@
 
     <!--
   ============================================================
-  10. DOKUMENTASI (galeri foto)
-  ============================================================
-  #galleryGrid = wadah kosong. Foto dimasukkan oleh admin
-  lewat panel admin (bisa pakai link URL atau upload file).
-  Kalau belum ada foto, JS menampilkan pesan "belum ada foto".
-  ============================================================
--->
-    <section id="dokumentasi" class="page-panel hidden" data-page="dokumentasi">
-      <div class="wrap">
-        <div class="sec-head reveal">
-          <span class="eyebrow">写真 · Dokumentasi</span>
-          <h2 class="h2">Momen <em>Kita</em></h2>
-          <p class="lead">
-            Kumpulan foto &amp; kenangan dari kegiatan eskul. Pengurus bisa menambah foto lewat panel
-            admin.
-          </p>
-        </div>
-        <!-- Galeri: viewport memotong strip foto; pengunjung bisa geser, berhenti, atau lanjutkan gerak otomatis. -->
-        <div class="gallery-shell">
-          <button class="gallery-arrow prev" id="galleryPrev" type="button" aria-label="Foto sebelumnya">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-          </button>
-          <div
-            class="gallery-viewport"
-            id="galleryViewport"
-            tabindex="0"
-            aria-label="Galeri foto, bisa digeser ke samping"
-          >
-            <div class="gallery-grid" id="galleryGrid"></div>
-          </div>
-          <!-- Tombol pause memberi kendali manual selain swipe/drag. -->
-          <button class="gallery-toggle" id="galleryToggle" type="button" aria-pressed="false">
-            Jeda gerakan
-          </button>
-          <button class="gallery-arrow next" id="galleryNext" type="button" aria-label="Foto berikutnya">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-          </button>
-        </div>
-        <p class="gallery-hint" id="galleryHint">
-          Geser foto ke samping. Galeri berhenti saat disentuh.
-        </p>
-      </div>
-    </section>
-    <!-- Selesai: galeri menampung strip foto yang digeser oleh JavaScript. -->
-
-    <!--
-  ============================================================
   11. PESAN & KRITIK
   ============================================================
   Ada 2 tab:
@@ -970,7 +902,6 @@
                 <li><a href="#kana">Hiragana &amp; Katakana</a></li>
                 <li><a href="#kosakata">Kosakata</a></li>
                 <li><a href="#kegiatan">Kegiatan</a></li>
-                <li><a href="#dokumentasi">Dokumentasi</a></li>
                 <li><a href="#pesan">Pesan &amp; Kritik</a></li>
               </ul>
             </div>
@@ -1055,7 +986,7 @@
     #adminDash      -> panel setelah berhasil login
                        (hidden = disembunyikan CSS)
 
-  Di dalam panel ada 3 tab: Info Pertemuan, Pesan Pribadi, Galeri.
+  Di dalam panel ada tab Info Pertemuan dan Pesan Pribadi.
   ============================================================
 -->
     <div class="modal" id="adminModal">
@@ -1127,7 +1058,7 @@
             </span>
             <div>
               <h3>Panel Pengurus</h3>
-              <p>Kelola info, pesan pribadi, dan galeri.</p>
+              <p>Kelola info, pesan pribadi, dan info klub.</p>
             </div>
             <button
               class="btn btn-ghost"
@@ -1141,7 +1072,6 @@
           <div class="admin-tabs">
             <button class="atab active" data-atab="forum">Info Pertemuan</button>
             <button class="atab" data-atab="private">Pesan Pribadi</button>
-            <button class="atab" data-atab="gallery">Galeri</button>
           </div>
 
           <div class="admin-pane" data-apane="forum">
@@ -1171,27 +1101,6 @@
 
           <div class="admin-pane hidden" data-apane="private">
             <div class="admin-list" id="privateList"></div>
-          </div>
-
-          <div class="admin-pane hidden" data-apane="gallery">
-            <small id="galleryAuthStatus" class="upload-help" aria-live="polite"></small>
-            <div id="galleryUploadFields">
-              <div class="field">
-                <label for="gFile">Pilih foto dari perangkat</label>
-                <input
-                  type="file"
-                  id="gFile"
-                  accept="image/*,.heic,.heif,.tif,.tiff,.svg,.jxl"
-                  multiple
-                />
-                <small class="upload-help">
-                  Pilih satu atau beberapa foto. Setelah tersimpan, foto langsung muncul di galeri.
-                </small>
-                <div id="uploadPreview" class="upload-preview" aria-live="polite"></div>
-              </div>
-              <div class="form-msg" id="galleryResult" role="status" aria-live="polite"></div>
-              <div class="admin-list" id="galleryAdminList"></div>
-            </div>
           </div>
         </div>
       </div>
