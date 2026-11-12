@@ -81,8 +81,6 @@ window.Store = (function () {
     ts: ms(r),
   });
   const GALLERY_BUCKET = "aozora-gallery";
-  // Kode unggah bersama: siapa pun yang punya tautan situs bisa mengunggah foto.
-  const GALLERY_CODE = "AOSORA-UP-2026";
   const isBlob = (value) =>
     value && typeof value.arrayBuffer === "function" && typeof value.size === "number";
   const imageBlob = async (source) => {
@@ -316,7 +314,6 @@ window.Store = (function () {
         contentType: "image/jpeg",
         cacheControl: "31536000",
         upsert: false,
-        headers: { "x-aozora-code": GALLERY_CODE },
       });
       if (uploadError) throw uploadError;
       const { data: publicData } = sb.storage.from(GALLERY_BUCKET).getPublicUrl(path);

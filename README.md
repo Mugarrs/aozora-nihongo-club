@@ -60,10 +60,10 @@ Detail login admin tidak dicantumkan di panduan publik. Simpan dan bagikan akses
 
 **3. Siapkan bucket foto (tanpa akun)**
 
-- Buka file **`supabase-gallery-open.sql`**, salin seluruh isinya ke **SQL Editor**, klik **Run**. Ini membuat bucket publik `aozora-gallery` (JPG maksimal 1,5 MB) dan mengizinkan siapa pun mengunggah foto lewat situs.
-- Tidak perlu membuat akun atau login. Siapa pun yang membuka situs bisa mengunggah foto, dan semua pengunjung melihatnya.
-- Risikonya: orang yang tahu situs juga bisa menghapus foto galeri. Untuk komunitas kelas ini biasanya cukup; kalau mulai disalahgunakan, ganti kode di file SQL dan di `js/store.js` (baris `GALLERY_CODE`).
-- Foto di bucket ini dapat dilihat publik melalui URL. Jangan unggah foto pribadi/sensitif; hapus metadata foto dari admin website dan minta pengurus membersihkan file lama dari Storage bila perlu.
+- Buka `supabase-gallery-open.sql`, salin seluruh isi ke Supabase **SQL Editor**, lalu klik **Run**.
+- Upload dari panel Galeri tidak perlu akun. Semua orang dapat melihat foto; JPG maksimal 1,5 MB.
+- Pengunjung bisa menambah foto, tetapi tidak bisa menghapus. Penghapusan galeri hanya lewat sesi admin website.
+- Karena upload publik, jangan kirim foto pribadi/sensitif. Jika galeri disalahgunakan, ganti kebijakan menjadi admin-only.
 
 **4. Ambil kunci API**
 

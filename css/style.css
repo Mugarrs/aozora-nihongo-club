@@ -4298,3 +4298,106 @@ body.page-mode .page-decoration {
     padding-inline: 16px;
   }
 }
+
+/* ============================================================================
+   12. PENYEMPURNAAN JARAK & WARNA
+   ============================================================================
+   Blok ini ditaruh paling bawah supaya menimpa aturan lama tanpa menghapusnya.
+   Isinya cuma tiga hal:
+     1. jarak antar-bagian dibuat lebih lapang (napas),
+     2. kartu diberi warna lembut berbeda supaya tidak monoton,
+     3. aksen garis tipis di atas kartu sebagai penanda visual.
+   Semua nilai memakai variabel warna yang sudah ada, jadi dark mode ikut aman.
+   ============================================================================ */
+
+/* 1. JARAK — lebih lega, tapi tetap rapat di HP */
+section {
+  padding-block: clamp(64px, 7vw, 104px);
+}
+.wrap {
+  width: min(1240px, 92vw);
+}
+.sec-head {
+  margin-bottom: clamp(30px, 3.6vw, 46px);
+}
+.sec-head .h2 {
+  margin: 15px 0 13px;
+}
+.lead {
+  line-height: 1.75;
+}
+
+/* 2. KARTU INFORMASI — warna lembut berbeda per kartu */
+.about-card {
+  padding: 26px 24px;
+  gap: 16px;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--teal) 7%, var(--card)), var(--card) 62%);
+  border-color: color-mix(in srgb, var(--teal) 22%, var(--line));
+}
+.about-card:nth-child(2n) {
+  background: linear-gradient(150deg, color-mix(in srgb, var(--pink) 9%, var(--card)), var(--card) 62%);
+  border-color: color-mix(in srgb, var(--pink) 26%, var(--line));
+}
+.about-card:nth-child(2n) .ic {
+  background: var(--pink-soft);
+  color: color-mix(in srgb, var(--pink) 70%, var(--ink));
+}
+.about-card:nth-child(3n) {
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--fuji-3) 12%, var(--card)),
+    var(--card) 62%
+  );
+  border-color: color-mix(in srgb, var(--fuji-3) 28%, var(--line));
+}
+.about-card:hover {
+  transform: translateY(-6px);
+}
+
+/* 3. GALERI — jarak antar foto dan sudut lebih halus */
+.gallery-grid {
+  gap: 18px;
+  padding: 6px 2px 18px;
+}
+.gallery-item {
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-sm);
+  border-color: color-mix(in srgb, var(--teal) 18%, var(--line));
+}
+.gallery-item:hover {
+  box-shadow: var(--shadow-lg);
+}
+.gallery-item figcaption {
+  padding: 10px 14px;
+}
+
+/* 4. PANEL HALAMAN — jarak atas-bawah konsisten */
+.page-panel {
+  padding: 30px 0 72px;
+}
+.page-subnav {
+  margin-bottom: 28px;
+  box-shadow: 0 10px 24px -18px rgba(31, 90, 110, 0.55);
+}
+.learn-pane {
+  padding: 30px 0;
+}
+
+/* 5. HP — jangan sampai terlalu lega sampai layar penuh scroll kosong */
+@media (max-width: 640px) {
+  section {
+    padding-block: 46px;
+  }
+  .about-card {
+    padding: 20px 18px;
+  }
+  .gallery-grid {
+    gap: 12px;
+  }
+  .page-panel {
+    padding: 16px 0 56px;
+  }
+  .learn-pane {
+    padding: 18px 0;
+  }
+}

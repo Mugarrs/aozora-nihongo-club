@@ -1,4 +1,4 @@
--- AOZORA: public photo bucket + open upload guarded by a share code.
+-- AOZORA: public photo bucket + public upload; no public delete.
 -- Run in Supabase SQL Editor (project aozora). Safe to run more than once.
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -11,19 +11,16 @@ on conflict (id) do update set
 alter table public.gallery enable row level security;
 drop policy if exists g_read on public.gallery;
 drop policy if exists aozora_gallery_public_read on public.gallery;
-drop policy if exists aozora_gallery_code_insert on public.gallery;
+drop policy if exists aozora_gallery_public_insert on public.gallery;
 drop policy if exists aozora_gallery_admin_insert on public.gallery;
 drop policy if exists g_insert on public.gallery;
-drop policy if exists aozora_gallery_admin_delete on public.gallery;
-drop policy if exists g_delete on public.gallery;
 
 create policy aozora_gallery_public_read on public.gallery
   for select to anon, authenticated using (true);
 
--- Anyone holding the share code can add a gallery row.
-create policy aozora_gallery_code_insert on public.gallery
-  for insert to anon, authenticated
-  with check (current_setting('request.headers', true)::json->>'x-aozora-code' = 'AOSORA-UP-2026');
+-- Public site can add gallery rows; uploaded JPG files remain size-limited by the bucket.
+create policy aozora_gallery_public_insert on public.gallery
+  for insert to anon, authenticated with check (true);
 
 drop policy if exists aozora_gallery_upload on storage.objects;
 drop policy if exists aozora_gallery_public_upload on storage.objects;
@@ -33,15 +30,7 @@ create policy aozora_gallery_upload on storage.objects
   for insert to anon, authenticated
   with check (
     bucket_id = 'aozora-gallery'
-    and (request.headers->>'x-aozora-code') = 'AOSORA-UP-2026'
     and lower(storage.extension(name)) in ('jpg', 'jpeg')
   );
 
-drop policy if exists aozora_gallery_public_delete on storage.objects;
-drop policy if exists aozora_gallery_code_delete on storage.objects;
-create policy aozora_gallery_code_delete on storage.objects
-  for delete to anon, authenticated
-  using (
-    bucket_id = 'aozora-gallery'
-    and (request.headers->>'x-aozora-code') = 'AOSORA-UP-2026'
-  );
+-- Tidak ada kebijakan hapus publik; hanya pengurus yang dapat menghapus foto.

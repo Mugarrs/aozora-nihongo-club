@@ -50,15 +50,14 @@ async function main() {
   assert.match(appSource, /File tidak bisa dibuka|Browser tidak bisa membaca format foto/);
   assert.match(appSource, /Server galeri belum terhubung/);
   assert.doesNotMatch(html, /id="galleryAdminPassword"/, "gallery must not ask visitors for a password");
-  assert.match(source, /GALLERY_CODE/, "upload must carry a shared upload code");
-  assert.match(
-    source,
-    /"x-aozora-code": GALLERY_CODE/,
-    "storage upload must send the share-code header",
-  );
   const openSql = fs.readFileSync(path.join(project, "supabase-gallery-open.sql"), "utf8");
   assert.match(openSql, /'aozora-gallery'/, "open setup must create the bucket");
   assert.match(openSql, /for insert to anon/, "anonymous visitors may upload photos");
+  assert.doesNotMatch(
+    openSql,
+    /create policy aozora_gallery_public_delete/i,
+    "anonymous visitors must not delete shared photos",
+  );
   assert.doesNotMatch(openSql, /gallery_upload_admins/, "open flow must not depend on admin accounts");
   assert.match(
     fs.readFileSync(path.join(project, "supabase-schema.sql"), "utf8"),
@@ -164,11 +163,6 @@ async function main() {
   assert.equal(uploadedObjects.length, 1, "photo binary must upload to object storage");
   assert.equal(uploadedObjects[0].bucket, "aozora-gallery");
   assert.equal(uploadedObjects[0].options.contentType, "image/jpeg");
-  assert.equal(
-    uploadedObjects[0].options.headers["x-aozora-code"],
-    "AOSORA-UP-2026",
-    "upload must send the share code",
-  );
   await assert.rejects(
     storageWindow.Store.addGallery({
       src: new Blob([new Uint8Array(1024 * 1024 + 1)], { type: "image/jpeg" }),
