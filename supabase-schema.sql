@@ -67,12 +67,13 @@ create policy pv_insert on private_messages for insert with check (true);
 create policy pv_delete on private_messages for delete using (true);
 
 -- gallery
-drop policy if exists g_read   on gallery;
+drop policy if exists g_read on gallery;
 drop policy if exists g_insert on gallery;
 drop policy if exists g_delete on gallery;
-create policy g_read   on gallery for select using (true);
-create policy g_insert on gallery for insert with check (true);
-create policy g_delete on gallery for delete using (true);
+create policy g_read on gallery for select using (true);
+
+-- Bucket dan kebijakan foto publik diatur terpisah:
+-- jalankan supabase-gallery-storage.sql setelah membuat akun admin Supabase.
 
 -- forum
 drop policy if exists f_read   on forum;

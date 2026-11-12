@@ -891,10 +891,7 @@
               if (!blob) continue;
               if (blob.size > 150 * 1024) continue;
 
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result);
-              reader.onerror = () => reject(new Error("Foto gagal dibaca."));
-              reader.readAsDataURL(blob);
+              resolve(blob);
               return;
             }
           }
@@ -918,6 +915,62 @@
   const uploadInput = $("#gFile");
   const uploadPreview = $("#uploadPreview");
   const uploadResult = $("#galleryResult");
+  const galleryAuthForm = $("#galleryAuthForm");
+  const galleryUploadFields = $("#galleryUploadFields");
+  const galleryAuthStatus = $("#galleryAuthStatus");
+  const galleryAdminPassword = $("#galleryAdminPassword");
+  const galleryAdminSignOut = $("#galleryAdminSignOut");
+  let galleryAdminSignedIn = false;
+  async function refreshGalleryAdminAuth() {
+    try {
+      const localMode = window.Store.mode === "local";
+      if (!localMode) await window.Store.checkGalleryConnection();
+      galleryAdminSignedIn = localMode ? false : await window.Store.isGalleryAdmin();
+      galleryUploadFields.classList.toggle("hidden", !(localMode || galleryAdminSignedIn));
+      galleryAdminPassword.classList.toggle("hidden", galleryAdminSignedIn || localMode);
+      $("#galleryAdminEmail").classList.toggle("hidden", galleryAdminSignedIn || localMode);
+      galleryAuthForm
+        .querySelectorAll("label")
+        .forEach((label) => label.classList.toggle("hidden", galleryAdminSignedIn || localMode));
+      galleryAuthForm
+        .querySelector('button[type="submit"]')
+        .classList.toggle("hidden", galleryAdminSignedIn || localMode);
+      galleryAdminSignOut.classList.toggle("hidden", !galleryAdminSignedIn);
+      galleryAuthStatus.textContent = galleryAdminSignedIn
+        ? "Login pengurus aktif. Foto yang diunggah dapat dilihat publik."
+        : localMode
+          ? "Mode lokal: foto hanya tersimpan di perangkat ini."
+          : "Masuk memakai akun Supabase pengurus yang telah diberi izin.";
+      renderGalleryAdmin();
+    } catch {
+      galleryAdminSignedIn = false;
+      galleryUploadFields.classList.add("hidden");
+      galleryAuthStatus.textContent =
+        "Server Supabase belum terjangkau atau izin galeri belum disiapkan.";
+    }
+  }
+  galleryAuthForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = galleryAuthForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    galleryAuthStatus.textContent = "Memeriksa akun pengurus…";
+    try {
+      await window.Store.signInGalleryAdmin(
+        $("#galleryAdminEmail").value.trim(),
+        galleryAdminPassword.value,
+      );
+      galleryAdminPassword.value = "";
+      await refreshGalleryAdminAuth();
+    } catch (error) {
+      galleryAuthStatus.textContent = error.message || "Login pengurus gagal.";
+    } finally {
+      button.disabled = false;
+    }
+  });
+  galleryAdminSignOut?.addEventListener("click", async () => {
+    await window.Store.signOutGalleryAdmin();
+    await refreshGalleryAdminAuth();
+  });
   let uploadingPhotos = false;
   const savedPhotoKeys = new Set();
   const photoKey = (file) => `${file.name}:${file.size}:${file.lastModified}`;
@@ -931,14 +984,36 @@
       return;
     }
     const reason = String(error?.message || "").toLowerCase();
+    if (reason === "gallery_admin_login_required") {
+      uploadResult.textContent =
+        "Login dulu dengan akun pengurus Supabase di atas untuk mengunggah foto bersama.";
+      return;
+    }
+    if (reason.includes("akun ini belum diberi izin")) {
+      uploadResult.textContent = "Akun Supabase ini belum terdaftar sebagai pengurus galeri.";
+      return;
+    }
     if (name === "TypeError" && (reason.includes("failed to fetch") || reason.includes("network"))) {
       uploadResult.textContent =
-        "Server galeri belum terhubung. Foto disimpan di perangkat ini saja; pengurus perlu memperbaiki koneksi Supabase.";
+        "Server galeri belum terhubung. Foto belum tersimpan online; pengurus perlu memeriksa Project URL Supabase.";
+      return;
+    }
+    if (reason.includes("maksimal 1 mb")) {
+      uploadResult.textContent = "Foto setelah dikompres harus berukuran maksimal 1 MB.";
       return;
     }
     if (reason.includes("payload too large") || reason.includes("request entity too large")) {
       uploadResult.textContent =
         "Database menolak ukuran foto. Pilih lebih sedikit foto atau foto beresolusi lebih kecil.";
+      return;
+    }
+    if (
+      reason.includes("bucket not found") ||
+      reason.includes("row-level security") ||
+      reason.includes("permission denied")
+    ) {
+      uploadResult.textContent =
+        "Penyimpanan foto bersama belum disiapkan. Pengurus perlu mengaktifkan bucket aozora-gallery di Supabase.";
       return;
     }
     uploadResult.textContent = error?.message || "Foto gagal disimpan. Pilih foto lalu coba lagi.";
@@ -1397,6 +1472,9 @@
       fillForumForm();
       loadPrivate().then(renderPrivateAdmin);
       renderGalleryAdmin();
+      refreshGalleryAdminAuth();
+    } else {
+      galleryUploadFields.classList.add("hidden");
     }
   }
 
@@ -1524,7 +1602,7 @@
       .map(
         (g) => `
       <div class="g-item"><img src="${esc(g.src)}" alt="" /><span class="g-cap">${esc(g.caption || "(tanpa keterangan)")}</span>
-      <button class="ai-del" data-gdel="${g.id}">Hapus</button></div>`,
+      ${galleryAdminSignedIn ? `<button class="ai-del" data-gdel="${g.id}">Hapus</button>` : ""}</div>`,
       )
       .join("");
     box.querySelectorAll("[data-gdel]").forEach((b) =>

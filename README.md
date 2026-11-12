@@ -55,10 +55,17 @@ Detail login admin tidak dicantumkan di panduan publik. Simpan dan bagikan akses
 
 - Di dashboard project, buka **SQL Editor → New query**.
 - Buka file **`supabase-schema.sql`** di folder ini, **copy semua isinya**, tempel ke
-  editor, lalu klik **Run**. (Ini membuat tabel feedback, private_messages, gallery,
-  forum + izin akses.)
+  editor, lalu klik **Run**. Skema ini membuat tabel feedback, private_messages,
+  gallery, forum, dan izin akses. Bucket foto publik diatur terpisah.
 
-**3. Ambil kunci API**
+**3. Siapkan bucket foto dan akun pengurus**
+
+- Buka file **`supabase-gallery-storage.sql`**, salin seluruh isinya ke **SQL Editor → New query**, lalu klik **Run**. File ini membuat bucket publik `aozora-gallery` untuk JPG terkompresi maksimal 1 MB. Foto di bucket bisa dilihat publik; jangan unggah foto pribadi/sensitif.
+- Di **Authentication → Users**, undang/buat akun email Supabase pengurus. Setelah itu jalankan query terakhir berkomentar di bawah file tersebut, dengan UUID akun pengurus.
+- Upload/hapus foto bersama hanya bisa dilakukan oleh akun pengurus Supabase yang sudah didaftarkan.
+- Foto di bucket ini dapat dilihat publik melalui URL. Jangan unggah foto pribadi/sensitif; hapus metadata foto dari admin website dan minta pengurus membersihkan file lama dari Storage bila perlu.
+
+**4. Ambil kunci API**.
 
 - Buka **Project Settings (ikon gerigi) → API**.
 - Copy dua hal:
@@ -80,6 +87,8 @@ Detail login admin tidak dicantumkan di panduan publik. Simpan dan bagikan akses
 
 - Buka web → sekarang pesan, pesan pribadi, foto, dan info pertemuan tersimpan
   **online** dan bisa dilihat dari HP mana saja.
+
+Untuk foto lokal lama, buka galeri Admin lalu unggah ulang setelah pengurus login Supabase. Foto lokal lama tidak berpindah otomatis; tidak ada server online yang bisa mengambilnya sebelum setup ini aktif.
 
 > ✅ Kunci `anon` memang untuk dipakai di web (bukan rahasia).
 > ⚠️ Jangan pernah menaruh **service_role key** di file web.
@@ -104,7 +113,8 @@ aozora-nihongo-club/
 │   ├── data.js           # data hiragana, katakana, kosakata
 │   └── main.js           # logika interaksi
 ├── assets/               # logo (jpg + png tanpa background)
-├── supabase-schema.sql   # ⬅️ tempel ke Supabase SQL Editor
+├── supabase-schema.sql   # skema data utama
+├── supabase-gallery-storage.sql # bucket publik + izin admin
 ├── MULAI-DISINI.bat      # jalankan server lokal (Windows)
 └── README.md
 ```
@@ -127,8 +137,8 @@ Login pengurus hanya bisa diverifikasi lewat `http://localhost` atau `https://`
 ## 📝 Catatan
 
 - Suara memakai Web Speech API bawaan browser (voice Jepang kalau tersedia).
-- Foto galeri: pilih file di panel Admin; foto diperkecil dan langsung muncul sesudah tersimpan.
-- Mode lokal menyimpan foto di perangkat browser. Jika kuota penuh, hapus foto lama dari galeri atau pilih foto lebih sedikit. Untuk penyimpanan bersama, perlu Supabase Storage (belum dihubungkan oleh alur saat ini).
+- Foto galeri: pilih file di panel Admin; file asli maksimal 12 MB, dikompres ke JPG maksimal 1 MB, lalu diunggah ke Supabase Storage publik. Perlu login akun pengurus Supabase.
+- Jika belum memakai Supabase, galeri hanya tersimpan di perangkat browser. Untuk berbagi, ikuti setup Supabase Storage di atas.
 
 ---
 

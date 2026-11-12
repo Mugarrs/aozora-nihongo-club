@@ -80,6 +80,28 @@ window.Store = (function () {
     caption: r.caption || "",
     ts: ms(r),
   });
+  const GALLERY_BUCKET = "aozora-gallery";
+  const GALLERY_ADMIN_LOGIN_REQUIRED = "GALLERY_ADMIN_LOGIN_REQUIRED";
+  const isBlob = (value) =>
+    value && typeof value.arrayBuffer === "function" && typeof value.size === "number";
+  const imageBlob = async (source) => {
+    const response = isBlob(source) ? null : await fetch(source);
+    if (response && !response.ok) throw new Error("File foto tidak bisa dibaca.");
+    const blob = response ? await response.blob() : source;
+    if (blob.type !== "image/jpeg") {
+      throw new Error("Foto perlu dikompres browser menjadi JPG sebelum diunggah.");
+    }
+    if (blob.size > 1024 * 1024) throw new Error("Ukuran foto setelah kompresi maksimal 1 MB.");
+    return blob;
+  };
+  const localImageUrl = async (blob) => {
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    let binary = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+      binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    }
+    return `data:${blob.type};base64,${btoa(binary)}`;
+  };
 
   /* ---------------- MODE LOKAL (perangkat) ---------------- */
   // MODE LOKAL: tiap fungsi menyimpan/membaca data dari perangkat ini saja.
@@ -184,6 +206,47 @@ window.Store = (function () {
 
   /* ---------------- MODE SUPABASE (online) ---------------- */
   // MODE SUPABASE: operasi setara dengan local, tetapi mengakses tabel database.
+  async function checkGalleryConnection() {
+    if (!hasSB) return false;
+    const { error } = await sb.from("gallery").select("id").limit(1);
+    if (error) throw error;
+    return true;
+  }
+
+  async function isGalleryAdmin() {
+    if (!hasSB || !sb.auth) return false;
+    const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+    if (sessionError || !sessionData.session) return false;
+    const userId = sessionData.session.user.id;
+    const { data, error } = await sb
+      .from("gallery_upload_admins")
+      .select("user_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error) throw error;
+    return !!data;
+  }
+
+  async function signInGalleryAdmin(email, password) {
+    if (!hasSB || !sb.auth) throw new Error("Supabase Auth tidak tersedia.");
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    const { data: access, error: accessError } = await sb
+      .from("gallery_upload_admins")
+      .select("user_id")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+    if (accessError || !access) {
+      await sb.auth.signOut();
+      throw new Error("Akun ini belum diberi izin sebagai pengurus galeri.");
+    }
+    return true;
+  }
+
+  async function signOutGalleryAdmin() {
+    if (sb?.auth) await sb.auth.signOut();
+  }
+
   const remote = {
     // Ambil semua pesan publik dan normalkan field-nya.
     async listFeedback() {
@@ -278,18 +341,32 @@ window.Store = (function () {
       if (error) throw error;
       return (data || []).map(normG);
     },
-    // Simpan foto/caption baru.
+    // Unggah file asli ke Storage; tabel galeri hanya menyimpan URL publiknya.
     async addGallery(o) {
+      const blob = await imageBlob(o.src);
+      const extension = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
+      const path = `${Date.now().toString(36)}-${uid().slice(1)}.${extension}`;
+      const { error: uploadError } = await sb.storage.from(GALLERY_BUCKET).upload(path, blob, {
+        contentType: blob.type || "image/jpeg",
+        cacheControl: "31536000",
+        upsert: false,
+      });
+      if (uploadError) throw uploadError;
+      const { data: publicData } = sb.storage.from(GALLERY_BUCKET).getPublicUrl(path);
       const { data, error } = await sb
         .from("gallery")
-        .insert([{ src: o.src, caption: o.caption || "" }])
+        .insert([{ src: publicData.publicUrl, caption: o.caption || "" }])
         .select()
         .single();
-      if (error) throw error;
+      if (error) {
+        await sb.storage.from(GALLERY_BUCKET).remove([path]);
+        throw error;
+      }
       return normG(data);
     },
-    // Hapus satu foto berdasarkan ID.
+    // Hapus metadata galeri; file publik dibersihkan pengurus dari Supabase Storage.
     async deleteGallery(id) {
+      if (!(await isGalleryAdmin())) throw new Error(GALLERY_ADMIN_LOGIN_REQUIRED);
       const { error } = await sb.from("gallery").delete().eq("id", id);
       if (error) throw error;
     },
@@ -299,9 +376,10 @@ window.Store = (function () {
   let galleryLocalOnly = !hasSB;
   async function listGallery() {
     const localRows = await local.listGallery();
-    if (galleryLocalOnly) return localRows.map((row) => ({ ...row, localOnly: true }));
+    if (!hasSB) return localRows.map((row) => ({ ...row, localOnly: true }));
     try {
       const remoteRows = await remote.listGallery();
+      galleryLocalOnly = false;
       return [...localRows.map((row) => ({ ...row, localOnly: true })), ...remoteRows];
     } catch {
       galleryLocalOnly = true;
@@ -309,20 +387,24 @@ window.Store = (function () {
     }
   }
   async function addGallery(item) {
-    if (!galleryLocalOnly) {
-      try {
-        return await remote.addGallery(item);
-      } catch {
-        galleryLocalOnly = true;
-      }
+    if (!hasSB) {
+      if (!isBlob(item.src)) return { ...(await local.addGallery(item)), localOnly: true };
+      const blob = await imageBlob(item.src);
+      return {
+        ...(await local.addGallery({ ...item, src: await localImageUrl(blob) })),
+        localOnly: true,
+      };
     }
-    return { ...(await local.addGallery(item)), localOnly: true };
+    if (!(await isGalleryAdmin())) throw new Error(GALLERY_ADMIN_LOGIN_REQUIRED);
+    const blob = await imageBlob(item.src);
+    return remote.addGallery({ ...item, src: blob });
   }
   async function deleteGallery(id) {
     const localRows = await local.listGallery();
     const isLocalPhoto = localRows.some((row) => String(row.id) === String(id));
-    await local.deleteGallery(id);
-    if (!isLocalPhoto && !galleryLocalOnly) await remote.deleteGallery(id);
+    if (isLocalPhoto) return local.deleteGallery(id);
+    if (!(await isGalleryAdmin())) throw new Error(GALLERY_ADMIN_LOGIN_REQUIRED);
+    await remote.deleteGallery(id);
   }
 
   // Ekspor satu pintu: galeri memakai fallback lokal khusus; operasi lain mengikuti mode biasa.
@@ -330,5 +412,9 @@ window.Store = (function () {
     listGallery,
     addGallery,
     deleteGallery,
+    checkGalleryConnection,
+    isGalleryAdmin,
+    signInGalleryAdmin,
+    signOutGalleryAdmin,
   });
 })();
