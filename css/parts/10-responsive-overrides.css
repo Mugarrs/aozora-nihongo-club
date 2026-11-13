@@ -171,6 +171,15 @@ body:not(.dark) {
   --muted: #40586b;
   --faint: #526b7d;
 }
+body:not(.dark) .pesan-tabs .ptab:not(.active) {
+  color: #173b57;
+  background: #ffffff;
+  border: 1px solid #9cb8cb;
+}
+body:not(.dark) .pesan-tabs .ptab:not(.active):hover {
+  background: #e5f3ff;
+  border-color: #5b91b8;
+}
 body:not(.dark) .foot-brand small,
 body:not(.dark) footer h4,
 body:not(.dark) .foot-bottom {
