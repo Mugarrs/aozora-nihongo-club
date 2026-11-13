@@ -297,48 +297,44 @@
 
   /* Penjelasan blok di atas: toast, tema, sakura, preloader, dan kursor. */
 
-  /* ---------- SUARA (cepat, tanpa delay) ---------- */
-  let jaVoice = null,
-    voicesReady = false;
-  // pickVoice memilih voice Jepang yang dipakai bersama oleh semua tombol suara.
+  /* ---------- SUARA (ramah browser HP) ---------- */
+  let jaVoice = null;
+  // Daftar voice sering datang terlambat di Safari/iPhone; cari ulang saat siap.
   function pickVoice() {
-    const vs = speechSynthesis.getVoices() || [];
-    if (!vs.length) return;
+    if (!("speechSynthesis" in window)) return;
+    const voices = speechSynthesis.getVoices();
     jaVoice =
-      vs.find((v) => /^ja[-_]?JP/i.test(v.lang)) ||
-      vs.find((v) => /japanese|日本語/i.test(v.name)) ||
+      voices.find((voice) => /^ja[-_]?JP/i.test(voice.lang)) ||
+      voices.find((voice) => /japanese|日本語/i.test(voice.name)) ||
       null;
-    voicesReady = true;
   }
   if ("speechSynthesis" in window) {
     pickVoice();
-    speechSynthesis.onvoiceschanged = pickVoice;
-    // "hangatkan" mesin suara supaya klik pertama tidak delay
-    try {
-      const w = new SpeechSynthesisUtterance(" ");
-      w.volume = 0;
-      w.lang = "ja-JP";
-      speechSynthesis.speak(w);
-      speechSynthesis.cancel();
-    } catch {}
+    speechSynthesis.addEventListener?.("voiceschanged", pickVoice);
+    if (!speechSynthesis.addEventListener) speechSynthesis.onvoiceschanged = pickVoice;
   }
-  // speak meminta Web Speech API membacakan teks Jepang bila suara tersedia.
+  // Memulai ucapan langsung dari klik pengguna agar kebijakan autoplay HP mengizinkan audio.
   function speak(text) {
-    if (!("speechSynthesis" in window)) {
-      toast("Perangkat ini belum mendukung suara");
+    if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+      toast("Browser ini belum mendukung suara. Coba buka situs di Safari atau Chrome.");
       return;
     }
     try {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "ja-JP";
-      u.rate = 0.95;
-      u.pitch = 1;
-      u.volume = 1;
-      if (jaVoice) u.voice = jaVoice;
-      speechSynthesis.speak(u);
+      const utterance = new SpeechSynthesisUtterance(String(text));
+      utterance.lang = "ja-JP";
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      if (!jaVoice) pickVoice();
+      if (jaVoice) utterance.voice = jaVoice;
+      utterance.onerror = (event) => {
+        if (event.error !== "canceled" && event.error !== "interrupted")
+          toast("Suara gagal diputar. Cek volume media atau coba browser lain.");
+      };
+      speechSynthesis.speak(utterance);
+      // Jangan panggil cancel() di sini: Safari/iOS bisa membatalkan ucapan baru.
     } catch {
-      toast("Gagal memutar suara");
+      toast("Suara gagal diputar. Cek volume media atau coba browser lain.");
     }
   }
 
