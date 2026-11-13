@@ -1,0 +1,183 @@
+/* ----------------------------------------------------------------------------
+   DOKUMENTASI — galeri foto
+   Grid otomatis: foto mengalir mengisi baris sesuai lebar layar.
+   ---------------------------------------------------------------------------- */
+/* Dokumentasi memakai viewport overflow-x agar strip foto bisa digeser mendatar. */
+/* ---------- DOKUMENTASI ---------- */
+.gallery-shell {
+  position: relative;
+}
+.gallery-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-inline: contain;
+  touch-action: pan-x;
+}
+.gallery-viewport::-webkit-scrollbar {
+  display: none;
+}
+.gallery-grid {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  padding: 4px 2px 14px;
+}
+.gallery-item {
+  position: relative;
+  flex: 0 0 clamp(220px, 28vw, 340px);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  aspect-ratio: 4/3;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition:
+    transform 0.22s var(--ease),
+    box-shadow 0.22s;
+}
+.gallery-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s var(--ease);
+}
+.gallery-item:hover img {
+  transform: scale(1.035);
+}
+.gallery-arrow {
+  position: absolute;
+  z-index: 2;
+  top: 42%;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.gallery-arrow svg {
+  width: 20px;
+  height: 20px;
+}
+.gallery-arrow.prev {
+  left: -16px;
+}
+.gallery-arrow.next {
+  right: -16px;
+}
+.gallery-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+.gallery-empty {
+  min-width: min(760px, 88vw);
+  text-align: center;
+  padding: 42px 18px;
+  color: var(--faint);
+  background: var(--card);
+  border: 1px dashed var(--line);
+  border-radius: var(--r-lg);
+}
+.upload-help {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 6px;
+}
+.upload-preview {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0;
+  min-height: 0;
+}
+.upload-preview:empty {
+  display: none;
+}
+.upload-preview img {
+  width: 76px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+.upload-count {
+  align-self: center;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+@media (max-width: 768px) {
+  .gallery-item {
+    flex-basis: min(78vw, 320px);
+  }
+  .gallery-arrow {
+    display: none;
+  }
+  .gallery-hint {
+    font-size: 12px;
+  }
+  .page-panel {
+    padding-top: 18px;
+  }
+}
+@media (max-width: 360px) {
+  .nav {
+    gap: 5px;
+    padding-inline: 6px;
+  }
+  .brand img {
+    width: 28px;
+    height: 28px;
+  }
+  .brand-txt b {
+    font-size: 11.5px;
+  }
+  .admin-corner {
+    width: 36px;
+    height: 36px;
+  }
+  .icon-btn,
+  .nav-burger {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+  .gallery-item {
+    flex-basis: 84vw;
+  }
+}
+.gallery-item figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  background: linear-gradient(0deg, rgba(10, 30, 35, 0.82), transparent);
+}
+.gallery-empty {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--faint);
+  background: var(--card);
+  border: 1px dashed var(--line);
+  border-radius: var(--r-lg);
+}

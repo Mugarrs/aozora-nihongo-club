@@ -7,18 +7,19 @@
   File ini adalah KERANGKA website. Ibarat rumah: HTML = dinding + ruangan,
   CSS = cat + hiasan, JavaScript = listrik + saklar yang bikin ruangan hidup.
 
-  URUTAN BACA DARI ATAS KE BAWAH:
-  index.html = susunan konten; css/style.css = tampilan; js/main.js = interaksi.
-    <head>   -> informasi halaman (judul tab, font, file CSS) — tidak tampil
-    <body>   -> semua yang kelihatan di layar
-      1. Preloader      : layar loading pembuka
-      2. Nav            : menu di atas (logo + link + tombol tema + admin)
-      3. Hero           : banner besar (Gunung Fuji, matahari, sakura)
-      4. Belajar        : Kana, kuis, kata hari ini, kosakata
-      5. Kegiatan       : info pertemuan + slider "Tentang"
-      7. Pesan          : form pesan/kritik + pesan pribadi
-      8. Footer         : penutup halaman
-      9. Popup & Modal  : elemen tersembunyi yang muncul saat diklik
+  PETA ISI:
+  index.html = struktur; css/style.css = urutan style; js/main.js = logika utama.
+    <head>   -> judul, font, metadata, dan stylesheet
+    <body>   -> navigasi, beranda/maskot, belajar, kegiatan, pesan, admin
+      1. Transisi + preloader  : efek pembuka/pindah panel
+      2. Latar + navigasi      : hiasan halaman dan menu
+      3. Beranda               : hero Fuji, teks klub, logo dan maskot
+      4. Belajar               : kana, kuis, kata hari ini, kosakata
+      5. Kegiatan              : info pertemuan dan slider klub
+      6. Pesan                 : form publik dan pesan pribadi
+      7. Footer                : penutup halaman
+      8. Popup + modal admin   : panel yang muncul saat dibuka
+      9. Script                : config, store, data, main, fitur terpisah
 
   BACA KODE: setelah blok utama ada komentar penutup yang merangkum fungsi.
   Uraian langkah demi langkah dan contoh tersedia di PANDUAN-KODE.md.
@@ -43,7 +44,7 @@
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <!-- style.css mengatur tampilan; JavaScript dimuat sebelum penutup body. -->
+    <!-- style.css memuat CSS per bagian dalam urutan cascade yang tercatat di panduan. -->
     <link rel="stylesheet" href="css/style.css" />
     <script>
       try {
@@ -326,8 +327,16 @@
             </div>
 
             <div class="hero-visual reveal d2">
-              <div class="logo-disc">
-                <img src="assets/logo-nobg.png" alt="Logo Aozora Nihongo Club" />
+              <img
+                class="hero-mascot"
+                src="assets/mascot-hero.png"
+                alt="Maskot Aozora berambut hitam dengan aksen ungu, mengenakan atasan biru muda"
+                width="456"
+                height="499"
+                decoding="async"
+              />
+              <div class="hero-logo-badge">
+                <img src="assets/logo-nobg.png" alt="Logo Aozora Nihongo Club" width="96" height="96" />
               </div>
             </div>
           </div>
@@ -1110,24 +1119,19 @@
     </div>
 
     <!--
-  ============================================================
-  15. MEMUAT JAVASCRIPT
-  ============================================================
-  Urutannya PENTING — jangan diacak, karena tiap file butuh yang di atasnya:
-
-  1. supabase-js -> pustaka untuk konek ke database online
-  2. config.js   -> isi alamat & kunci database
-  3. store.js    -> "petugas gudang": simpan/ambil data (online atau offline)
-  4. data.js     -> daftar huruf kana & kosakata
-  5. main.js     -> otak website: bikin tampilan, tangani klik, login admin
-
-  Kalau store.js dimuat sebelum config.js, dia tidak tahu mau konek ke mana.
-  ============================================================
--->
+  SCRIPT DI BAWAH: urutan file menentukan kapan dependensi tersedia.
+  1. Supabase CDN, lalu config.js dan store.js untuk penyimpanan.
+  2. data.js menyediakan kana/kosakata; main.js mengatur router, tema, form, admin.
+  3. Tiga js/features/* dijalankan setelah main.js dan memakai data/helper yang siap.
+  Jangan memindahkan script tanpa menyesuaikan dependensi.
+  -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/store.js"></script>
     <script src="js/data.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/features/about-slider.js"></script>
+    <script src="js/features/kana-quiz.js"></script>
+    <script src="js/features/daily-word.js"></script>
   </body>
 </html>

@@ -1,0 +1,436 @@
+/* ----------------------------------------------------------------------------
+   MARQUEE — teks berjalan
+   Animasi menggeser track ke kiri terus-menerus tanpa henti.
+   ---------------------------------------------------------------------------- */
+/* ---------- MARQUEE ---------- */
+.marquee {
+  margin: 6px 0 0;
+  overflow: hidden;
+  padding: 10px 0;
+}
+.marquee-track {
+  display: flex;
+  gap: 38px;
+  width: max-content;
+  animation: marq 32s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+.marquee span {
+  font-weight: 700;
+  font-size: clamp(14px, 1.9vw, 20px);
+  color: var(--faint);
+  white-space: nowrap;
+  opacity: 0.65;
+}
+.marquee span:nth-child(even) {
+  color: var(--teal);
+  opacity: 1;
+}
+@keyframes marq {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   TABS / CHIPS / SEARCH — tombol tab, filter kecil, dan kotak cari
+   .active = penanda mana yang sedang dipilih (diatur JS saat diklik).
+   ---------------------------------------------------------------------------- */
+/* ---------- TABS / CHIPS / SEARCH ---------- */
+.tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.tab {
+  padding: 10px 20px;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.22s;
+}
+.tab:hover {
+  color: var(--teal-dark);
+  transform: translateY(-1px);
+}
+.tab.active {
+  color: #fff;
+  background: linear-gradient(100deg, var(--teal), var(--teal-deep));
+  border-color: transparent;
+}
+.kana-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.search-box {
+  position: relative;
+  flex: 1 1 240px;
+  max-width: 360px;
+}
+.search-box svg {
+  position: absolute;
+  left: 17px;
+  top: 50%;
+  translate: 0 -50%;
+  width: 17px;
+  height: 17px;
+  opacity: 0.4;
+}
+.search-box input {
+  width: 100%;
+  padding: 13px 18px 13px 44px;
+  border-radius: var(--r-pill);
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  outline: none;
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s;
+}
+.search-box input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px rgba(67, 199, 190, 0.15);
+}
+.search-box input::placeholder {
+  color: var(--faint);
+}
+.chips {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.chip {
+  padding: 8px 15px;
+  border-radius: var(--r-pill);
+  font-size: 12.5px;
+  font-weight: 500;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  transition: all 0.22s;
+}
+.chip:hover {
+  color: var(--teal-dark);
+  border-color: var(--teal);
+}
+.chip.active {
+  color: #fff;
+  background: linear-gradient(100deg, var(--teal), var(--teal-deep));
+  border-color: transparent;
+}
+
+/* ----------------------------------------------------------------------------
+   KANA — kartu huruf hiragana/katakana
+   .kana-groups -> daftar menurun, tiap baris satu kelompok
+   .kana-grid   -> isi huruf, memakai CSS Grid:
+                   repeat(auto-fill, minmax(...)) = buat kolom otomatis
+                   sebanyak yang muat, minimal selebar nilai minmax.
+                   Inilah yang bikin tata letak rapi tanpa media query.
+   ---------------------------------------------------------------------------- */
+/* Kana memakai grid dan accordion; isi daftar dibuat JavaScript saat dibutuhkan. */
+/* ---------- KANA ---------- */
+.kana-groups {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.4vw, 30px);
+}
+.kana-group {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: clamp(16px, 2.2vw, 26px);
+  box-shadow: var(--shadow);
+}
+.kana-group-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  padding-bottom: 13px;
+  border-bottom: 1.5px dashed var(--line);
+}
+.kana-group-head h3 {
+  font-size: clamp(15px, 2vw, 20px);
+}
+.kana-group-head .range {
+  font-family: "Noto Sans JP", sans-serif;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 4px 13px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(100deg, var(--teal), var(--teal-deep));
+}
+.kana-group-head .cnt {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.kana-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(94px, 1fr));
+  gap: 11px;
+}
+@media (max-width: 560px) {
+  .kana-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 8px;
+  }
+}
+.kana-cell {
+  aspect-ratio: 1/1.06;
+  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: var(--mint-soft);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.24s var(--ease),
+    border-color 0.24s,
+    box-shadow 0.24s,
+    background 0.24s;
+}
+.kana-cell:hover {
+  transform: translateY(-5px) scale(1.03);
+  background: var(--card);
+  border-color: var(--teal);
+  box-shadow: var(--shadow-sm);
+}
+.kana-cell .glyph {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(28px, 3.8vw, 40px);
+  line-height: 1;
+  font-weight: 600;
+  color: var(--navy);
+}
+.kana-cell .rom {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--teal-dark);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.kana-cell.done {
+  background: var(--card);
+  border-color: var(--teal);
+}
+.kana-cell.done::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+.kana-empty {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--faint);
+}
+.kana-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+.kana-progress .bar {
+  flex: 1 1 220px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--mint-soft);
+  overflow: hidden;
+}
+.kana-progress .bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-dark));
+  transition: width 0.5s var(--ease);
+}
+.kana-progress small {
+  color: var(--muted);
+  font-size: 13px;
+}
+.kana-progress b {
+  color: var(--teal-dark);
+}
+.kana-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(18, 55, 58, 0.36);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s,
+    visibility 0.3s;
+}
+.kana-pop.open {
+  opacity: 1;
+  visibility: visible;
+}
+.kana-pop-card {
+  width: min(400px, 92vw);
+  padding: 32px;
+  text-align: center;
+  transform: scale(0.94);
+  transition: transform 0.32s var(--ease-out);
+  background: var(--card);
+}
+.kana-pop.open .kana-pop-card {
+  transform: none;
+}
+.kana-pop-card .big {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(72px, 19vw, 112px);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--teal-dark);
+}
+.kana-pop-card .rom2 {
+  font-weight: 800;
+  font-size: 28px;
+  margin: 6px 0 2px;
+  color: var(--navy);
+}
+.kana-pop-card .row-tag {
+  color: var(--faint);
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.kana-pop-actions {
+  display: flex;
+  gap: 9px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.stroke-hint {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--mint-soft);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  text-align: left;
+}
+
+/* ----------------------------------------------------------------------------
+   KOSAKATA — kartu kata
+   .vocab-card -> tiap kartu berisi tulisan Jepang, cara baca, arti, tombol suara
+   .speak      -> tombol pengeras suara, memicu suara lewat main.js
+   ---------------------------------------------------------------------------- */
+/* Kosakata dikelompokkan per kategori; pencarian dan isi dikelola main.js. */
+/* ---------- KOSAKATA ---------- */
+.vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 15px;
+}
+.vocab-card {
+  padding: 20px;
+  border-radius: var(--r-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  transition:
+    transform 0.28s var(--ease),
+    box-shadow 0.28s,
+    border-color 0.28s;
+}
+.vocab-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--teal);
+  box-shadow: var(--shadow-lg);
+}
+.vocab-card .cat {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 11px;
+  border-radius: var(--r-pill);
+  background: var(--mint-soft);
+  color: var(--teal-dark);
+}
+.vocab-card .jp {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(23px, 3.4vw, 30px);
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--navy);
+}
+.vocab-card .kana {
+  font-family: "Noto Sans JP", sans-serif;
+  color: var(--pink);
+  font-size: 14px;
+}
+.vocab-card .id {
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 15px;
+}
+.vocab-card .foot {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-top: 11px;
+  border-top: 1px solid var(--line);
+}
+.vocab-card .foot small {
+  color: var(--faint);
+  font-size: 11.5px;
+}
+.speak {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--mint-soft);
+  display: grid;
+  place-items: center;
+  transition: all 0.22s;
+  flex: 0 0 auto;
+  color: var(--teal-dark);
+}
+.speak:hover {
+  border-color: transparent;
+  background: linear-gradient(140deg, var(--teal), var(--teal-deep));
+  color: #fff;
+  transform: scale(1.06);
+}
+.speak svg {
+  width: 15px;
+  height: 15px;
+}

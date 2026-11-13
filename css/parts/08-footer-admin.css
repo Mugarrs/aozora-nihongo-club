@@ -1,0 +1,418 @@
+/* ----------------------------------------------------------------------------
+   FOOTER — penutup halaman
+   ---------------------------------------------------------------------------- */
+/* ---------- FOOTER ---------- */
+footer {
+  margin-top: 26px;
+  padding: 0 0 32px;
+}
+.foot-inner {
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, var(--teal), var(--teal-deep));
+  color: #eafffb;
+  padding: clamp(28px, 3.6vw, 50px);
+  box-shadow: var(--shadow-lg);
+}
+.foot-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 28px;
+}
+@media (max-width: 760px) {
+  .foot-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+.foot-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 13px;
+}
+.foot-brand img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+.foot-brand b {
+  font-weight: 700;
+  font-size: 16.5px;
+  color: #fff;
+}
+.foot-brand small {
+  display: block;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+footer p {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 14px;
+  margin: 0;
+}
+footer h4 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 13px;
+}
+footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+footer ul a {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  transition:
+    color 0.2s,
+    padding-left 0.2s;
+}
+footer ul a:hover {
+  color: #fff;
+  padding-left: 5px;
+}
+.foot-bottom {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12.5px;
+}
+
+/* ----------------------------------------------------------------------------
+   TOAST / PROGRESS / TO-TOP
+   .toast  = notifikasi kecil yang muncul lalu hilang sendiri
+   .to-top = tombol panah ke atas, muncul setelah scroll cukup jauh
+   ---------------------------------------------------------------------------- */
+/* ---------- TOAST / PROGRESS / TO-TOP ---------- */
+.toast-wrap {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 170;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  align-items: center;
+}
+.toast {
+  padding: 12px 20px;
+  border-radius: var(--r-pill);
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--navy);
+  animation: toastIn 0.4s var(--ease-out);
+}
+.toast.out {
+  animation: toastOut 0.32s var(--ease) forwards;
+}
+.toast .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal-dark);
+}
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.95);
+  }
+}
+@keyframes toastOut {
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+}
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  z-index: 130;
+  background: linear-gradient(90deg, var(--teal), var(--teal-dark), var(--pink));
+}
+.to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 110;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--teal-dark);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s var(--ease);
+}
+.to-top svg {
+  width: 19px;
+  height: 19px;
+}
+.to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+.to-top:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(140deg, var(--teal), var(--teal-deep));
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ----------------------------------------------------------------------------
+   MODAL — kotak panel admin
+   .modal       = latar gelap transparan menutupi seluruh layar
+   .modal-card  = kotak putih di tengahnya
+   ---------------------------------------------------------------------------- */
+/* Modal menutup layar saat login/pengelolaan admin dibuka. */
+/* ---------- MODAL (admin) ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(18, 55, 58, 0.42);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s,
+    visibility 0.3s;
+}
+.modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-card {
+  width: min(560px, 94vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: clamp(24px, 3.4vw, 38px);
+  background: var(--card);
+  transform: scale(0.94);
+  transition: transform 0.32s var(--ease-out);
+}
+.modal.open .modal-card {
+  transform: none;
+}
+.modal-x {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  transition: all 0.22s;
+}
+.modal-x:hover {
+  color: #fff;
+  background: var(--pink);
+  border-color: var(--pink);
+}
+.modal-x svg {
+  width: 16px;
+  height: 16px;
+}
+.modal-head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 20px;
+}
+.modal-ic {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-md);
+  display: grid;
+  place-items: center;
+  background: var(--mint-soft);
+  color: var(--teal-dark);
+  flex: 0 0 auto;
+}
+.modal-ic.ok {
+  background: linear-gradient(140deg, var(--teal), var(--teal-deep));
+  color: #fff;
+}
+.modal-ic svg {
+  width: 22px;
+  height: 22px;
+}
+.modal-head h3 {
+  font-size: 18px;
+}
+.modal-head p {
+  margin: 2px 0 0;
+  color: var(--faint);
+  font-size: 13px;
+}
+.admin-err {
+  margin-top: 12px;
+  color: #d9556f;
+  font-size: 13px;
+  font-weight: 600;
+  display: none;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+  border-radius: var(--r-pill);
+  background: var(--mint-soft);
+  margin-bottom: 18px;
+}
+.atab {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all 0.25s;
+}
+.atab.active {
+  color: #fff;
+  background: linear-gradient(100deg, var(--teal), var(--teal-deep));
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-top: 16px;
+}
+.admin-item {
+  padding: 14px;
+  border-radius: var(--r-md);
+  background: var(--field);
+  border: 1px solid var(--line);
+}
+.admin-item .ai-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 6px;
+}
+.admin-item .ai-who {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--navy);
+}
+.admin-item .ai-when {
+  color: var(--faint);
+  font-size: 11px;
+  margin-left: auto;
+}
+.admin-item p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.admin-item .ai-del {
+  margin-top: 9px;
+  font-size: 12.5px;
+  color: var(--pink);
+  font-weight: 600;
+}
+.admin-empty {
+  text-align: center;
+  padding: 34px 16px;
+  color: var(--faint);
+  font-size: 14px;
+}
+.g-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: var(--r-md);
+  background: var(--field);
+  border: 1px solid var(--line);
+}
+.g-item img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--r-sm);
+  flex: 0 0 auto;
+}
+.g-item .g-cap {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--navy);
+  flex: 1;
+}
+.g-item .ai-del {
+  font-size: 12.5px;
+  color: var(--pink);
+  font-weight: 600;
+}
+.or-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--faint);
+  font-size: 12px;
+  margin: 4px 0 14px;
+}
+.or-line::before,
+.or-line::after {
+  content: "";
+  height: 1px;
+  background: var(--line);
+  flex: 1;
+}
+.field input[type="file"] {
+  padding: 11px;
+  font-size: 13px;
+  background: var(--field);
+}
+
+/* Hormati pengaturan aksesibilitas pengguna yang meminta animasi dikurangi. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

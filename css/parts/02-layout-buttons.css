@@ -1,0 +1,176 @@
+/* ----------------------------------------------------------------------------
+   LAYOUT — pengatur lebar konten
+   .wrap = pembungkus yang membatasi lebar maksimum dan menengahkan isi,
+   supaya di layar lebar teks tidak melebar sampai susah dibaca.
+   ---------------------------------------------------------------------------- */
+/* .wrap membatasi lebar isi; grid/flex di dalamnya menyusun komponen. */
+/* ---------- LAYOUT ---------- */
+.wrap {
+  width: min(1220px, 92vw);
+  margin-inline: auto;
+}
+section {
+  position: relative;
+  padding: clamp(54px, 6.5vw, 92px) 0;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  background: var(--mint-soft);
+  color: var(--teal-dark);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pink);
+}
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--navy);
+}
+.h2 {
+  font-size: clamp(27px, 4.2vw, 42px);
+}
+.h2 em {
+  font-style: normal;
+  color: var(--teal-dark);
+}
+.lead {
+  color: var(--muted);
+  max-width: 64ch;
+  font-size: clamp(15px, 1.4vw, 16.5px);
+}
+.sec-head {
+  margin-bottom: clamp(24px, 3.2vw, 40px);
+}
+.sec-head .h2 {
+  margin: 13px 0 11px;
+}
+.muted {
+  color: var(--faint);
+}
+
+/* Animasi muncul saat digulir (dipicu JS lewat IntersectionObserver).
+   translateY(+) = mulai dari BAWAH, lalu naik ke posisi asli.
+   scale(.97)    = mulai sedikit lebih kecil, lalu membesar -> terasa "hidup".
+   Hanya transform & opacity yang dianimasikan, jadi ringan di HP. */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.38s var(--ease-out),
+    transform 0.42s var(--ease-out);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Varian arah: elemen tertentu bisa masuk dari kiri/kanan/zoom saja */
+.reveal-left {
+  transform: translateX(-34px);
+}
+.reveal-right {
+  transform: translateX(34px);
+}
+.reveal-zoom {
+  transform: scale(0.9);
+}
+.reveal-left.in,
+.reveal-right.in,
+.reveal-zoom.in {
+  transform: none;
+}
+.reveal.d1 {
+  transition-delay: 0.07s;
+}
+.reveal.d2 {
+  transition-delay: 0.14s;
+}
+.reveal.d3 {
+  transition-delay: 0.21s;
+}
+.reveal.d4 {
+  transition-delay: 0.28s;
+}
+.reveal.d5 {
+  transition-delay: 0.35s;
+}
+.reveal.d6 {
+  transition-delay: 0.42s;
+}
+
+.glass {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  transition:
+    background 0.45s var(--ease),
+    border-color 0.45s var(--ease);
+}
+
+/* ----------------------------------------------------------------------------
+   BUTTONS — gaya tombol
+   .btn-primary = tombol utama (warna penuh)
+   .btn-ghost   = tombol sekunder (hanya garis tepi)
+   ---------------------------------------------------------------------------- */
+/* Satu aturan tombol utama dipakai ulang agar ukuran dan fokus konsisten. */
+/* ---------- BUTTONS ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  font-size: 14.5px;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--navy);
+  transition:
+    transform 0.25s var(--ease),
+    box-shadow 0.3s,
+    background 0.3s,
+    border-color 0.3s;
+  white-space: nowrap;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--teal);
+  box-shadow: var(--shadow-sm);
+}
+.btn:active {
+  transform: translateY(-1px) scale(0.99);
+}
+.btn-primary {
+  background: linear-gradient(100deg, var(--teal), var(--teal-deep));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 12px 26px -12px var(--teal-deep);
+}
+.btn-primary:hover {
+  box-shadow: 0 16px 34px -12px var(--teal-deep);
+}
+.btn-ghost {
+  background: var(--mint-soft);
+  border-color: transparent;
+  color: var(--teal-dark);
+}

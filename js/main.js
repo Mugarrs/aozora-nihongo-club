@@ -1,5 +1,7 @@
 /* =========================================================
-   AOZORA NIHONGO CLUB — Main script v4
+   AOZORA NIHONGO CLUB — interaksi utama
+   Peta: helper/tema/router → belajar → forum/pesan/admin → statistik/init.
+   Kuis, slider klub, dan kata harian ada di js/features/.
    ========================================================= */
 (() => {
   "use strict";
@@ -514,7 +516,16 @@
     }
   });
 
-  /* Selesai: router mengatur panel; tombol navigasi mengubah route/hash. */
+  /*
+   * KOLOM PENCARIAN — gunakan find/pegang nama fungsi di tiap section.
+   * 1. awal file: ikon, toast, tema, sakura, preloader, cursor (baris 50–192)
+   * 2. router + suara: showRoute(), revealInit(), speak() (baris 193–330)
+   * 3. kana: buildChips(), renderKana(), popup huruf (baris 331–520)
+   * 4. kosakata: buildVocabChips(), renderVocab() (baris 521–620)
+   * 5. kegiatan: loadForum(); slider ada di js/features/about-slider.js
+   * 6. pesan: helper anonim, pesan publik/pribadi, admin (baris 646–1150)
+   * 7. akhir file: statistik dan init; kuis/kata harian ada di js/features/
+   */
 
   /* =======================================================
      KOSAKATA
@@ -636,80 +647,7 @@
     renderForum();
   }
 
-  /* =======================================================
-     SLIDER TENTANG
-     ======================================================= */
-  const SLIDES = [
-    {
-      e: "Tentang kami",
-      t: "Bukan kelas yang tegang",
-      p: "Di Aozora, kamu nggak harus sudah bisa bahasa Jepang buat mulai. Kita belajar santai, banyak ketawa, dan saling bantu. Yang penting berani coba.",
-    },
-    {
-      e: "Cara belajar",
-      t: "Satu huruf sehari, cukup",
-      p: "Kita mulai dari hiragana & katakana, lanjut ke kosakata yang sering dipakai. Ada juga latihan ngobrol biar makin percaya diri.",
-    },
-    {
-      e: "Siapa saja boleh",
-      t: "Terbuka buat semua jurusan",
-      p: "Mau dari TKJ, RPL, atau jurusan lain — semua boleh ikut. Nggak ada syarat khusus, cuma niat buat belajar bareng.",
-    },
-    {
-      e: "Suasana",
-      t: "Kadang belajar, kadang seru-seruan",
-      p: "Sesekali kita bikin origami, kaligrafi, dengar lagu Jepang, atau sekadar ngobrol soal anime. Belajar jadi nggak membosankan.",
-    },
-    {
-      e: "Pesan pengurus",
-      t: "Jangan takut salah",
-      p: "Salah itu bagian dari belajar. Justru dari salah kita cepat paham. Jadi, berani tampil dan tanya, ya!",
-    },
-  ];
-  // slider mengisi isi slideshow dan menangani panah, titik, serta jeda otomatis.
-  (function slider() {
-    const wrap = $("#aboutSlides"),
-      dots = $("#slideDots");
-    if (!wrap) return;
-    wrap.innerHTML = SLIDES.map(
-      (s) =>
-        `<div class="slide"><span class="s-eyebrow">${s.e}</span><h3>${s.t}</h3><p>${s.p}</p></div>`,
-    ).join("");
-    dots.innerHTML = SLIDES.map(
-      (_, i) =>
-        `<button data-i="${i}" class="${i === 0 ? "on" : ""}" aria-label="Slide ${i + 1}"></button>`,
-    ).join("");
-    let idx = 0,
-      timer;
-    const go = (i) => {
-      idx = (i + SLIDES.length) % SLIDES.length;
-      wrap.style.transform = `translateX(-${idx * 100}%)`;
-      dots.querySelectorAll("button").forEach((b, j) => b.classList.toggle("on", j === idx));
-    };
-    const next = () => go(idx + 1),
-      prev = () => go(idx - 1);
-    const restart = () => {
-      clearInterval(timer);
-      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(next, 5200);
-    };
-    $("#slideNext").addEventListener("click", () => {
-      next();
-      restart();
-    });
-    $("#slidePrev").addEventListener("click", () => {
-      prev();
-      restart();
-    });
-    dots.querySelectorAll("button").forEach((b) =>
-      b.addEventListener("click", () => {
-        go(+b.dataset.i);
-        restart();
-      }),
-    );
-    restart();
-  })();
-
-  /* Selesai: slider kegiatan berisi data yang ditulis pada array SLIDES. */
+  /* Slider klub diinisialisasi pada js/features/about-slider.js. */
 
   // Router tetap membuka panel awal setelah helper halaman siap.
   showRoute(location.hash || "#home", false);
@@ -1217,150 +1155,7 @@
     }
   });
 
-  /* =======================================================
-     KUIS KANA
-     ======================================================= */
-  (function quiz() {
-    const TOTAL = 10;
-    let qScript = "hiragana",
-      questions = [],
-      idx = 0,
-      score = 0,
-      answered = false;
-    const startEl = $("#quizStart"),
-      playEl = $("#quizPlay"),
-      doneEl = $("#quizDone");
-    const glyphEl = $("#quizGlyph"),
-      optsEl = $("#quizOpts"),
-      fbEl = $("#quizFb"),
-      numEl = $("#quizNum");
-
-    $$("#quizBox .quiz-tabs .tab").forEach((t) =>
-      t.addEventListener("click", () => {
-        qScript = t.dataset.qs;
-        $$("#quizBox .quiz-tabs .tab").forEach((x) => x.classList.toggle("active", x === t));
-      }),
-    );
-
-    function pool() {
-      if (qScript === "campur") return [...HIRAGANA, ...KATAKANA];
-      return qScript === "katakana" ? [...KATAKANA] : [...HIRAGANA];
-    }
-    function shuffle(a) {
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = (Math.random() * (i + 1)) | 0;
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
-
-    // generate memilih soal acak dan membuat pilihan jawaban.
-    function generate() {
-      const p = pool();
-      shuffle(p);
-      const picked = p.slice(0, TOTAL);
-      const allRom = [...new Set(p.map((x) => x.r))];
-      questions = picked.map((q) => {
-        const wrongs = shuffle(allRom.filter((r) => r !== q.r)).slice(0, 3);
-        return { glyph: q.k, answer: q.r, opts: shuffle([q.r, ...wrongs]) };
-      });
-    }
-
-    function show() {
-      const q = questions[idx];
-      numEl.textContent = idx + 1;
-      glyphEl.textContent = q.glyph;
-      glyphEl.style.animation = "none";
-      void glyphEl.offsetWidth;
-      glyphEl.style.animation = "";
-      fbEl.textContent = "";
-      fbEl.className = "quiz-fb";
-      answered = false;
-      optsEl.innerHTML = q.opts
-        .map((o) => `<button class="quiz-opt" data-r="${esc(o)}">${esc(o)}</button>`)
-        .join("");
-      optsEl.querySelectorAll(".quiz-opt").forEach((b) => b.addEventListener("click", () => pick(b)));
-    }
-
-    // pick menilai jawaban sekali, memperbarui skor, lalu lanjut ke soal berikutnya.
-    function pick(btn) {
-      if (answered) return;
-      answered = true;
-      const q = questions[idx],
-        chosen = btn.dataset.r;
-      optsEl.querySelectorAll(".quiz-opt").forEach((b) => {
-        b.classList.add("disabled");
-        if (b.dataset.r === q.answer) b.classList.add("correct");
-      });
-      if (chosen === q.answer) {
-        score++;
-        btn.classList.add("correct");
-        fbEl.textContent = "Benar!";
-        fbEl.className = "quiz-fb ok";
-      } else {
-        btn.classList.add("wrong");
-        fbEl.textContent = `Salah — jawabannya "${q.answer}"`;
-        fbEl.className = "quiz-fb bad";
-      }
-      setTimeout(() => {
-        idx++;
-        if (idx < TOTAL) show();
-        else finish();
-      }, 1200);
-    }
-
-    function finish() {
-      playEl.classList.add("hidden");
-      doneEl.classList.remove("hidden");
-      $("#quizScore").textContent = score;
-      const pct = score / TOTAL;
-      $("#quizVerdict").textContent =
-        pct === 1
-          ? "Sempurna! Kamu luar biasa!"
-          : pct >= 0.7
-            ? "Bagus! Terus latihan ya."
-            : pct >= 0.4
-              ? "Lumayan, coba lagi biar makin hafal."
-              : "Jangan menyerah — ulangi pelan-pelan.";
-    }
-
-    // start mengatur ulang ronde dan menampilkan pertanyaan pertama.
-    function start() {
-      generate();
-      idx = 0;
-      score = 0;
-      startEl.classList.add("hidden");
-      doneEl.classList.add("hidden");
-      playEl.classList.remove("hidden");
-      show();
-    }
-
-    $("#quizGo").addEventListener("click", start);
-    $("#quizRetry").addEventListener("click", start);
-    $("#quizBack").addEventListener("click", () => {
-      playEl.classList.add("hidden");
-      doneEl.classList.add("hidden");
-      startEl.classList.remove("hidden");
-    });
-  })();
-
-  /* Selesai: modal admin mengatur login, tab pengelolaan, dan data klub. */
-
-  /* =======================================================
-     KATA HARI INI
-     ======================================================= */
-  (function kotd() {
-    // Hash tanggal hari ini supaya kata berubah tiap hari
-    const d = new Date(),
-      seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-    const word = KOSAKATA[seed % KOSAKATA.length];
-    if (!word) return;
-    $("#kotdJp").textContent = word.jp;
-    $("#kotdKana").textContent = word.kana;
-    $("#kotdId").textContent = word.id;
-    $("#kotdKat").textContent = word.kat;
-    $("#kotdSpeak").addEventListener("click", () => speak(word.jp));
-  })();
+  /* Kuis kana diinisialisasi pada js/features/kana-quiz.js. */
 
   /* =======================================================
      STATS + INIT
@@ -1398,7 +1193,7 @@
   applyAdminUI();
   setTimeout(animateStats, 600);
 
-  /* Selesai: kuis dan kata harian memakai data.js serta helper suara. */
+  /* Kata harian diinisialisasi pada js/features/daily-word.js. */
 
   /* muat data dari store (Supabase / lokal) */
   loadFeedback();
