@@ -6,7 +6,7 @@ Dokumen ini jadi peta utama untuk memahami, mencari, menguji, dan mengubah websi
 
 ## 1. Ringkasan website
 
-Website statis Aozora Nihongo Club (青空日本語), ekstrakurikuler bahasa Jepang SMK N 1 Purwokerto. Tidak memakai framework/build step. HTML menyusun isi, CSS mengatur tampilan, JavaScript menjalankan interaksi, `data.js` menyimpan materi belajar, dan `store.js` mengatur penyimpanan.
+Website Aozora Nihongo Club (青空日本語), ekstrakurikuler bahasa Jepang SMK N 1 Purwokerto. Tampilan browser berupa situs statis tanpa framework; sumber HTML dibagi ke folder `pages/` dan digabung dengan skrip build kecil menjadi `index.html`. CSS mengatur tampilan, JavaScript menjalankan interaksi, `data.js` menyimpan materi belajar, dan `store.js` mengatur penyimpanan.
 
 Bagian utama yang tersedia: Beranda dengan logo dan maskot, belajar Hiragana/Katakana, kuis kana, kata harian, kosakata, informasi kegiatan/slider klub, papan pesan dan formulir pesan pribadi, serta panel admin. **Menu/halaman Galeri tidak tampil di website.** Foto dan API penyimpanannya tidak dihapus.
 
@@ -69,15 +69,15 @@ aozora-nihongo-club/
 | Popup dan modal admin | `pages/dialogs.html` | `#kanaPop`, `#adminModal` |
 | Dokumen hasil yang dibuka browser | `index.html` (dibuat otomatis) | jangan edit manual — edit `pages/` lalu build |
 | Ilustrasi maskot besar di sisi hero | `pages/home.html`, `assets/mascot-hero.png` | `.hero-mascot` |
-| Logo klub pada hero | `index.html`, `css/parts/03-hero-mascot.css` | `.hero-logo-badge` |
+| Logo klub pada hero | `pages/home.html`, `css/parts/03-hero-mascot.css` | `.hero-logo-badge` |
 | Warna dan tema | `css/parts/00-base.css` | `:root`, `body.dark` |
-| Navigasi atas dan dock HP | `index.html`, `css/parts/01-navigation.css` | `#nav`, `#mobileDock`, `.nav`, `.mobile-dock` |
+| Navigasi atas dan dock HP | `pages/navigation.html`, `css/parts/01-navigation.css` | `#nav`, `#mobileDock`, `.nav`, `.mobile-dock` |
 | Lebar konten dan tombol | `css/parts/02-layout-buttons.css` | `.wrap`, `.btn`, `.hero-cta` |
-| Bagian hero | `index.html`, `css/parts/03-hero-mascot.css` | `.hero`, `.hero-card`, `.logo-disc` |
-| Materi belajar | `css/parts/04-learning.css` | `.kana-*`, `.vocab-*`, `.quiz-*`, `.kotd-*` |
-| Info kegiatan | `css/parts/05-activities.css` | `.kegiatan-*`, `.forum-*`, `.slider` |
-| Form dan daftar pesan | `css/parts/07-messages.css` | `.feedback-*`, `.private-*`, `.field` |
-| Modal admin dan pemberitahuan | `css/parts/08-footer-admin.css` | `.modal`, `.toast`, `footer` |
+| Bagian hero | `pages/home.html`, `css/parts/03-hero-mascot.css` | `.hero`, `.hero-card`, `.hero-mascot` |
+| Materi belajar | `pages/learning.html`, `css/parts/04-learning.css` | `.kana-*`, `.vocab-*`, `.quiz-*`, `.kotd-*` |
+| Info kegiatan | `pages/activities.html`, `css/parts/05-activities.css` | `.kegiatan-*`, `.forum-*`, `.slider` |
+| Form dan daftar pesan | `pages/messages.html`, `css/parts/07-messages.css` | `.feedback-*`, `.private-*`, `.field` |
+| Modal admin dan pemberitahuan | `pages/dialogs.html`, `css/parts/08-footer-admin.css` | `.modal`, `.toast`, `footer` |
 | Layout HP dan gerak | `css/parts/10-responsive-overrides.css` | `@media`, `prefers-reduced-motion`, `.page-panel` |
 | Ganti panel/hash browser | `js/main.js` | `routes`, `showRoute`, `popstate` |
 | Hiragana/Katakana dan tanda belajar | `js/main.js`, `js/data.js` | `renderKana`, `buildChips`, `updateKanaProgress`, `HIRAGANA`, `KATAKANA` |
@@ -99,9 +99,9 @@ aozora-nihongo-club/
 
 ### HTML — struktur
 
-`<head>` berisi judul tab, deskripsi, font, dan stylesheet. `<body>` berisi navigasi, panel halaman, form, dialog, dan elemen tempat JS merender daftar. `id` harus unik karena tautan dan JS memakainya sebagai tujuan. `data-page` menandai panel utama; route seperti `#kuis` tetap membuka panel Belajar.
+`index.template.html` memegang `<head>` dan urutan kerangka. Isi `<body>` disimpan di `pages/`: navigasi, panel halaman, form, dialog, dan elemen tempat JS merender daftar. `tools/build_html.py` menggabungkan sumber tersebut menjadi `index.html`, yaitu satu file yang dibaca browser dan GitHub Pages. `id` harus unik karena tautan dan JS memakainya sebagai tujuan. `data-page` menandai panel utama; route seperti `#kuis` tetap membuka panel Belajar.
 
-Script dimuat di akhir `index.html` dengan urutan berikut:
+Script disimpan di `pages/scripts.html` dan dimuat di akhir hasil HTML dengan urutan berikut:
 
 1. Pustaka Supabase dari CDN.
 2. `js/config.js`.
@@ -153,6 +153,7 @@ Lalu buka `http://localhost:8000/`. Jangan buka `index.html` dengan `file://` ka
 Tes dasar setelah mengedit:
 
 ```bash
+python tools/build_html.py
 node --check js/main.js
 node --check js/features/about-slider.js
 node --check js/features/kana-quiz.js
@@ -168,7 +169,7 @@ Periksa desktop dan HP: Beranda, navigasi ke Belajar/Kegiatan/Pesan, pencarian k
 | Gejala | Periksa |
 |---|---|
 | Tampilan CSS kosong/berantakan | URL file di `css/style.css`, urutan import, tab Network untuk 404 |
-| Tombol kuis atau slider tidak merespons | URL script pada akhir `index.html`, urutannya, lalu Console browser |
+| Tombol kuis atau slider tidak merespons | `pages/scripts.html` untuk urutan script; buka Console browser |
 | Data lokal tidak terlihat di HP lain | `localStorage` bersifat lokal; periksa mode `window.Store.mode` |
 | Hash link membuka panel yang salah | daftar `routes` dan atribut `data-page` di HTML |
 | Perubahan tidak terlihat | server mengarah ke folder yang benar; lakukan refresh paksa |
