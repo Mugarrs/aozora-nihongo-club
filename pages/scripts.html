@@ -1,0 +1,17 @@
+    <!--
+  SCRIPT DI BAWAH: urutan file menentukan kapan dependensi tersedia.
+  1. Supabase CDN, lalu config.js dan store.js untuk penyimpanan.
+  2. data.js menyediakan kana/kosakata; main.js mengatur router, tema, form, admin.
+  3. Tiga js/features/* dijalankan setelah main.js dan memakai data/helper yang siap.
+  Jangan memindahkan script tanpa menyesuaikan dependensi.
+  -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/features/about-slider.js"></script>
+    <script src="js/features/kana-quiz.js"></script>
+    <script src="js/features/daily-word.js"></script>
+  </body>
+</html>

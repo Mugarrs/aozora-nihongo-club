@@ -1,0 +1,180 @@
+    <!--
+  ============================================================
+  7. KANA (Hiragana & Katakana)
+  ============================================================
+  Bagian Kana berada di panel Belajar; id setiap materi menjadi tujuan subtab.
+
+  .tabs        -> 2 tombol: Hiragana / Katakana
+                  data-script="hiragana" dibaca JS untuk tahu mana yang aktif
+  #kanaSearch  -> kotak pencarian huruf
+  #kanaChips   -> tombol filter per baris (a, ka, sa, …) — diisi JS
+  #kanaGroups  -> TEMPAT KOSONG yang nanti diisi JS dengan daftar huruf
+
+  Penting: di HTML kita hanya menyiapkan wadah kosong.
+  Isinya dibuat oleh JavaScript dari data di js/data.js.
+  Kenapa? Biar tidak perlu tulis 104 huruf manual di HTML.
+  ============================================================
+-->
+    <section id="belajar" class="page-panel" data-page="belajar" aria-label="Halaman Belajar">
+      <!-- Subnavigasi mengganti materi di dalam halaman Belajar, bukan halaman utama. -->
+      <nav class="page-subnav" aria-label="Menu belajar">
+        <a href="#kana" class="subnav-link active">Kana</a><a href="#kuis" class="subnav-link">Kuis</a
+        ><a href="#kotd" class="subnav-link">Kata Hari Ini</a
+        ><a href="#kosakata" class="subnav-link">Kosakata</a>
+      </nav>
+      <section id="kana" class="learn-pane" data-learn="kana">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">Daftar Isi Huruf</span>
+            <h2 class="h2">Hiragana &amp; <em>Katakana</em></h2>
+            <p class="lead">
+              Tiap baris dipisah per kelompok (a–o, ka–ko, sa–so, dan seterusnya). Klik hurufnya buat
+              lihat bacaan &amp; dengar suaranya. Huruf yang sudah kamu tandai tersimpan di perangkatmu.
+            </p>
+          </div>
+          <div class="tabs reveal d1">
+            <button class="tab active" data-script="hiragana">ひらがな Hiragana</button>
+            <button class="tab" data-script="katakana">カタカナ Katakana</button>
+          </div>
+          <div class="kana-toolbar reveal d2">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input type="search" id="kanaSearch" placeholder="Cari huruf atau romaji…" />
+            </div>
+            <div class="chips" id="kanaChips"></div>
+          </div>
+          <div class="kana-groups" id="kanaGroups"></div>
+          <div class="kana-progress reveal">
+            <small>Sudah ditandai: <b id="kanaDoneCount">0</b> / <span id="kanaTotal">0</span></small>
+            <div class="bar"><i id="kanaBar"></i></div>
+            <button class="btn btn-ghost" id="kanaReset" style="padding: 9px 18px; font-size: 13px">
+              Reset
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!--
+  ============================================================
+  7a. KUIS KANA (pilihan ganda)
+  ============================================================
+  Latihan mencocokkan huruf kana dengan romaji.
+  4 pilihan jawaban, skor dihitung otomatis.
+  Muncul di antara bagian Kana dan Kosakata.
+  ============================================================
+-->
+      <section id="kuis" class="learn-pane hidden" data-learn="kuis">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">クイズ · Kuis</span>
+            <h2 class="h2">Kuis <em>Kana</em></h2>
+            <p class="lead">
+              Pilih romaji yang tepat untuk huruf kana yang ditampilkan. 10 soal per ronde — coba sampai
+              skor sempurna!
+            </p>
+          </div>
+          <div class="quiz-box glass reveal d1" id="quizBox">
+            <div class="quiz-start" id="quizStart">
+              <div class="quiz-tabs">
+                <button class="tab active" data-qs="hiragana">Hiragana</button>
+                <button class="tab" data-qs="katakana">Katakana</button>
+                <button class="tab" data-qs="campur">Campur</button>
+              </div>
+              <button class="btn btn-primary" id="quizGo">Mulai Kuis</button>
+            </div>
+            <div class="quiz-play hidden" id="quizPlay">
+              <div class="quiz-progress"><span id="quizNum">1</span>/10</div>
+              <div class="quiz-glyph" id="quizGlyph">あ</div>
+              <div class="quiz-opts" id="quizOpts"></div>
+              <div class="quiz-fb" id="quizFb"></div>
+            </div>
+            <div class="quiz-done hidden" id="quizDone">
+              <div class="quiz-score">
+                <span class="quiz-score-num" id="quizScore">0</span><small>/10</small>
+              </div>
+              <p id="quizVerdict"></p>
+              <button class="btn btn-primary" id="quizRetry">Coba Lagi</button>
+              <button class="btn btn-ghost" id="quizBack">Kembali</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!--
+  ============================================================
+  7b. KATA HARI INI
+  ============================================================
+  Satu kosakata acak yang berubah setiap hari berdasarkan tanggal.
+  Ditampilkan sebagai kartu kecil di antara Kuis dan Kosakata.
+  ============================================================
+-->
+      <section id="kotd" class="learn-pane hidden" data-learn="kotd">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">今日の言葉 · Kata Hari Ini</span>
+            <h2 class="h2">Kata <em>Hari Ini</em></h2>
+            <p class="lead">Tiap hari satu kata baru. Klik ikon suara buat dengar pelafalannya.</p>
+          </div>
+          <div class="kotd-card glass reveal d1" id="kotdCard">
+            <div class="kotd-jp" id="kotdJp">—</div>
+            <div class="kotd-kana" id="kotdKana">—</div>
+            <div class="kotd-id" id="kotdId">—</div>
+            <div class="kotd-kat" id="kotdKat">—</div>
+            <button class="btn btn-ghost kotd-speak" id="kotdSpeak">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M11 5L6 9H3v6h3l5 4z" />
+                <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12" />
+              </svg>
+              Dengar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!--
+  ============================================================
+  8. KOSAKATA
+  ============================================================
+  Sama polanya dengan bagian Kana:
+    #vocabSearch -> kotak cari kata
+    #vocabChips  -> filter kategori (Salam, Angka, Keluarga, …)
+    #vocabGrid   -> wadah kosong, diisi JS per kelompok kategori
+
+  Kartu kosakata berisi: kanji/kana Jepang, cara baca, arti Indonesia,
+  dan tombol speaker untuk mendengar pelafalan.
+  ============================================================
+-->
+      <section id="kosakata" class="learn-pane hidden" data-learn="kosakata">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">語彙 · Kosakata</span>
+            <h2 class="h2">Kosakata <em>Sehari-hari</em></h2>
+            <p class="lead">
+              Kata-kata yang sering dipakai waktu latihan. Klik ikon suara untuk mendengar pelafalannya.
+            </p>
+          </div>
+          <div class="kana-toolbar reveal d1">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input type="search" id="vocabSearch" placeholder="Cari kosakata…" />
+            </div>
+            <div class="chips" id="vocabChips"></div>
+          </div>
+          <div class="vocab-grid" id="vocabGrid"></div>
+        </div>
+      </section>
+    </section>
+    <!-- penutup panel halaman Belajar -->

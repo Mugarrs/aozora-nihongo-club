@@ -1,0 +1,104 @@
+    <!--
+  ============================================================
+  5. HERO (banner pembuka)
+  ============================================================
+  Bagian paling atas yang pertama dilihat orang.
+
+  Dua lapisan:
+    .scene      -> GAMBAR: matahari, awan, Gunung Fuji, bukit, sakura
+                   (semua dibuat pakai CSS + SVG, bukan file foto)
+    .hero-grid  -> TEKS: sapaan, judul, tombol, statistik angka
+
+  Gunung digambar menggunakan SVG supaya tetap tajam ketika ukuran layar berubah.
+  Path SVG berisi perintah menggambar garis dan kurva; detail latihan SVG ada di PANDUAN-KODE.md.
+  ============================================================
+-->
+    <header class="hero page-panel" id="home" data-page="home">
+      <div class="wrap">
+        <div class="hero-card">
+          <div class="scene" aria-hidden="true">
+            <div class="hero-sun"></div>
+            <div class="cloud c3"></div>
+            <div class="cloud c1"></div>
+            <div class="cloud c2"></div>
+            <svg class="fuji" viewBox="0 0 1200 470" preserveAspectRatio="xMidYMax meet">
+              <defs>
+                <linearGradient id="fujiG" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="var(--fuji-1)" />
+                  <stop offset="0.55" stop-color="var(--fuji-2)" />
+                  <stop offset="1" stop-color="var(--fuji-3)" />
+                </linearGradient>
+              </defs>
+              <!-- badan gunung -->
+              <path d="M0,470 L520,120 Q600,72 680,120 L1200,470 Z" fill="url(#fujiG)" />
+              <!-- salju di puncak (mengikuti kontur gunung) -->
+              <path
+                d="M394,205 L520,120 Q600,72 680,120 L806,205
+                   L765,158 L722,196 L680,148 L640,186 L600,132 L560,186 L520,148 L478,196 L435,158 Z"
+                fill="var(--snow)"
+              />
+            </svg>
+            <div class="hills"></div>
+            <div class="petals" id="petals"></div>
+          </div>
+
+          <div class="hero-grid">
+            <div>
+              <p class="hero-jp reveal">ようこそ — Selamat datang di Aozora</p>
+              <h2 class="hero-title">
+                <span class="line l1"><span>Aozora Nihongo Club</span></span>
+              </h2>
+              <p class="hero-tag reveal d1">Ganbaruzo!</p>
+              <p class="lead reveal d1">
+                Halo! Ini tempat ngumpulnya anak <b>SMK N 1 Purwokerto</b> yang pengin bisa bahasa
+                Jepang. Kita mulai dari huruf paling gampang, lanjut ke kosakata, sampai berani ngobrol
+                bareng. Santai aja — <b>nggak perlu jago dulu buat ikut</b>.
+              </p>
+              <div class="hero-cta reveal d2">
+                <a href="#kana" class="btn btn-primary">Mulai dari huruf pertama</a>
+                <a href="#pesan" class="btn btn-ghost">Tulis pesan atau curhat</a>
+              </div>
+              <div class="hero-stats reveal d3">
+                <div><b id="statKana">0</b><small>Huruf Kana</small></div>
+                <div><b id="statVocab">0</b><small>Kosakata</small></div>
+                <div><b id="statFb">0</b><small>Pesan Masuk</small></div>
+              </div>
+            </div>
+
+            <div class="hero-visual reveal d2">
+              <img
+                class="hero-mascot"
+                src="assets/mascot-hero.png"
+                alt="Maskot Aozora berambut hitam dengan aksen ungu, mengenakan atasan biru muda"
+                width="456"
+                height="499"
+                decoding="async"
+              />
+              <div class="hero-logo-badge">
+                <img src="assets/logo-nobg.png" alt="Logo Aozora Nihongo Club" width="96" height="96" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="scroll-hint"><span class="wheel"></span>Gulir</div>
+      </div>
+    </header>
+
+    <!--
+  ============================================================
+  6. MARQUEE (teks berjalan)
+  ============================================================
+  Pita teks yang bergerak terus ke kiri: Hiragana, Katakana, Kanji…
+  Teksnya DITULIS DUA KALI supaya saat animasi mengulang tidak
+  terlihat ada jeda/kosong.
+  aria-hidden="true" karena ini hiasan, isinya sudah ada di bagian lain.
+  ============================================================
+-->
+    <div class="marquee page-decoration" aria-hidden="true">
+      <div class="marquee-track">
+        <span>ひらがな Hiragana</span><span>カタカナ Katakana</span><span>漢字 Kanji</span>
+        <span>語彙 Kosakata</span><span>青空日本語</span><span>SMK N 1 Purwokerto</span>
+        <span>ひらがな Hiragana</span><span>カタカナ Katakana</span><span>漢字 Kanji</span>
+        <span>語彙 Kosakata</span><span>青空日本語</span><span>SMK N 1 Purwokerto</span>
+      </div>
+    </div>

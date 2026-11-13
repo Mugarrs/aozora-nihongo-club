@@ -477,8 +477,25 @@ body.is-admin .admin-corner,
   body {
     padding-bottom: calc(76px + env(safe-area-inset-bottom));
   }
-  .nav-links,
-  .nav-burger,
+  .nav-burger {
+    display: grid;
+    place-items: center;
+    flex: 0 0 40px;
+  }
+  .nav-links {
+    position: fixed;
+    top: 64px;
+    left: 50%;
+    right: auto;
+    width: min(560px, calc(100vw - 24px));
+    translate: -50% 0;
+    z-index: 120;
+  }
+  .nav-links.open {
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
   .nav-cta {
     display: none !important;
   }

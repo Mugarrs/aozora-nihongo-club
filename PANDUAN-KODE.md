@@ -14,7 +14,19 @@ Bagian utama yang tersedia: Beranda dengan logo dan maskot, belajar Hiragana/Kat
 
 ```text
 aozora-nihongo-club/
-├── index.html                              # struktur halaman, route, dan isi form
+├── index.html                              # hasil gabungan siap dibuka/deploy
+├── index.template.html                     # kerangka head + marker bagian
+├── pages/                                  # sumber HTML per bagian situs
+│   ├── navigation.html                     # navigasi atas dan dock HP
+│   ├── home.html                           # hero Beranda dan dekorasi
+│   ├── learning.html                       # kana, kuis, kata harian, kosakata
+│   ├── activities.html                     # info kegiatan dan slider
+│   ├── messages.html                       # form dan daftar pesan
+│   ├── footer.html                         # penutup halaman
+│   ├── dialogs.html                        # popup kana dan modal admin
+│   └── scripts.html                        # urutan pemuatan JavaScript
+├── tools/
+│   └── build_html.py                       # gabungkan sumber HTML menjadi index.html
 ├── css/
 │   ├── style.css                           # daftar import CSS; jaga urutannya
 │   └── parts/
@@ -48,8 +60,15 @@ aozora-nihongo-club/
 
 | Fitur/yang mau diubah | Buka file | Cari teks/selector/fungsi |
 |---|---|---|
-| Judul, teks, tombol, menu, urutan bagian | `index.html` | `data-page`, `id="home"`, `id="belajar"`, `id="kegiatan"`, `id="pesan"` |
-| Ilustrasi maskot besar di sisi hero | `index.html`, `assets/mascot-hero.jpg` | `.hero-mascot` |
+| Judul/teks Beranda | `pages/home.html` | `id="home"`, `.hero-title`, `.hero-mascot` |
+| Menu desktop dan dock HP | `pages/navigation.html`, `css/parts/01-navigation.css` | `#nav`, `#mobileDock`, `#navBurger` |
+| Materi belajar | `pages/learning.html` | `data-learn`, `#kanaGroups`, `#vocabGrid` |
+| Kegiatan klub | `pages/activities.html` | `data-page="kegiatan"`, `.slider` |
+| Pesan dan kritik | `pages/messages.html` | `data-page="pesan"`, `#fbForm` |
+| Footer | `pages/footer.html` | `.foot-inner` |
+| Popup dan modal admin | `pages/dialogs.html` | `#kanaPop`, `#adminModal` |
+| Dokumen hasil yang dibuka browser | `index.html` (dibuat otomatis) | jangan edit manual — edit `pages/` lalu build |
+| Ilustrasi maskot besar di sisi hero | `pages/home.html`, `assets/mascot-hero.png` | `.hero-mascot` |
 | Logo klub pada hero | `index.html`, `css/parts/03-hero-mascot.css` | `.hero-logo-badge` |
 | Warna dan tema | `css/parts/00-base.css` | `:root`, `body.dark` |
 | Navigasi atas dan dock HP | `index.html`, `css/parts/01-navigation.css` | `#nav`, `#mobileDock`, `.nav`, `.mobile-dock` |
@@ -112,6 +131,14 @@ Alurnya: pengunjung melakukan aksi → fungsi fitur memvalidasi → `window.Stor
 Menghapus tombol/halaman tidak sama dengan menghapus data. UI Galeri sudah tidak ada. Jangan jalankan penghapusan tabel/bucket atau bersihkan `localStorage` sebagai bagian dari edit tampilan. Foto lama tetap di penyimpanannya.
 
 Status admin di front-end tidak setara dengan kontrol keamanan server. Jangan masukkan secret server ke kode browser; perubahan akses produksi perlu autentikasi/policy backend yang benar.
+
+### Mengubah isi HTML
+
+1. Edit bagian yang sesuai di folder `pages/` (misalnya `pages/home.html` untuk Beranda).
+2. Jalankan `python tools/build_html.py` dari folder project. Perintah ini membuat ulang `index.html` untuk browser dan GitHub Pages.
+3. Jangan mengedit `index.html` langsung; perubahan berikutnya akan ditimpa builder.
+
+`index.template.html` memegang kerangka `<head>` dan marker urutan bagian. Builder hanya menggabungkan berkas HTML saat pengembangan/publish; browser tetap membaca satu `index.html` biasa.
 
 ## 6. Menjalankan dan memeriksa lokal
 

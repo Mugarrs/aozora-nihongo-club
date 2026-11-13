@@ -1,0 +1,170 @@
+    <!--
+  ============================================================
+  11. PESAN & KRITIK
+  ============================================================
+  Ada 2 tab:
+    data-ptab="publik"  -> Papan Pesan (terlihat semua orang)
+    data-ptab="pribadi" -> Pesan Pribadi (hanya admin yang bisa baca)
+
+  Form papan pesan (#fbForm) berisi:
+    #fbName   -> nama + kelas pengirim
+    #fbType   -> jenis pesan (Saran / Kritik / Ide) — pakai dropdown custom
+    #fbRating -> bintang penilaian 1–5
+    #fbMsg    -> isi pesan
+    .err      -> teks error merah, muncul kalau isian kurang
+
+  Catatan penting soal privasi:
+    Nama asli tetap tersimpan, TAPI yang tampil ke publik disamarkan
+    jadi "Pengunjung 123". Hanya admin yang bisa lihat nama asli.
+
+  novalidate = matikan validasi bawaan browser, supaya kita bisa
+  pakai pesan error sendiri yang lebih rapi.
+  ============================================================
+-->
+    <section id="pesan" class="page-panel hidden" data-page="pesan">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">意見 · Pesan</span>
+          <h2 class="h2">Pesan &amp; <em>Kritik</em></h2>
+          <p class="lead">
+            Ada usul, masukan, atau sekadar mau cerita soal eskul? Tulis di sini. Pesanmu tampil buat
+            semua orang, tapi
+            <b>namamu disamarkan</b> — cuma pengurus yang tahu siapa pengirimnya. Kamu juga bisa kasih
+            tanda suka ke pesan orang lain.
+          </p>
+        </div>
+
+        <div class="pesan-tabs reveal d1">
+          <button class="ptab active" data-ptab="publik">Papan Pesan</button>
+          <button class="ptab" data-ptab="pribadi">Pesan Pribadi ke Admin</button>
+        </div>
+
+        <div class="pesan-pane" data-pane="publik">
+          <div class="feedback-grid">
+            <form class="glass form-card reveal" id="fbForm" novalidate>
+              <div class="field" id="fName">
+                <label for="fbName">Nama / Kelas</label>
+                <input type="text" id="fbName" placeholder="mis. Rina — XI RPL 2" maxlength="40" />
+                <div class="err">Nama wajib diisi.</div>
+              </div>
+
+              <div class="field" id="fTypeField">
+                <label>Jenis Pesan</label>
+                <div class="select" id="fbTypeSelect" data-value="Saran">
+                  <button type="button" class="select-btn" id="fbTypeBtn">
+                    <span class="select-ic" id="fbTypeIc"></span>
+                    <span class="select-label" id="fbTypeLabel">Saran</span>
+                    <svg
+                      class="select-arrow"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  <ul class="select-menu" id="fbTypeMenu"></ul>
+                </div>
+                <input type="hidden" id="fbType" value="Saran" />
+              </div>
+
+              <div class="field">
+                <label>Seberapa seru kegiatannya?</label>
+                <div class="rating" id="fbRating"></div>
+              </div>
+
+              <div class="field" id="fMsg">
+                <label for="fbMsg">Pesan / Kritik</label>
+                <textarea
+                  id="fbMsg"
+                  placeholder="Tulis pesanmu di sini… (min. 5 karakter)"
+                  maxlength="600"
+                  aria-describedby="fbMsgCount"
+                ></textarea>
+                <div class="field-meta">
+                  <small id="fbMsgCount">0 / 600</small>
+                </div>
+                <div class="err">Pesan minimal 5 karakter.</div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%">Kirim Pesan</button>
+              <div class="form-msg" id="fbResult" role="status" aria-live="polite"></div>
+            </form>
+
+            <div class="reveal d2">
+              <div class="kana-toolbar" style="margin-bottom: 14px">
+                <div class="chips" id="fbFilter"></div>
+                <button
+                  class="btn btn-ghost hidden"
+                  id="fbClear"
+                  style="padding: 9px 16px; font-size: 13px; margin-left: auto"
+                >
+                  Hapus Semua
+                </button>
+              </div>
+              <div class="fb-list" id="fbList"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pesan-pane hidden" data-pane="pribadi">
+          <div class="private-wrap">
+            <form class="glass form-card reveal" id="pvForm" novalidate>
+              <div class="private-head">
+                <span class="private-ic">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5" />
+                    <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+                  </svg>
+                </span>
+                <div>
+                  <b>Pesan Pribadi ke Pengurus</b
+                  ><small>cuma pengurus yang bisa baca — pengguna lain nggak lihat</small>
+                </div>
+              </div>
+              <div class="field" id="pvNameField">
+                <label for="pvName">Nama / Kelas</label>
+                <input type="text" id="pvName" placeholder="mis. Dina — X TKJ 1" maxlength="40" />
+                <div class="err">Nama wajib diisi.</div>
+              </div>
+              <div class="field" id="pvMsgField">
+                <label for="pvMsg">Isi Pesan</label>
+                <textarea
+                  id="pvMsg"
+                  placeholder="Tulis apa saja — pertanyaan, saran, atau sekadar curhat… (min. 5 karakter)"
+                  maxlength="800"
+                ></textarea>
+                <div class="err">Pesan minimal 5 karakter.</div>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%">
+                Kirim ke Pengurus
+              </button>
+              <div class="form-msg" id="pvResult"></div>
+            </form>
+            <div class="glass private-info reveal d1">
+              <h3>Apa itu pesan pribadi?</h3>
+              <p>
+                Pesan ini <b>tidak muncul di papan pesan umum</b>. Hanya pengurus (admin) yang bisa
+                membacanya. Cocok buat hal yang kamu nggak mau orang lain tahu, atau sekadar butuh teman
+                cerita.
+              </p>
+              <p class="muted">
+                Kalau butuh bantuan cepat, kamu juga bisa sampaikan langsung ke pengurus saat pertemuan
+                Kamis.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Penjelasan: panel Pesan menggabungkan form publik dan form pribadi. -->

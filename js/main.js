@@ -213,6 +213,21 @@
   ]);
   let currentPage = "home",
     currentLearn = "kana";
+  // Tombol hamburger membuka menu pada tablet/desktop kecil dan menutupnya setelah navigasi.
+  function setMenuOpen(open) {
+    navLinks?.classList.toggle("open", open);
+    burger?.classList.toggle("open", open);
+    burger?.setAttribute("aria-expanded", String(open));
+  }
+  burger?.addEventListener("click", () => {
+    setMenuOpen(!navLinks?.classList.contains("open"));
+  });
+  navLinks?.addEventListener("click", (event) => {
+    if (event.target.closest("a")) setMenuOpen(false);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setMenuOpen(false);
+  });
   // showRoute memilih panel, menyelaraskan menu/hash, dan menjaga riwayat browser.
   function showRoute(route, updateHistory = true) {
     const id = String(route || "home").replace(/^#/, "");
@@ -248,8 +263,7 @@
       top: 0,
       behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
     });
-    navLinks?.classList.remove("open");
-    burger?.classList.remove("open");
+    setMenuOpen(false);
     setTimeout(() => pagePanels.forEach((p) => p.classList.remove("page-enter")), 280);
     onScroll();
   }

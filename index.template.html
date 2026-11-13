@@ -1,0 +1,126 @@
+<!doctype html>
+<!--
+  ============================================================================
+  AOZORA NIHONGO CLUB — index.html
+  ============================================================================
+  APA INI?
+  File ini adalah KERANGKA website. Ibarat rumah: HTML = dinding + ruangan,
+  CSS = cat + hiasan, JavaScript = listrik + saklar yang bikin ruangan hidup.
+
+  PETA ISI:
+  index.html = struktur; css/style.css = urutan style; js/main.js = logika utama.
+    <head>   -> judul, font, metadata, dan stylesheet
+    <body>   -> navigasi, beranda/maskot, belajar, kegiatan, pesan, admin
+      1. Transisi + preloader  : efek pembuka/pindah panel
+      2. Latar + navigasi      : hiasan halaman dan menu
+      3. Beranda               : hero Fuji, teks klub, logo dan maskot
+      4. Belajar               : kana, kuis, kata hari ini, kosakata
+      5. Kegiatan              : info pertemuan dan slider klub
+      6. Pesan                 : form publik dan pesan pribadi
+      7. Footer                : penutup halaman
+      8. Popup + modal admin   : panel yang muncul saat dibuka
+      9. Script                : config, store, data, main, fitur terpisah
+
+  BACA KODE: setelah blok utama ada komentar penutup yang merangkum fungsi.
+  Uraian langkah demi langkah dan contoh tersedia di PANDUAN-KODE.md.
+  Komentar HTML tidak tampil sebagai konten halaman.
+  ============================================================================
+-->
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#4ecdc4" />
+    <title>青空日本語 — Aozora Nihongo Club | SMK N 1 Purwokerto</title>
+    <meta
+      name="description"
+      content="Aozora Nihongo Club — ekstrakurikuler bahasa Jepang SMK N 1 Purwokerto. Belajar Hiragana, Katakana, kosakata, dan kegiatan klub."
+    />
+    <link rel="icon" href="assets/logo.jpg" />
+    <link rel="apple-touch-icon" href="assets/logo.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- style.css memuat CSS per bagian dalam urutan cascade yang tercatat di panduan. -->
+    <link rel="stylesheet" href="css/style.css" />
+    <script>
+      try {
+        if (localStorage.getItem("aozora.theme") === "dark")
+          document.documentElement.classList.add("dark-pre");
+      } catch (e) {}
+    </script>
+  </head>
+  <body class="locked">
+    <!--
+  ============================================================
+  1. PAGE TRANSITION (tirai animasi)
+  ============================================================
+  Dua panel (.p1 .p2) yang menutup layar saat pindah bagian,
+  lalu terbuka lagi. Diatur animasinya di CSS (.curtain).
+  aria-hidden="true" = disembunyikan dari pembaca layar
+  karena ini cuma hiasan, bukan konten.
+  ============================================================
+-->
+    <div class="curtain" id="curtain" aria-hidden="true">
+      <div class="panel p1"></div>
+      <div class="panel p2"></div>
+      <div class="mark">
+        <div><img src="assets/logo-nobg.png" alt="" /><b>青空日本語</b></div>
+      </div>
+    </div>
+
+    <!--
+  ============================================================
+  2. PRELOADER (layar loading)
+  ============================================================
+  Muncul pertama kali web dibuka, menampilkan logo + progress bar.
+  id="plBar"   -> batang progress (lebarnya diatur JS)
+  id="plPct"   -> angka persen
+  id="plTip"   -> teks tips yang berganti-ganti
+  Setelah selesai, JS menambahkan class "done" supaya hilang.
+  ============================================================
+-->
+    <div id="preloader">
+      <div class="pl-inner">
+        <img class="pl-logo" src="assets/logo-nobg.png" alt="Logo Aozora Nihongo Club" />
+        <h1 class="pl-name">Aozora <span>Nihongo</span> Club</h1>
+        <div class="pl-sub">青空日本語 · SMK N 1 Purwokerto</div>
+        <div class="pl-bar"><i id="plBar"></i></div>
+        <div class="pl-pct"><span id="plPct">0</span>%</div>
+        <div class="pl-tip" id="plTip">Menyiapkan kelas…</div>
+      </div>
+    </div>
+
+    <!--
+  ============================================================
+  3. BACKDROP (latar hiasan)
+  ============================================================
+  .blob      -> 3 bulatan warna blur di belakang layar
+  .grid-overlay -> garis kotak-kotak halus (tekstur)
+  .scroll-progress -> garis tipis di atas = seberapa jauh sudah scroll
+  .cursor-ring / .cursor-dot -> kursor kustom (hanya di komputer)
+  ============================================================
+-->
+    <div class="backdrop">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+    </div>
+    <div class="grid-overlay"></div>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+    <div class="cursor-dot" id="cursorDot"></div>
+
+    <!-- BUILD:navigation -->
+    <!-- BUILD:home -->
+    <!-- BUILD:learning -->
+    <!-- BUILD:activities -->
+    <!-- BUILD:messages -->
+    <!-- BUILD:footer -->
+    <!-- BUILD:dialogs -->
+    <!-- BUILD:scripts -->
+  </body>
+</html>
