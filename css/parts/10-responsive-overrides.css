@@ -464,7 +464,7 @@ body.is-admin .admin-corner,
     right: 10px;
     bottom: calc(8px + env(safe-area-inset-bottom));
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 3px;
     padding: 6px;
     background: color-mix(in srgb, var(--card) 96%, transparent);
@@ -993,7 +993,7 @@ body.page-mode .page-decoration {
 }
 @media (max-width: 768px) {
   .mobile-dock {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -276,6 +276,9 @@
   margin-bottom: calc(-1 * clamp(30px, 4.6vw, 62px));
   transform: translateX(clamp(12px, 2.2vw, 32px));
 }
+.hero-visual {
+  perspective: 1000px;
+}
 .hero-mascot {
   display: block;
   width: min(118%, 600px);
@@ -284,6 +287,21 @@
   object-fit: contain;
   object-position: center bottom;
   filter: drop-shadow(0 12px 22px rgba(23, 59, 87, 0.14));
+  transform: rotateY(-7deg) rotateX(2deg) translateZ(18px);
+  transform-origin: 70% 55%;
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-visual:hover .hero-mascot {
+    transform: rotateY(-2deg) rotateX(0) translateZ(34px) scale(1.025);
+    filter: drop-shadow(0 20px 28px rgba(23, 59, 87, 0.22));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-mascot {
+    transform: none;
+    transition: none;
+  }
 }
 .hero-logo-badge {
   position: absolute;
