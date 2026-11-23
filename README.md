@@ -2,6 +2,16 @@
 
 Website statis ekstrakurikuler bahasa Jepang **SMK N 1 Purwokerto**. Fitur: Hiragana/Katakana, kuis kana, kata harian, kosakata, info pertemuan, slider klub, papan pesan, pesan pribadi, dan panel admin. Galeri tidak ditampilkan; data foto lama tetap tersimpan.
 
+## Website sudah online
+
+| Layanan | Alamat |
+|---|---|
+| **Vercel** (domain utama) | https://aozora-nihongo-club.vercel.app |
+| **GitHub Pages** (mirror) | https://mugarrs.github.io/aozora-nihongo-club/ |
+| **Repositori kode** | https://github.com/Mugarrs/aozora-nihongo-club |
+
+Kedua alamat menampilkan website yang sama. Vercel dan GitHub Pages membaca kode langsung dari repositori, jadi setiap `git push` ke `main` otomatis memperbarui website.
+
 ---
 
 ## Data dan keamanan
