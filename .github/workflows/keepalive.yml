@@ -3,9 +3,13 @@ name: Keep Supabase Alive
 # Supabase free plan mem-pause project yang tidak menerima aktivitas tulis
 # selama ~7 hari. Workflow ini menulis satu baris ke tabel keepalive tiap hari
 # supaya timer pause tidak pernah tercapai.
+#
+# GitHub juga menonaktifkan workflow terjadwal di repo publik bila 60 hari
+# tanpa commit, jadi job kedua membuat commit kosong tiap 30 hari.
 on:
   schedule:
-    - cron: "0 2 * * *" # 02:00 UTC = 09:00 WIB
+    - cron: "0 2 * * *" # 02:00 UTC = 09:00 WIB, ping harian
+    - cron: "0 2 1 * *" # tanggal 1 tiap bulan, penanda aktivitas repo
   workflow_dispatch: # tombol "Run workflow" untuk tes manual
 
 jobs:
@@ -23,3 +27,21 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Prefer: return=representation" \
             -d "{\"last_ping\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
+
+  # Reset penghitung 60 hari GitHub tanpa commit, supaya jadwal harian di atas
+  # tidak dimatikan otomatis. Hanya jalan tanggal 1 tiap bulan.
+  stay-enabled:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 2 1 * *'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Commit penanda aktivitas bulanan
+        run: |
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/last-alive.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/last-alive.txt
+          git diff --staged --quiet || git commit -m "chore: penanda aktivitas bulanan untuk workflow keep-alive"
+          git push
