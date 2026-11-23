@@ -1,5 +1,7 @@
 /* =========================================================
    KONFIGURASI DATABASE (Supabase)
+   Nilai di file ini dipakai browser untuk memilih mode remote. Jangan masukkan
+   kunci service-role atau rahasia server ke file publik ini.
    ========================================================= */
 
 window.AOZORA_CONFIG = {

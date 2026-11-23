@@ -80,27 +80,6 @@ window.Store = (function () {
     caption: r.caption || "",
     ts: ms(r),
   });
-  const GALLERY_BUCKET = "aozora-gallery";
-  const isBlob = (value) =>
-    value && typeof value.arrayBuffer === "function" && typeof value.size === "number";
-  const imageBlob = async (source) => {
-    const response = isBlob(source) ? null : await fetch(source);
-    if (response && !response.ok) throw new Error("File foto tidak bisa dibaca.");
-    const blob = response ? await response.blob() : source;
-    if (blob.type !== "image/jpeg") {
-      throw new Error("Foto perlu dikompres browser menjadi JPG sebelum diunggah.");
-    }
-    if (blob.size > 1024 * 1024) throw new Error("Ukuran foto setelah kompresi maksimal 1 MB.");
-    return blob;
-  };
-  const localImageUrl = async (blob) => {
-    const bytes = new Uint8Array(await blob.arrayBuffer());
-    let binary = "";
-    for (let i = 0; i < bytes.length; i += 0x8000) {
-      binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-    }
-    return `data:${blob.type};base64,${btoa(binary)}`;
-  };
 
   /* ---------------- MODE LOKAL (perangkat) ---------------- */
   // MODE LOKAL: tiap fungsi menyimpan/membaca data dari perangkat ini saja.
@@ -122,7 +101,11 @@ window.Store = (function () {
         ts: Date.now(),
       };
       a.push(row);
-      wr(K.fb, a);
+      if (!wr(K.fb, a)) {
+        const error = new Error("Penyimpanan perangkat penuh.");
+        error.name = "QuotaExceededError";
+        throw error;
+      }
       return row;
     },
     // Simpan jumlah suka terbaru untuk satu pesan.
@@ -154,7 +137,11 @@ window.Store = (function () {
       const a = rd(K.pv, []);
       const row = { id: uid(), name: o.name, msg: o.msg, ts: Date.now() };
       a.push(row);
-      wr(K.pv, a);
+      if (!wr(K.pv, a)) {
+        const error = new Error("Penyimpanan perangkat penuh.");
+        error.name = "QuotaExceededError";
+        throw error;
+      }
       return row;
     },
     // Hapus pesan privat terpilih.
@@ -205,13 +192,6 @@ window.Store = (function () {
 
   /* ---------------- MODE SUPABASE (online) ---------------- */
   // MODE SUPABASE: operasi setara dengan local, tetapi mengakses tabel database.
-  async function checkGalleryConnection() {
-    if (!hasSB) return false;
-    const { error } = await sb.from("gallery").select("id").limit(1);
-    if (error) throw error;
-    return true;
-  }
-
   const remote = {
     // Ambil semua pesan publik dan normalkan field-nya.
     async listFeedback() {
@@ -306,40 +286,133 @@ window.Store = (function () {
       if (error) throw error;
       return (data || []).map(normG);
     },
-    // Unggah foto terbuka untuk pemilik kode; tidak perlu akun atau login.
+    // Simpan foto/caption baru.
     async addGallery(o) {
-      const blob = await imageBlob(o.src);
-      const path = `${Date.now().toString(36)}-${uid().slice(1)}.jpg`;
-      const { error: uploadError } = await sb.storage.from(GALLERY_BUCKET).upload(path, blob, {
-        contentType: "image/jpeg",
-        cacheControl: "31536000",
-        upsert: false,
-      });
-      if (uploadError) throw uploadError;
-      const { data: publicData } = sb.storage.from(GALLERY_BUCKET).getPublicUrl(path);
       const { data, error } = await sb
         .from("gallery")
-        .insert([{ src: publicData.publicUrl, caption: o.caption || "" }])
+        .insert([{ src: o.src, caption: o.caption || "" }])
         .select()
         .single();
       if (error) throw error;
       return normG(data);
     },
-    // Hapus metadata galeri; file publik dibersihkan pengurus dari Supabase Storage.
+    // Hapus satu foto berdasarkan ID.
     async deleteGallery(id) {
       const { error } = await sb.from("gallery").delete().eq("id", id);
       if (error) throw error;
     },
   };
 
-  // Galeri tetap dapat dipakai saat database tak terjangkau; item fallback ditandai localOnly.
+  // Galeri/pesan tetap dapat dipakai saat database tak terjangkau; item fallback ditandai localOnly.
+  // Mode remote bisa mati kapan saja (Supabase pause/hapus), jadi tiap operasi punya cadangan lokal.
   let galleryLocalOnly = !hasSB;
+  let fbLocalOnly = !hasSB;
+  let pvLocalOnly = !hasSB;
+  const isLocalId = (id) => String(id).startsWith("x");
+
+  async function listFeedback() {
+    let remoteRows = [];
+    if (!fbLocalOnly) {
+      try {
+        remoteRows = await remote.listFeedback();
+      } catch {
+        fbLocalOnly = true;
+      }
+    }
+    // Baca lokal SETELAH percobaan remote: pesan yang masuk selama percobaan tetap ikut tampil.
+    const localRows = await local.listFeedback();
+    return [...localRows.map((row) => ({ ...row, localOnly: true })), ...remoteRows];
+  }
+  async function addFeedback(o) {
+    if (!fbLocalOnly) {
+      try {
+        return await remote.addFeedback(o);
+      } catch {
+        fbLocalOnly = true;
+      }
+    }
+    return { ...(await local.addFeedback(o)), localOnly: true };
+  }
+  async function setLikes(id, n) {
+    if (isLocalId(id) || fbLocalOnly) return local.setLikes(id, n);
+    try {
+      return await remote.setLikes(id, n);
+    } catch {
+      fbLocalOnly = true;
+    }
+  }
+  async function deleteFeedback(id) {
+    if (isLocalId(id) || fbLocalOnly) return local.deleteFeedback(id);
+    try {
+      return await remote.deleteFeedback(id);
+    } catch {
+      fbLocalOnly = true;
+    }
+  }
+  async function clearFeedback() {
+    await local.clearFeedback();
+    if (fbLocalOnly) return;
+    try {
+      await remote.clearFeedback();
+    } catch {
+      fbLocalOnly = true;
+    }
+  }
+  async function listPrivate() {
+    let remoteRows = [];
+    if (!pvLocalOnly) {
+      try {
+        remoteRows = await remote.listPrivate();
+      } catch {
+        pvLocalOnly = true;
+      }
+    }
+    const localRows = await local.listPrivate();
+    return [...localRows.map((row) => ({ ...row, localOnly: true })), ...remoteRows];
+  }
+  async function addPrivate(o) {
+    if (!pvLocalOnly) {
+      try {
+        return await remote.addPrivate(o);
+      } catch {
+        pvLocalOnly = true;
+      }
+    }
+    return { ...(await local.addPrivate(o)), localOnly: true };
+  }
+  async function deletePrivate(id) {
+    if (isLocalId(id) || pvLocalOnly) return local.deletePrivate(id);
+    try {
+      return await remote.deletePrivate(id);
+    } catch {
+      pvLocalOnly = true;
+    }
+  }
+  async function getForum() {
+    if (!hasSB) return local.getForum();
+    try {
+      return await remote.getForum();
+    } catch {
+      return local.getForum();
+    }
+  }
+  async function setForum(o) {
+    const saved = await local.setForum(o);
+    if (hasSB) {
+      try {
+        await remote.setForum(o);
+      } catch {
+        /* jadwal tetap tersimpan di perangkat */
+      }
+    }
+    return saved;
+  }
+
   async function listGallery() {
     const localRows = await local.listGallery();
-    if (!hasSB) return localRows.map((row) => ({ ...row, localOnly: true }));
+    if (galleryLocalOnly) return localRows.map((row) => ({ ...row, localOnly: true }));
     try {
       const remoteRows = await remote.listGallery();
-      galleryLocalOnly = false;
       return [...localRows.map((row) => ({ ...row, localOnly: true })), ...remoteRows];
     } catch {
       galleryLocalOnly = true;
@@ -347,29 +420,42 @@ window.Store = (function () {
     }
   }
   async function addGallery(item) {
-    if (!hasSB) {
-      if (!isBlob(item.src)) return { ...(await local.addGallery(item)), localOnly: true };
-      const blob = await imageBlob(item.src);
-      return {
-        ...(await local.addGallery({ ...item, src: await localImageUrl(blob) })),
-        localOnly: true,
-      };
+    if (!galleryLocalOnly) {
+      try {
+        return await remote.addGallery(item);
+      } catch {
+        galleryLocalOnly = true;
+      }
     }
-    const blob = await imageBlob(item.src);
-    return remote.addGallery({ ...item, src: blob });
+    return { ...(await local.addGallery(item)), localOnly: true };
   }
   async function deleteGallery(id) {
     const localRows = await local.listGallery();
     const isLocalPhoto = localRows.some((row) => String(row.id) === String(id));
-    if (isLocalPhoto) return local.deleteGallery(id);
-    await remote.deleteGallery(id);
+    await local.deleteGallery(id);
+    if (!isLocalPhoto && !galleryLocalOnly) await remote.deleteGallery(id);
   }
 
-  // Ekspor satu pintu: galeri memakai fallback lokal khusus; operasi lain mengikuti mode biasa.
-  return Object.assign({ mode, liked, DEFAULT_FORUM }, hasSB ? remote : local, {
+  // Ekspor satu pintu: tiap operasi memakai remote bila hidup, dan jatuh ke perangkat bila gagal.
+  const Store = Object.assign({ mode, liked, DEFAULT_FORUM }, hasSB ? remote : local, {
+    listFeedback,
+    addFeedback,
+    setLikes,
+    deleteFeedback,
+    clearFeedback,
+    listPrivate,
+    addPrivate,
+    deletePrivate,
+    getForum,
+    setForum,
     listGallery,
     addGallery,
     deleteGallery,
-    checkGalleryConnection,
   });
+  // offline true hanya saat mode online gagal dan data jatuh ke perangkat.
+  // Mode lokal murni (tanpa Supabase) sudah diberi tahu lewat toast terpisah.
+  Object.defineProperty(Store, "offline", {
+    get: () => hasSB && (fbLocalOnly || pvLocalOnly),
+  });
+  return Store;
 })();

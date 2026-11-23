@@ -4,13 +4,14 @@
    ========================================================= */
 
 /* ---------- HIRAGANA ---------- */
+// Setiap objek menyimpan glyph, romaji, dan nama kelompok untuk filter.
 const HIRAGANA = [
   // gojūon
-  { k: "あ", r: "a",  row: "Vokal" },
-  { k: "い", r: "i",  row: "Vokal" },
-  { k: "う", r: "u",  row: "Vokal" },
-  { k: "え", r: "e",  row: "Vokal" },
-  { k: "お", r: "o",  row: "Vokal" },
+  { k: "あ", r: "a", row: "Vokal" },
+  { k: "い", r: "i", row: "Vokal" },
+  { k: "う", r: "u", row: "Vokal" },
+  { k: "え", r: "e", row: "Vokal" },
+  { k: "お", r: "o", row: "Vokal" },
 
   { k: "か", r: "ka", row: "K" },
   { k: "き", r: "ki", row: "K" },
@@ -19,14 +20,14 @@ const HIRAGANA = [
   { k: "こ", r: "ko", row: "K" },
 
   { k: "さ", r: "sa", row: "S" },
-  { k: "し", r: "shi",row: "S" },
+  { k: "し", r: "shi", row: "S" },
   { k: "す", r: "su", row: "S" },
   { k: "せ", r: "se", row: "S" },
   { k: "そ", r: "so", row: "S" },
 
   { k: "た", r: "ta", row: "T" },
-  { k: "ち", r: "chi",row: "T" },
-  { k: "つ", r: "tsu",row: "T" },
+  { k: "ち", r: "chi", row: "T" },
+  { k: "つ", r: "tsu", row: "T" },
   { k: "て", r: "te", row: "T" },
   { k: "と", r: "to", row: "T" },
 
@@ -60,7 +61,7 @@ const HIRAGANA = [
 
   { k: "わ", r: "wa", row: "W" },
   { k: "を", r: "wo", row: "W" },
-  { k: "ん", r: "n",  row: "W" },
+  { k: "ん", r: "n", row: "W" },
 
   // dakuon / handakuon
   { k: "が", r: "ga", row: "Dakuon" },
@@ -126,12 +127,13 @@ const HIRAGANA = [
 ];
 
 /* ---------- KATAKANA ---------- */
+// Bentuk field Katakana sama agar renderer kana dapat dipakai ulang.
 const KATAKANA = [
-  { k: "ア", r: "a",  row: "Vokal" },
-  { k: "イ", r: "i",  row: "Vokal" },
-  { k: "ウ", r: "u",  row: "Vokal" },
-  { k: "エ", r: "e",  row: "Vokal" },
-  { k: "オ", r: "o",  row: "Vokal" },
+  { k: "ア", r: "a", row: "Vokal" },
+  { k: "イ", r: "i", row: "Vokal" },
+  { k: "ウ", r: "u", row: "Vokal" },
+  { k: "エ", r: "e", row: "Vokal" },
+  { k: "オ", r: "o", row: "Vokal" },
 
   { k: "カ", r: "ka", row: "K" },
   { k: "キ", r: "ki", row: "K" },
@@ -140,14 +142,14 @@ const KATAKANA = [
   { k: "コ", r: "ko", row: "K" },
 
   { k: "サ", r: "sa", row: "S" },
-  { k: "シ", r: "shi",row: "S" },
+  { k: "シ", r: "shi", row: "S" },
   { k: "ス", r: "su", row: "S" },
   { k: "セ", r: "se", row: "S" },
   { k: "ソ", r: "so", row: "S" },
 
   { k: "タ", r: "ta", row: "T" },
-  { k: "チ", r: "chi",row: "T" },
-  { k: "ツ", r: "tsu",row: "T" },
+  { k: "チ", r: "chi", row: "T" },
+  { k: "ツ", r: "tsu", row: "T" },
   { k: "テ", r: "te", row: "T" },
   { k: "ト", r: "to", row: "T" },
 
@@ -181,7 +183,7 @@ const KATAKANA = [
 
   { k: "ワ", r: "wa", row: "W" },
   { k: "ヲ", r: "wo", row: "W" },
-  { k: "ン", r: "n",  row: "W" },
+  { k: "ン", r: "n", row: "W" },
 
   { k: "ガ", r: "ga", row: "Dakuon" },
   { k: "ギ", r: "gi", row: "Dakuon" },
@@ -246,20 +248,81 @@ const KATAKANA = [
 
 /* ---------- KOSAKATA (Vocab) ---------- */
 /* kat: kategori, jp: kanji/kana, kana: bacaan kana, romaji, id: arti */
+// Data kosakata dipisah dari tampilan; tambah satu objek untuk menambah kata.
 const KOSAKATA = [
   // Salam & sapaan sehari-hari
-  { kat: "Salam Harian", jp: "おはようございます", kana: "ohayou gozaimasu", id: "Selamat pagi" },
-  { kat: "Salam Harian", jp: "こんにちは", kana: "konnichiwa", id: "Selamat siang" },
-  { kat: "Salam Harian", jp: "こんばんは", kana: "konbanwa", id: "Selamat malam" },
-  { kat: "Salam Harian", jp: "おやすみなさい", kana: "oyasuminasai", id: "Selamat tidur" },
-  { kat: "Salam Harian", jp: "さようなら", kana: "sayounara", id: "Selamat tinggal" },
-  { kat: "Salam Harian", jp: "ありがとう", kana: "arigatou", id: "Terima kasih" },
-  { kat: "Salam Harian", jp: "すみません", kana: "sumimasen", id: "Permisi / Maaf" },
-  { kat: "Salam Harian", jp: "いただきます", kana: "itadakimasu", id: "Selamat makan (sebelum)" },
-  { kat: "Salam Harian", jp: "ごちそうさま", kana: "gochisousama", id: "Terima kasih (setelah makan)" },
-  { kat: "Salam Harian", jp: "はじめまして", kana: "hajimemashite", id: "Salam kenal" },
-  { kat: "Salam Harian", jp: "おげんきですか", kana: "ogenki desu ka", id: "Apa kabar?" },
-  { kat: "Salam Harian", jp: "じゃあまた", kana: "jaa mata", id: "Sampai jumpa" },
+  {
+    kat: "Salam Harian",
+    jp: "おはようございます",
+    kana: "ohayou gozaimasu",
+    id: "Selamat pagi",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "こんにちは",
+    kana: "konnichiwa",
+    id: "Selamat siang",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "こんばんは",
+    kana: "konbanwa",
+    id: "Selamat malam",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "おやすみなさい",
+    kana: "oyasuminasai",
+    id: "Selamat tidur",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "さようなら",
+    kana: "sayounara",
+    id: "Selamat tinggal",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "ありがとう",
+    kana: "arigatou",
+    id: "Terima kasih",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "すみません",
+    kana: "sumimasen",
+    id: "Permisi / Maaf",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "いただきます",
+    kana: "itadakimasu",
+    id: "Selamat makan (sebelum)",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "ごちそうさま",
+    kana: "gochisousama",
+    id: "Terima kasih (setelah makan)",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "はじめまして",
+    kana: "hajimemashite",
+    id: "Salam kenal",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "おげんきですか",
+    kana: "ogenki desu ka",
+    id: "Apa kabar?",
+  },
+  {
+    kat: "Salam Harian",
+    jp: "じゃあまた",
+    kana: "jaa mata",
+    id: "Sampai jumpa",
+  },
 
   // Angka
   { kat: "Angka", jp: "一", kana: "ichi", id: "1 (satu)" },
@@ -297,7 +360,12 @@ const KOSAKATA = [
   { kat: "Makanan & Minuman", jp: "にく", kana: "niku", id: "Daging" },
   { kat: "Makanan & Minuman", jp: "やさい", kana: "yasai", id: "Sayur" },
   { kat: "Makanan & Minuman", jp: "くだもの", kana: "kudamono", id: "Buah" },
-  { kat: "Makanan & Minuman", jp: "おいしい", kana: "oishii", id: "Enak / lezat" },
+  {
+    kat: "Makanan & Minuman",
+    jp: "おいしい",
+    kana: "oishii",
+    id: "Enak / lezat",
+  },
 
   // Sekolah
   { kat: "Sekolah", jp: "がっこう", kana: "gakkou", id: "Sekolah" },
@@ -308,7 +376,12 @@ const KOSAKATA = [
   { kat: "Sekolah", jp: "えんぴつ", kana: "enpitsu", id: "Pensil" },
   { kat: "Sekolah", jp: "つくえ", kana: "tsukue", id: "Meja" },
   { kat: "Sekolah", jp: "べんきょう", kana: "benkyou", id: "Belajar" },
-  { kat: "Sekolah", jp: "しゅくだい", kana: "shukudai", id: "PR / pekerjaan rumah" },
+  {
+    kat: "Sekolah",
+    jp: "しゅくだい",
+    kana: "shukudai",
+    id: "PR / pekerjaan rumah",
+  },
   { kat: "Sekolah", jp: "ともだち", kana: "tomodachi", id: "Teman" },
 
   // Waktu
@@ -324,17 +397,75 @@ const KOSAKATA = [
   // Sifat & Ungkapan
   { kat: "Sifat & Ungkapan", jp: "おおきい", kana: "ookii", id: "Besar" },
   { kat: "Sifat & Ungkapan", jp: "ちいさい", kana: "chiisai", id: "Kecil" },
-  { kat: "Sifat & Ungkapan", jp: "たかい", kana: "takai", id: "Tinggi / mahal" },
+  {
+    kat: "Sifat & Ungkapan",
+    jp: "たかい",
+    kana: "takai",
+    id: "Tinggi / mahal",
+  },
   { kat: "Sifat & Ungkapan", jp: "やすい", kana: "yasui", id: "Murah" },
-  { kat: "Sifat & Ungkapan", jp: "かわいい", kana: "kawaii", id: "Lucu / imut" },
-  { kat: "Sifat & Ungkapan", jp: "きれい", kana: "kirei", id: "Cantik / bersih" },
-  { kat: "Sifat & Ungkapan", jp: "たのしい", kana: "tanoshii", id: "Menyenangkan" },
-  { kat: "Sifat & Ungkapan", jp: "がんばって", kana: "ganbatte", id: "Semangat!" },
-  { kat: "Sifat & Ungkapan", jp: "だいじょうぶ", kana: "daijoubu", id: "Tidak apa-apa / aman" },
-  { kat: "Sifat & Ungkapan", jp: "すきです", kana: "suki desu", id: "Saya suka" },
-  { kat: "Sifat & Ungkapan", jp: "わかりました", kana: "wakarimashita", id: "Saya mengerti" },
+  {
+    kat: "Sifat & Ungkapan",
+    jp: "かわいい",
+    kana: "kawaii",
+    id: "Lucu / imut",
+  },
+  {
+    kat: "Sifat & Ungkapan",
+    jp: "きれい",
+    kana: "kirei",
+    id: "Cantik / bersih",
+  },
+  {
+    kat: "Sifat & Ungkapan",
+    jp: "たのしい",
+    kana: "tanoshii",
+    id: "Menyenangkan",
+  },
+  {
+    kat: "Sifat & Ungkapan",
+    jp: "がんばって",
+    kana: "ganbatte",
+    id: "Semangat!",
+  },
+  {
+    kat: "Sifat & Ungkapan",
+    jp: "だいじょうぶ",
+    kana: "daijoubu",
+    id: "Tidak apa-apa / aman",
+  },
+  {
+    kat: "Sifat & Ungkapan",
+    jp: "すきです",
+    kana: "suki desu",
+    id: "Saya suka",
+  },
+  {
+    kat: "Sifat & Ungkapan",
+    jp: "わかりました",
+    kana: "wakarimashita",
+    id: "Saya mengerti",
+  },
   { kat: "Sifat & Ungkapan", jp: "かっこいい", kana: "kakkoii", id: "Keren" },
 ];
 
 /* Baris kana yang tersedia (untuk filter) */
-const KANA_ROWS = ["Semua", "Vokal", "K", "S", "T", "N", "H", "M", "Y", "R", "W", "Dakuon", "Handakun", "Youon"];
+// Daftar label kelompok yang dipakai sebagai chip filter.
+const KANA_ROWS = [
+  "Semua",
+  "Vokal",
+  "K",
+  "S",
+  "T",
+  "N",
+  "H",
+  "M",
+  "Y",
+  "R",
+  "W",
+  "Dakuon",
+  "Handakun",
+  "Youon",
+];
+
+// Penjelasan: file ini hanya data mentah; main.js yang mengubahnya menjadi tampilan.

@@ -31,6 +31,7 @@ const featureScripts = [
   "js/features/about-slider.js",
   "js/features/kana-quiz.js",
   "js/features/daily-word.js",
+  "js/features/messages.js",
 ];
 for (const feature of featureScripts) {
   assert.ok(scripts.indexOf("js/main.js") < scripts.indexOf(feature), `${feature} must load after main.js`);

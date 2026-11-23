@@ -49,7 +49,8 @@ aozora-nihongo-club/
 │   └── features/
 │       ├── about-slider.js                 # slider pengenalan klub
 │       ├── kana-quiz.js                    # kuis pilihan ganda
-│       └── daily-word.js                   # kata harian
+│       ├── daily-word.js                   # kata harian
+│       └── messages.js                     # pesan publik/pribadi + admin
 ├── assets/                                 # logo dan gambar
 ├── tests/                                  # tes otomatis tanpa framework
 ├── PANDUAN-KODE.md                         # dokumentasi utama ini
@@ -86,9 +87,9 @@ aozora-nihongo-club/
 | Kata harian dan suara | `js/features/daily-word.js`, `js/main.js` | `kotd()`, `speak()` |
 | Info pertemuan | `js/main.js`, `js/store.js` | `loadForum`, `renderForum`, `getForum`, `setForum` |
 | Slider pengenalan klub | `js/features/about-slider.js`, `index.html` | `SLIDES`, `#aboutSlides`, `#slideNext`, `#slidePrev` |
-| Form dan daftar pesan publik | `js/main.js`, `js/store.js`, `index.html` | `fbForm`, `loadFeedback`, `renderFeedback`, `addFeedback` |
-| Pesan pribadi | `js/main.js`, `js/store.js` | `loadPrivate`, `renderPrivateAdmin`, `addPrivate` |
-| Login dan panel admin | `js/main.js`, `index.html` | `sha256`, `applyAdminUI`, `#adminModal` |
+| Form dan daftar pesan publik | `js/features/messages.js`, `js/store.js`, `index.html` | `fbForm`, `loadFeedback`, `renderFeedback`, `addFeedback` |
+| Pesan pribadi | `js/features/messages.js`, `js/store.js` | `loadPrivate`, `renderPrivateAdmin`, `addPrivate` |
+| Login dan panel admin | `js/features/messages.js`, `index.html` | `sha256`, `applyAdminUI`, `#adminModal` |
 | Foto yang tersimpan lama | `js/store.js`, storage | `gallery`; jangan hapus atau tulis ulang data saat merapikan UI |
 | Accordion dan gerak elemen | `css/parts/09-motion-accordion.css` | `.acc`, `.pop-in`, `@keyframes` |
 | Override responsive dan tema | `css/parts/10-responsive-overrides.css` | `@media`, `prefers-reduced-motion`, `.page-panel` |
@@ -108,9 +109,9 @@ Script disimpan di `pages/scripts.html` dan dimuat di akhir hasil HTML dengan ur
 3. `js/store.js`.
 4. `js/data.js`.
 5. `js/main.js`.
-6. Tiga file `js/features/*.js`.
+6. Empat file `js/features/*.js` (about-slider, kana-quiz, daily-word, messages).
 
-Jangan memindahkan file tanpa memeriksa dependensi. File fitur berjalan setelah data dan main siap.
+Jangan memindahkan file tanpa memeriksa dependensi. File fitur berjalan setelah data dan main siap. `messages.js` butuh `window.AOZORA` dari `main.js`, jadi harus dimuat paling akhir.
 
 ### CSS — tampilan
 
@@ -120,7 +121,9 @@ Jangan memindahkan file tanpa memeriksa dependensi. File fitur berjalan setelah 
 
 `main.js` memakai `$()` untuk satu elemen dan `$$()` untuk banyak elemen. Kode utama dibungkus IIFE agar variabel internal tidak bocor. `window.AOZORA` menyediakan beberapa helper yang dipakai file fitur lain, termasuk suara. `data.js` mendefinisikan materi; fungsi render membentuk HTML untuk panel belajar. Konten input pengguna harus di-escape sebelum dimasukkan sebagai HTML.
 
-Tiga fitur yang dipisah memakai data/helper yang sama, tetapi punya scope sendiri. `kana-quiz.js` mengambil data kana dan membuat kuis; `daily-word.js` memakai kosakata dan helper suara; `about-slider.js` memasang tombol serta slide pengenalan klub.
+Empat fitur yang dipisah memakai data/helper yang sama, tetapi punya scope sendiri. `kana-quiz.js` mengambil data kana dan membuat kuis; `daily-word.js` memakai kosakata dan helper suara; `about-slider.js` memasang tombol serta slide pengenalan klub; `messages.js` mengurus form pesan publik, pesan pribadi, dan panel admin.
+
+`main.js` membagikan helper lewat `window.AOZORA` (`$`, `$$`, `esc`, `toast`, `I`, `TYPES`, `speak`, `setFeedbackCount`, `setForum`, `forum`). `messages.js` menambahkan `renderFeedback`, `loadFeedback`, `feedback`, dan `privateMsgs` ke objek yang sama, sehingga `main.js` tidak perlu tahu isi fitur pesan.
 
 ## 5. Data dan penyimpanan
 
@@ -158,6 +161,7 @@ node --check js/main.js
 node --check js/features/about-slider.js
 node --check js/features/kana-quiz.js
 node --check js/features/daily-word.js
+node --check js/features/messages.js
 node tests/gallery-store.test.cjs
 node tests/site-structure.test.cjs
 ```

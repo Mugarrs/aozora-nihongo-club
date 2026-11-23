@@ -7,6 +7,7 @@ const project = path.join(__dirname, "..");
 const source = fs.readFileSync(path.join(project, "js/store.js"), "utf8");
 const html = fs.readFileSync(path.join(project, "index.html"), "utf8");
 const appSource = fs.readFileSync(path.join(project, "js/main.js"), "utf8");
+const messagesSource = fs.readFileSync(path.join(project, "js/features/messages.js"), "utf8");
 
 function makeStore({ failWrite = false } = {}) {
   const data = new Map();
@@ -34,7 +35,7 @@ async function main() {
   for (const id of ["home", "belajar", "kegiatan", "pesan", "adminModal"]) assert.match(html, new RegExp(`id="${id}"`));
   assert.match(appSource, /function showRoute/);
   assert.match(appSource, /showRoute\(location\.hash \|\| "#home", false\)/);
-  assert.match(appSource, /function applyAdminUI/);
+  assert.match(messagesSource, /function applyAdminUI/);
   assert.doesNotMatch(appSource, /galleryAuto|loadGallery|galleryAdmin|gFile|renderGalleryAdmin|refreshGalleryAdminAuth/);
   const { store } = makeStore();
   await store.addGallery({ src: "data:image/jpeg;base64,AA==", caption: "data lama" });
