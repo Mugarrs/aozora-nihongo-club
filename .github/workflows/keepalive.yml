@@ -1,0 +1,25 @@
+name: Keep Supabase Alive
+
+# Supabase free plan mem-pause project yang tidak menerima aktivitas tulis
+# selama ~7 hari. Workflow ini menulis satu baris ke tabel keepalive tiap hari
+# supaya timer pause tidak pernah tercapai.
+on:
+  schedule:
+    - cron: "0 2 * * *" # 02:00 UTC = 09:00 WIB
+  workflow_dispatch: # tombol "Run workflow" untuk tes manual
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tulis ping ke tabel keepalive
+        run: |
+          # Hanya penulisan sungguhan ke Postgres yang menunda pause.
+          # SELECT / buka dashboard tidak dihitung.
+          curl -sS -f -X PATCH \
+            "https://bxxfiulfelzinukpuqbd.supabase.co/rest/v1/keepalive?id=eq.1" \
+            -H "apikey: sb_publishable_UYOsmvrASovZIhBPPZ9mWQ_OCGou8ea" \
+            -H "Authorization: Bearer sb_publishable_UYOsmvrASovZIhBPPZ9mWQ_OCGou8ea" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d "{\"last_ping\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
